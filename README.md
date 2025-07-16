@@ -1,2 +1,3 @@
 # Excel Pipeline
-Local file automation.
+
+Automate your local Excel files.
