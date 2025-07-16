@@ -92,4 +92,24 @@ namespace ExcelPipeline.Models
 
         }
     }
+
+    public class ScheduledPipeline
+    {
+        public Pipeline Pipeline { get; set; } = null!;
+        public string FilePath { get; set; } = string.Empty;
+        public string TriggerType { get; set; } = string.Empty;
+        public DateTime NextRunTime { get; set; }
+        public bool IsRecurring { get; set; }
+        public TimeSpan RecurrenceInterval { get; set; }
+        public bool IsMonthly { get; set; }
+        public bool IsCron { get; set; }
+        public string CronExpression { get; set; } = string.Empty;
+    }
+
+    public class FileWatcherPipeline
+    {
+        public Pipeline Pipeline { get; set; } = null!;
+        public string FilePath { get; set; } = string.Empty;
+        public string WatchPath { get; set; } = string.Empty;
+    }
 }
