@@ -4,72 +4,41 @@ obj/
 [Bb]uild/
 [Ll]og/
 *.log
-*.tmp
 
 ## User-specific files
 *.user
-*.suo
 *.userosscache
+*.suo
 *.sln.docstates
-.vs/
+*.vs/
 .vscode/
 .idea/
 
-## macOS-specific files
-.DS_Store
-*.DS_Store
+## .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
 
-## Android
-*.apk
-*.ap_
-*.dex
-*.apkset
-*.aab
-*.keystore
-*.jks
-*.gradle/
-.gradle/
-local.properties
-Android/bin/
-Android/obj/
+## ASP.NET temp files
+**/wwwroot/**/bundle*
+**/wwwroot/**/node_modules/
 
-## iOS
-*.app/
-*.dSYM/
-*.ipa
-*.xcuserstate
-*.xcworkspace/
-*.xcodeproj/
-*.xcconfig
-*.plist
-*.entitlements
+## Rider & VS Code
+.idea/
+*.sln.iml
+.vscode/
 
-## Windows / UWP
-*.appx
-*.appxbundle
-*.appxupload
-*.msix
-*.msixbundle
-*.msixupload
-*.eappx
-*.eappxbundle
-*.eappxupload
-*.cer
+## Resharper
+*.DotSettings.user
 
-## MAUI specific
-**/Platforms/**/bin/
-**/Platforms/**/obj/
-**/Resources/Raw/**
-
-## NuGet
+## NUGET
 *.nupkg
 *.snupkg
 .nuget/
 packages/
-project.lock.json
-project.fragment.lock.json
+*.nuspec
 
-## Environment
+## Environment files
 .env
 .env.*
 
@@ -77,23 +46,32 @@ project.fragment.lock.json
 *.log
 logs/
 
-## Publish
-publish/
-out/
-artifacts/
-
-## Testing
+## Test Results
 TestResults/
 *.coverage
 *.coveragexml
+*.testsettings
+*.vsmdi
+*.vsp
+*.vspx
+*.sarif
+*.codecoverage
 
-## Rider
-.idea/
-*.sln.iml
+## Publish
+publish/
+out/
 
-## VS Code
-.vscode/
+## Others
+*.db
+*.sqlite
+*.pdb
+*.cache
+*.tmp
+*.bak
+*.swp
 
-## Resharper
-*.DotSettings.user
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
 
