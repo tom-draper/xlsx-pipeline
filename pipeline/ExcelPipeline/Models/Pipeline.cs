@@ -102,8 +102,13 @@ namespace ExcelPipeline.Models
         public bool IsRecurring { get; set; }
         public TimeSpan RecurrenceInterval { get; set; }
         public bool IsMonthly { get; set; }
+        public bool IsWeekdaysOnly { get; set; }
         public bool IsCron { get; set; }
         public string CronExpression { get; set; } = string.Empty;
+        public bool IsQuarterly { get; set; }
+        public bool IsYearly { get; set; }
+        public bool IsWeekly { get; set; }
+        public bool IsWeekendsOnly { get; set; }
     }
 
     public class FileWatcherPipeline

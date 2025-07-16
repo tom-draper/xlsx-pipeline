@@ -1,5 +1,4 @@
 ﻿using ExcelPipeline.Models;
-using ExcelPipeline.Services;
 
 namespace ExcelPipeline.Services
 {
@@ -76,12 +75,86 @@ namespace ExcelPipeline.Services
                         }
                         break;
 
+                    // Daily options
+                    case "once a day":
+                    case "every day":
+                    case "daily":
+                        scheduledPipeline.NextRunTime = now.AddDays(1).Date; // Next day at midnight
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
+                        break;
+
+                    // Weekly options
+                    case "once a week":
+                    case "every week":
+                    case "weekly":
+                        scheduledPipeline.NextRunTime = now.AddDays(7);
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(7);
+                        scheduledPipeline.IsWeekly = true;
+                        break;
+
+                    // Hourly options
+                    case "once an hour":
+                    case "every hour":
+                    case "hourly":
+                        scheduledPipeline.NextRunTime = now.AddHours(1);
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromHours(1);
+                        break;
+
+                    // Monthly options
                     case "once a month":
+                    case "every month":
+                    case "monthly":
                         var nextMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1);
                         scheduledPipeline.NextRunTime = nextMonth;
                         scheduledPipeline.IsRecurring = true;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(30);
                         scheduledPipeline.IsMonthly = true;
+                        break;
+
+                    // Quarterly options
+                    case "once a quarter":
+                    case "every quarter":
+                    case "quarterly":
+                        var nextQuarter = GetNextQuarterStart(now);
+                        scheduledPipeline.NextRunTime = nextQuarter;
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(90);
+                        scheduledPipeline.IsQuarterly = true;
+                        break;
+
+                    // Yearly options
+                    case "once a year":
+                    case "every year":
+                    case "yearly":
+                    case "annually":
+                        var nextYear = new DateTime(now.Year + 1, 1, 1);
+                        scheduledPipeline.NextRunTime = nextYear;
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(365);
+                        scheduledPipeline.IsYearly = true;
+                        break;
+
+                    // Weekday options
+                    case "weekdays":
+                    case "every weekday":
+                        var nextWeekday = GetNextWeekday(now);
+                        scheduledPipeline.NextRunTime = nextWeekday;
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
+                        scheduledPipeline.IsWeekdaysOnly = true;
+                        break;
+
+                    // Weekend options
+                    case "weekends":
+                    case "every weekend":
+                        var nextWeekend = GetNextWeekend(now);
+                        scheduledPipeline.NextRunTime = nextWeekend;
+                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
+                        scheduledPipeline.IsWeekendsOnly = true;
                         break;
 
                     default:
@@ -97,6 +170,39 @@ namespace ExcelPipeline.Services
                 _logger.LogError(ex, "Error creating scheduled pipeline for: {FileName}", Path.GetFileName(filePath));
                 return null;
             }
+        }
+
+        private static DateTime GetNextQuarterStart(DateTime now)
+        {
+            var currentQuarter = (now.Month - 1) / 3 + 1;
+            var nextQuarterStartMonth = currentQuarter * 3 + 1;
+
+            if (nextQuarterStartMonth > 12)
+            {
+                return new DateTime(now.Year + 1, 1, 1);
+            }
+
+            return new DateTime(now.Year, nextQuarterStartMonth, 1);
+        }
+
+        private static DateTime GetNextWeekday(DateTime now)
+        {
+            var nextDay = now.AddDays(1);
+            while (nextDay.DayOfWeek == DayOfWeek.Saturday || nextDay.DayOfWeek == DayOfWeek.Sunday)
+            {
+                nextDay = nextDay.AddDays(1);
+            }
+            return nextDay.Date;
+        }
+
+        private static DateTime GetNextWeekend(DateTime now)
+        {
+            var nextDay = now.AddDays(1);
+            while (nextDay.DayOfWeek != DayOfWeek.Saturday && nextDay.DayOfWeek != DayOfWeek.Sunday)
+            {
+                nextDay = nextDay.AddDays(1);
+            }
+            return nextDay.Date;
         }
     }
 }
