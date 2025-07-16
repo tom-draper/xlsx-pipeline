@@ -1,0 +1,99 @@
+## Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.log
+*.tmp
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+.idea/
+
+## macOS-specific files
+.DS_Store
+*.DS_Store
+
+## Android
+*.apk
+*.ap_
+*.dex
+*.apkset
+*.aab
+*.keystore
+*.jks
+*.gradle/
+.gradle/
+local.properties
+Android/bin/
+Android/obj/
+
+## iOS
+*.app/
+*.dSYM/
+*.ipa
+*.xcuserstate
+*.xcworkspace/
+*.xcodeproj/
+*.xcconfig
+*.plist
+*.entitlements
+
+## Windows / UWP
+*.appx
+*.appxbundle
+*.appxupload
+*.msix
+*.msixbundle
+*.msixupload
+*.eappx
+*.eappxbundle
+*.eappxupload
+*.cer
+
+## MAUI specific
+**/Platforms/**/bin/
+**/Platforms/**/obj/
+**/Resources/Raw/**
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+
+## Environment
+.env
+.env.*
+
+## Logs
+*.log
+logs/
+
+## Publish
+publish/
+out/
+artifacts/
+
+## Testing
+TestResults/
+*.coverage
+*.coveragexml
+
+## Rider
+.idea/
+*.sln.iml
+
+## VS Code
+.vscode/
+
+## Resharper
+*.DotSettings.user
+
