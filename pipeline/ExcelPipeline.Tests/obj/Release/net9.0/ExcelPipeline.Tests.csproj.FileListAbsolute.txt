@@ -1,8 +1,0 @@
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\bin\Release\net9.0\.msCoverageSourceRootsMapping_ExcelPipeline.Tests
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\bin\Release\net9.0\CoverletSourceRootsMapping_ExcelPipeline.Tests
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\obj\Release\net9.0\ExcelPipeline.Tests.csproj.AssemblyReference.cache
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\obj\Release\net9.0\ExcelPipeline.Tests.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\obj\Release\net9.0\ExcelPipeline.Tests.AssemblyInfoInputs.cache
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\obj\Release\net9.0\ExcelPipeline.Tests.AssemblyInfo.cs
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\obj\Release\net9.0\ExcelPipeline.Tests.csproj.CoreCompileInputs.cache
-C:\Users\tomdraper\Documents\Development\excel-pipeline\pipeline\ExcelPipeline.Tests\obj\Release\net9.0\ExcelPipeline.Tests.sourcelink.json
