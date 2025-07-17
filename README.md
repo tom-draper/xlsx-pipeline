@@ -33,3 +33,15 @@ Workflows, denoted 'Pipelines', like the one below are defined using a flexible 
     ]
 }
 ```
+
+You can have any number of pipelines running at once, just add a new file to the `Pipelines/` directory.
+
+```text
+ExcelPipeline.exe
+Pipelines/
+├── CleanReport.json
+├── TransferSalesData.json
+├── ApplyAnalytics.json
+└── UpdateLeads.json
+```
+
