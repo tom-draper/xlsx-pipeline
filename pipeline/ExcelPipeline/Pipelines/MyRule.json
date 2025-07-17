@@ -6,18 +6,13 @@
   },
   "actions": [
     {
-      "type": "RenameSheet",
-      "originalName": "MySheet",
-      "newName": "Sheet1"
-    },
-    {
       "type": "MoveColumn",
       "from": "A",
       "to": "C"
     },
     {
       "type": "CopyFile",
-      "destinationPath": "C:\\Reports\\"
+      "destinationPath": "..\\"
     }
   ]
 }

@@ -1,6 +1,6 @@
 ﻿namespace ExcelPipeline.Actions.File
 {
-    public class CopyFileAction : ActionBase
+    public class MoveFileAction : ActionBase
     {
         public required string DestinationPath { get; set; }
         public string? FilePath { get; set; }
@@ -8,12 +8,7 @@
         /// <summary>
         /// Whether to overwrite the destination file if it already exists
         /// </summary>
-        public bool OverwriteIfExists { get; set; } = true;
-
-        /// <summary>
-        /// Whether to automatically rename the file if it already exists (Windows-style - Copy, - Copy (2), etc.)
-        /// </summary>
-        public bool AutoRenameIfExists { get; set; } = false;
+        public bool OverwriteIfExists { get; set; } = false;
 
         /// <summary>
         /// Whether to create destination directories if they don't exist
@@ -41,10 +36,10 @@
                 string destinationFilePath;
 
                 // Check if DestinationPath appears to be a full file path
-                if (Path.IsPathRooted(DestinationPath) &&
-                    (Path.HasExtension(DestinationPath) ||
-                     DestinationPath.Contains(Path.DirectorySeparatorChar) ||
-                     DestinationPath.Contains(Path.AltDirectorySeparatorChar)))
+                if (System.IO.Path.IsPathRooted(DestinationPath) &&
+                    (System.IO.Path.HasExtension(DestinationPath) ||
+                     DestinationPath.Contains(System.IO.Path.DirectorySeparatorChar) ||
+                     DestinationPath.Contains(System.IO.Path.AltDirectorySeparatorChar)))
                 {
                     // Treat DestinationPath as a full file path
                     destinationFilePath = DestinationPath;
@@ -52,12 +47,12 @@
                 else
                 {
                     // Treat DestinationPath as a directory and combine with source filename
-                    var fileName = Path.GetFileName(sourceFilePath);
-                    destinationFilePath =Path.Combine(DestinationPath, fileName);
+                    var fileName = System.IO.Path.GetFileName(sourceFilePath);
+                    destinationFilePath = System.IO.Path.Combine(DestinationPath, fileName);
                 }
 
                 // Ensure destination directory exists
-                var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
+                var destinationDirectory = System.IO.Path.GetDirectoryName(destinationFilePath);
                 if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
                 {
                     if (CreateDirectories)
@@ -67,42 +62,24 @@
                 }
 
                 // Check if destination file already exists and handle accordingly
-                if (System.IO.File.Exists(destinationFilePath) && !OverwriteIfExists)
+                if (System.IO.File.Exists(destinationFilePath))
                 {
-                    if (AutoRenameIfExists)
-                    {
-                        // Find next available file name
-                        var directory = Path.GetDirectoryName(destinationFilePath)!;
-                        var originalFileName = Path.GetFileNameWithoutExtension(destinationFilePath);
-                        var extension = Path.GetExtension(destinationFilePath);
-
-                        string baseCopyName = $"{originalFileName} - Copy";
-                        string newFilePath = Path.Combine(directory, $"{baseCopyName}{extension}");
-                        int copyIndex = 2;
-
-                        while (System.IO.File.Exists(newFilePath))
-                        {
-                            newFilePath = Path.Combine(directory, $"{baseCopyName} ({copyIndex}){extension}");
-                            copyIndex++;
-                        }
-
-                        destinationFilePath = newFilePath;
-                    }
-                    else
-                    {
+                    if (!OverwriteIfExists)
                         throw new InvalidOperationException($"Destination file already exists and OverwriteIfExists is false: {destinationFilePath}");
-                    }
+
+                    // Delete the existing file if we're overwriting
+                    System.IO.File.Delete(destinationFilePath);
                 }
 
-                // Perform the copy operation
-                System.IO.File.Copy(sourceFilePath, destinationFilePath, OverwriteIfExists);
+                // Perform the move operation
+                System.IO.File.Move(sourceFilePath, destinationFilePath);
 
                 return Task.CompletedTask;
             }
             catch (Exception ex)
             {
                 return Task.FromException(new InvalidOperationException(
-                    $"Failed to copy file from '{FilePath ?? filePath}' to '{DestinationPath}': {ex.Message}", ex));
+                    $"Failed to move file from '{FilePath ?? filePath}' to '{DestinationPath}': {ex.Message}", ex));
             }
         }
     }
