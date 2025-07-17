@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExcelPipeline.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2bf03ea005c49d63d989fd4dba4190e8f3e31d42")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65b9911048eb9c48882489b91a5ebac8152bf094")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExcelPipeline.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExcelPipeline.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
