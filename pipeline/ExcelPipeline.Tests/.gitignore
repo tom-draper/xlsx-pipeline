@@ -1,0 +1,74 @@
+# .NET build files
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+*.dll
+*.exe
+*.app
+*.log
+*.vspscc
+*.vssscc
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.codecoverage
+*.vsp
+*.vspx
+
+# Visual Studio settings
+.vs/
+.vscode/
+*.ncb
+*.sdf
+*.opensdf
+*.cache
+*.dbmdl
+
+# Rider/JetBrains settings
+.idea/
+*.DotSettings.user
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# DotCover reports
+*.dotCover
+
+# Resharper files
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Coverage tools
+coverage*.json
+coverage*.xml
+coverage*.info
+lcov.info
+
+# Temporary files
+~$*
+*.tmp
+*.bak
+
+# Others
+*.publish.xml
+*.orig
+
+# Mac/Linux files
+.DS_Store
+*.swp
+
