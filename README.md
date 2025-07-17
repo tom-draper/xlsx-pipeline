@@ -2,7 +2,7 @@
 
 Automate your local Excel files.
 
-Excel Pipeline runs as a background service running automated workflows on your Excel sheets.
+Excel Pipeline runs as a background service processing automated workflows on your Excel sheets.
 
 Workflows, denoted 'Pipelines', like the one below are defined using a flexible DML using JSON.
 
