@@ -1,0 +1,45 @@
+---
+const links = {
+	windows: {
+		label: "Download for Windows",
+		url: "https://example.com/download/windows",
+	},
+	mac: {
+		label: "Download for macOS",
+		url: "https://example.com/download/macos",
+	},
+	linux: {
+		label: "Download for Linux",
+		url: "https://example.com/download/linux",
+	},
+};
+---
+
+<button
+	id="download-btn"
+	class="bg-[#107b43] text-white p-4 rounded-sm px-6 text-xl cursor-pointer hover:bg-[#175935] transition-colors duration-200"
+	client:load
+>
+	Download
+</button>
+
+<script is:inline define:vars={{ links }}>
+	const btn = document.getElementById("download-btn");
+
+	// Detect operating system
+	const platform = navigator.userAgent.toLowerCase();
+	let os = "windows"; // default fallback
+
+	if (platform.includes("mac")) {
+		os = "mac";
+	} else if (platform.includes("linux")) {
+		os = "linux";
+	}
+
+	// Update button text and add click handler
+	const link = links[os];
+	btn.textContent = link.label;
+	btn.onclick = () => {
+		window.location.href = link.url;
+	};
+</script>

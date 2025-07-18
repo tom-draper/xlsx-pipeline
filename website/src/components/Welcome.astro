@@ -1,3 +1,7 @@
+---
+import DownloadButton from "./DownloadButton.astro";
+---
+
 <div id="container">
 	<main>
 		<section class="text-center">
@@ -5,12 +9,26 @@
 			<!-- <div class="w-[100%] absolute h-[90vh] mt-[-40vh] radial-gradient z-[-2] bg-[radial-gradient(ellipse_80%_50%_at_center,_#00CAFE,_transparent)] transparent"></div> -->
 			<div class="pipes absolute bottom-0 top-0 left-0 right-0 z-[-1]"></div>
 			<!-- <div class="w-[100%] absolute h-[120vh] mt-[-10vh] radial-gradient z-[-1] bg-[radial-gradient(ellipse_80%_50%_at_center,_rgba(34,158,99,0.1),_transparent)] transparent"></div> -->
-			<div>
-				<h1 class="text-9xl pt-60">Excel Pipeline</h1>
+			<div class="w-fit mx-auto">
+				<!-- <h1 class="text-9xl pt-[30vh] w-fit">Excel Pipeline</h1> -->
+				<h1 class="text-9xl pt-[30vh] w-fit">xlsx pipeline</h1>
+				<div class="text-right bg-[#adada61a] w-fit ml-auto px-3 py-1 text-[#808080] mt-[-10px] mr-1 rounded backdrop-blur-xs">
+					v1.0.0
+				</div>
 			</div>
-
-			<div class="absolute bottom-0 left-0 right-0 pb-32">
-				<button class="bg-[#107b43] text-white p-4 rounded px-6 text-xl cursor-pointer hover:bg-[#175935]">Download for Windows (64-bit)</button>
+			<div class="absolute bottom-6 right-4">
+				<iframe src="https://ghbtns.com/github-btn.html?user=tom-draper&repo=excel-pipeline&type=star&count=true&size=large" frameborder="0" scrolling="0" width="90" height="30" title="GitHub"></iframe>
+			</div>
+			<div class="absolute bottom-0 left-0 right-0 pb-[8vh]">
+				<DownloadButton client:load />
+				<!-- <button class="bg-[#107b43] text-white p-4 rounded-sm px-6 text-xl cursor-pointer hover:bg-[#175935]">Download for Windows</button> -->
+				<div class="pt-8">
+					<div class="w-fit m-auto backdrop-blur-xs px-3 py-1 bg-[#adada61a] rounded text-[#808080] transition-all duration-300 hover:bg-[#adada625] hover:text-[#606060]">
+						<a href="https://dotnet.microsoft.com/en-us/download/dotnet/9.0" class="transition-colors duration-300 hover:text-[#31be7d]">
+							Requires .NET Runtime 9.0
+						</a>
+					</div>
+				</div>
 			</div>
 		</section>
 	</main>

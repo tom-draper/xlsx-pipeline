@@ -45,3 +45,49 @@ pipelines/
 └── update-leads.json
 ```
 
+Pipelines can have scheduled triggers (e.g. every week), or file watcher triggers (e.g. when a new file is created in a directory).
+
+## Getting Started
+
+.NET Runtime 9.0 is required
+
+### Windows
+
+Create a new service with PowerShell.
+
+```powershell
+New-Service -Name "XLSXPipeline" -BinaryPathName "C:\Path\To\xlsx-pipeline.exe" -DisplayName "XLSX Pipeline" -StartupType Automatic
+Start-Service XLSXPipeline
+```
+
+Or using `sc`:
+
+```bash
+sc create XLSXPipeline binPath= "C:\Path\To\xlsx-pipeline.exe"
+```
+
+### Linux
+
+Create a new file: `/etc/systemd/system/xlsx-pipeline.service`
+
+```toml
+[Unit]
+Description=My .NET Worker Service
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/xlsx-pipeline
+ExecStart=/opt/xlsx-pipeline/xlsx-pipeline
+Restart=always
+# Optional: Set user/group
+# User=youruser
+# Group=yourgroup
+Environment=DOTNET_ENVIRONMENT=Production
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### macOS
+
+
