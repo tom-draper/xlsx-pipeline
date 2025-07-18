@@ -2,7 +2,7 @@
 
 Automate your local .xlsx files.
 
-XLSX Pipeline runs as a background service processing automated workflows on your Excel sheets.
+XLSX Pipeline runs as a background service processing automated workflows on your sheets.
 
 Workflows, denoted 'Pipelines', like the one below are defined using a flexible DML using JSON.
 
