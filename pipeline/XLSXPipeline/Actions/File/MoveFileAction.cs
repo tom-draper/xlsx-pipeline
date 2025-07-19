@@ -36,10 +36,10 @@
                 string destinationFilePath;
 
                 // Check if DestinationPath appears to be a full file path
-                if (System.IO.Path.IsPathRooted(DestinationPath) &&
-                    (System.IO.Path.HasExtension(DestinationPath) ||
-                     DestinationPath.Contains(System.IO.Path.DirectorySeparatorChar) ||
-                     DestinationPath.Contains(System.IO.Path.AltDirectorySeparatorChar)) || DestinationPath.EndsWith(".xlsx"))
+                if (Path.IsPathRooted(DestinationPath) &&
+                    (Path.HasExtension(DestinationPath) ||
+                     DestinationPath.Contains(Path.DirectorySeparatorChar) ||
+                     DestinationPath.Contains(Path.AltDirectorySeparatorChar)) || DestinationPath.EndsWith(".xlsx"))
                 {
                     // Treat DestinationPath as a full file path
                     destinationFilePath = DestinationPath;
@@ -47,12 +47,12 @@
                 else
                 {
                     // Treat DestinationPath as a directory and combine with source filename
-                    var fileName = System.IO.Path.GetFileName(sourceFilePath);
-                    destinationFilePath = System.IO.Path.Combine(DestinationPath, fileName);
+                    var fileName = Path.GetFileName(sourceFilePath);
+                    destinationFilePath = Path.Combine(DestinationPath, fileName);
                 }
 
                 // Ensure destination directory exists
-                var destinationDirectory = System.IO.Path.GetDirectoryName(destinationFilePath);
+                var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
                 if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
                 {
                     if (CreateDirectories)

@@ -4,13 +4,13 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.CopyFile;
 
-public abstract class ConvertToCSVTestBase : PipelineTestBase
+public abstract class CopyFileTestBase : PipelineTestBase
 {
     protected readonly string OutputPath;
 
-    protected ConvertToCSVTestBase() : base(@"..\..\..\PipelineTests\CopyFile")
+    protected CopyFileTestBase() : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "CopyFile"))
     {
-        OutputPath = Path.GetFullPath(GetCopyFileDestination());
+        OutputPath = Path.GetFullPath(GetOutputPath());
     }
 
     protected override void UpdatePipelinePaths()
@@ -18,7 +18,7 @@ public abstract class ConvertToCSVTestBase : PipelineTestBase
         UpdatePipelinePathsForAction<CopyFileAction>();
     }
 
-    private string GetCopyFileDestination()
+    private string GetOutputPath()
     {
         return Pipeline.Actions
             .OfType<CopyFileAction>()

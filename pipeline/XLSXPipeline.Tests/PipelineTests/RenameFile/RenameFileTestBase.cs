@@ -9,7 +9,7 @@ public abstract class RenameFileTestBase : PipelineTestBase
     protected readonly string NewName;
     protected readonly string OutputPath;
 
-    protected RenameFileTestBase() : base(@"..\..\..\PipelineTests\RenameFile")
+    protected RenameFileTestBase() : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "RenameFile"))
     {
         NewName = GetRenameFileNewName();
         OutputPath = GetOutputPath();

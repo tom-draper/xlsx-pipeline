@@ -16,7 +16,7 @@ public abstract class PipelineTestBase : IDisposable
     protected readonly string BaseDir;
     private readonly List<string> _tempFilesToCleanup;
 
-    protected PipelineTestBase(string testDirectory, string pipelineSubPath = @".\Pipelines\Pipeline.json")
+    protected PipelineTestBase(string testDirectory, string? pipelineSubPath = null)
     {
         Services = new ServiceCollection();
         _tempFilesToCleanup = [];
@@ -24,6 +24,9 @@ public abstract class PipelineTestBase : IDisposable
         ConfigureServices();
 
         BaseDir = Path.GetFullPath(testDirectory);
+
+        pipelineSubPath ??= Path.Combine("Pipelines", "Pipeline.json");
+
         var pipelinePath = Path.GetFullPath(Path.Combine(BaseDir, pipelineSubPath));
         Pipeline = CreatePipelineAsync(pipelinePath).GetAwaiter().GetResult();
 
@@ -64,14 +67,14 @@ public abstract class PipelineTestBase : IDisposable
 
     protected void UpdatePipelinePropertyForAction<T>(T action, string propertyName) where T : class
     {
-        var property = typeof(T).GetProperty(propertyName);
-        if (property != null && property.CanWrite)
+        var destinationProperty = typeof(T).GetProperty(propertyName);
+        if (destinationProperty != null && destinationProperty.CanWrite)
         {
-            var current = property.GetValue(action) as string;
-            if (!string.IsNullOrEmpty(current))
+            var currentDestination = destinationProperty.GetValue(action) as string;
+            if (!string.IsNullOrEmpty(currentDestination))
             {
-                string fullPath = Path.Combine(BaseDir, current);
-                property.SetValue(action, fullPath);
+                string fullPath = Path.Combine(BaseDir, currentDestination);
+                destinationProperty.SetValue(action, fullPath);
             }
         }
     }

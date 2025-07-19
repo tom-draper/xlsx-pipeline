@@ -2,7 +2,7 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.CopyFile;
 
-public class ConvertToCSVTest : ConvertToCSVTestBase
+public class CopyFileTest : CopyFileTestBase
 {
     [Fact]
     public async Task CopyFile_CopiesFileToDestination()

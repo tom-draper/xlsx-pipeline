@@ -8,9 +8,9 @@ public abstract class MoveFileTestBase : PipelineTestBase
 {
     protected readonly string OutputPath;
 
-    protected MoveFileTestBase() : base(@"..\..\..\PipelineTests\MoveFile")
+    protected MoveFileTestBase() : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "MoveFile"))
     {
-        OutputPath = Path.GetFullPath(GetMoveFileDestination());
+        OutputPath = Path.GetFullPath(GetOutputPath());
     }
 
     protected override void UpdatePipelinePaths()
@@ -18,7 +18,7 @@ public abstract class MoveFileTestBase : PipelineTestBase
         UpdatePipelinePathsForAction<MoveFileAction>();
     }
 
-    private string GetMoveFileDestination()
+    private string GetOutputPath()
     {
         return Pipeline.Actions
             .OfType<MoveFileAction>()

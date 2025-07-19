@@ -8,7 +8,7 @@ public abstract class ConvertToCSVTestBase : PipelineTestBase
 {
     protected readonly string OutputPath;
 
-    protected ConvertToCSVTestBase() : base(@"..\..\..\PipelineTests\ConvertToCSV")
+    protected ConvertToCSVTestBase() : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "ConvertToCSV"))
     {
         OutputPath = Path.GetFullPath(GetOutputPath());
     }
