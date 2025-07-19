@@ -4,11 +4,11 @@ namespace XLSXPipeline.Actions.Cells
 {
     public class ValidateDataAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
-        public string Range { get; set; }
+        public string? SheetName { get; set; }
+        public required string Range { get; set; }
         public string ValidationType { get; set; } = "List";
-        public string ValidationCriteria { get; set; }
-        public string ErrorMessage { get; set; }
+        public required string ValidationCriteria { get; set; }
+        public string? ErrorMessage { get; set; }
 
         public override Task ExecuteAsync(string filePath)
         {

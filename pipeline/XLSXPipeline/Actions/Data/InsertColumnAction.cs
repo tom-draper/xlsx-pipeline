@@ -4,7 +4,7 @@ namespace XLSXPipeline.Actions.Data
 {
     public class InsertColumnAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
+        public string? SheetName { get; set; }
         public required string ColumnName { get; set; }
         public int Count { get; set; } = 1;
 

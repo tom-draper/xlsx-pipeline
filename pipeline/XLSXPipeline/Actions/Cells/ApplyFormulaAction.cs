@@ -4,9 +4,9 @@ namespace XLSXPipeline.Actions.Cells
 {
     public class ApplyFormulaAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
-        public string CellAddress { get; set; }
-        public string Formula { get; set; }
+        public string? SheetName { get; set; }
+        public required string CellAddress { get; set; }
+        public required string Formula { get; set; }
 
         public override Task ExecuteAsync(string filePath)
         {

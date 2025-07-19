@@ -4,7 +4,7 @@ namespace XLSXPipeline.Actions.Data
 {
     public class FilterDataAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
+        public string? SheetName { get; set; }
         public required string Range { get; set; }
         public int FilterColumnIndex { get; set; }
         public required string FilterValue { get; set; }

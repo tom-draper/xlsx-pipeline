@@ -4,8 +4,8 @@ namespace XLSXPipeline.Actions.Worksheet
 {
     public class ProtectSheetAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
-        public string Password { get; set; }
+        public string? SheetName { get; set; }
+        public required string Password { get; set; }
 
         public override Task ExecuteAsync(string filePath)
         {

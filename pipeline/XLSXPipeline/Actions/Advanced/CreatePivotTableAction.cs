@@ -4,13 +4,13 @@ namespace XLSXPipeline.Actions.Advanced
 {
     public class CreatePivotTableAction : ActionBase
     {
-        public string SourceSheetName { get; set; } = "";
-        public string SourceRange { get; set; }
-        public string DestinationSheetName { get; set; }
-        public string DestinationCell { get; set; }
-        public List<string> RowFields { get; set; } = new();
-        public List<string> ColumnFields { get; set; } = new();
-        public List<string> DataFields { get; set; } = new();
+        public string? SourceSheetName { get; set; }
+        public required string SourceRange { get; set; }
+        public required string DestinationSheetName { get; set; }
+        public required string DestinationCell { get; set; }
+        public List<string> RowFields { get; set; } = [];
+        public List<string> ColumnFields { get; set; } = [];
+        public List<string> DataFields { get; set; } = [];
 
         public override Task ExecuteAsync(string filePath)
         {

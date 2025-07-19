@@ -4,9 +4,9 @@ namespace XLSXPipeline.Actions.Data
 {
     public class SortDataAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
-        public string Range { get; set; }
-        public string SortColumn { get; set; }
+        public string? SheetName { get; set; }
+        public required string Range { get; set; }
+        public required string SortColumn { get; set; }
         public bool Ascending { get; set; } = true;
 
         public override Task ExecuteAsync(string filePath)

@@ -4,8 +4,8 @@ namespace XLSXPipeline.Actions.Worksheet
 {
     public class RenameSheetAction : ActionBase
     {
-        public string OriginalName { get; set; }
-        public string NewName { get; set; }
+        public required string OriginalName { get; set; }
+        public required string NewName { get; set; }
 
         public override Task ExecuteAsync(string filePath)
         {

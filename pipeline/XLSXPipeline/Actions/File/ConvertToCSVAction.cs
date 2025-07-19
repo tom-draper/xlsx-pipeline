@@ -7,7 +7,7 @@ namespace XLSXPipeline.Actions.File
     {
         public required string OutputPath { get; set; }
         public string? FilePath { get; set; }
-        public string SheetName { get; set; } = "";
+        public string? SheetName { get; set; }
         public string Delimiter { get; set; } = ",";
         public string Encoding { get; set; } = "utf-8";
         public bool IncludeHeaders { get; set; } = true;

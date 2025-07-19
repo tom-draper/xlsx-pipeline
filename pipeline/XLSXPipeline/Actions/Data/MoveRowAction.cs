@@ -4,7 +4,7 @@ namespace XLSXPipeline.Actions.Data
 {
     public class MoveRowAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
+        public string? SheetName { get; set; }
         public int FromRow { get; set; }
         public int ToRow { get; set; }
         public int Count { get; set; } = 1;

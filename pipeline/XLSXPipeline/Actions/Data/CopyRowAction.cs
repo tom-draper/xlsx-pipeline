@@ -4,11 +4,11 @@ namespace XLSXPipeline.Actions.Data
 {
     public class CopyRowAction : ActionBase
     {
-        public string SheetName { get; set; } = "";
+        public string? SheetName { get; set; }
         public int SourceRow { get; set; }
         public int DestinationRow { get; set; }
         public int Count { get; set; } = 1;
-        public string DestinationSheetName { get; set; } = "";
+        public string? DestinationSheetName { get; set; }
         public bool InsertRows { get; set; } = false; // If true, insert new rows; if false, overwrite existing
 
         public override Task ExecuteAsync(string filePath)
