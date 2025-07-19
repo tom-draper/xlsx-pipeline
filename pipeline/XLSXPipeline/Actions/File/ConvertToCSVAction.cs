@@ -9,7 +9,7 @@ namespace XLSXPipeline.Actions.File
         public string? FilePath { get; set; }
         public string SheetName { get; set; } = "";
         public string Delimiter { get; set; } = ",";
-        public Encoding Encoding { get; set; } = Encoding.UTF8;
+        public string Encoding { get; set; } = "utf-8";
         public bool IncludeHeaders { get; set; } = true;
         public bool TrimWhitespace { get; set; } = true;
 
@@ -59,12 +59,19 @@ namespace XLSXPipeline.Actions.File
                     }
                 }
 
-                await System.IO.File.WriteAllTextAsync(OutputPath, csvContent.ToString(), Encoding);
+                await System.IO.File.WriteAllTextAsync(GetOutputPath(), csvContent.ToString(), System.Text.Encoding.GetEncoding(Encoding));
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to convert to CSV: {ex.Message}", ex);
             }
+        }
+
+        private string GetOutputPath()
+        {
+            if (!Path.HasExtension(OutputPath))
+                return OutputPath + ".csv";
+            return OutputPath;
         }
 
         private static string GetCellValueAsString(IXLCell cell)
@@ -90,9 +97,9 @@ namespace XLSXPipeline.Actions.File
 
             // Check if escaping is needed
             bool needsEscaping = value.Contains(delimiter) ||
-                               value.Contains("\"") ||
-                               value.Contains("\n") ||
-                               value.Contains("\r");
+                               value.Contains('"') ||
+                               value.Contains('\n') ||
+                               value.Contains('\r');
 
             if (!needsEscaping)
                 return value;

@@ -1,17 +1,17 @@
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.CopyFile;
+namespace XLSXPipeline.Tests.PipelineTests.ConvertToCSV;
 
 public class ConvertToCSVTest : ConvertToCSVTestBase
 {
     [Fact]
-    public async Task CopyFile_CopiesFileToDestination()
+    public async Task ConvertToCSV_ConvertToCSV()
     {
         // Execute the test
-        var success = await ExecuteCopyFileTestAsync();
+        var success = await ExecuteConvertToCSVAsync();
 
         // Verify results
-        Assert.True(success, "File copy operation should succeed");
+        Assert.True(success, "Convert to CSV operation should succeed");
 
         // Re-create files for verification (since cleanup happened in ExecuteCopyFileTestAsync)
         ExcelTestHelpers.CreateTestFile(InputPath);

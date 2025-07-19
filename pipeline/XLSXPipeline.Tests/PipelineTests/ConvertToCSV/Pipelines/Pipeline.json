@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Convert To CSV",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ConvertToCSV",
+      "outputPath":  ".\\Output\\Output.csv"
+    }
+  ]
+}
