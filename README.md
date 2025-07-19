@@ -87,7 +87,3 @@ Environment=DOTNET_ENVIRONMENT=Production
 [Install]
 WantedBy=multi-user.target
 ```
-
-### macOS
-
-
