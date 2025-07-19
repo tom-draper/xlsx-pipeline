@@ -45,7 +45,7 @@ public class MoveFileTest : MoveFileTestBase
             AddTempFile(inputPath);
             AddTempFile(outputPath);
 
-            var pipelineExecutor = await GetPipelineExecutorAsync();
+            var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
 
             VerifyFileIntegrity(pipelineName);

@@ -198,7 +198,7 @@ public abstract class PipelineTestBase : IDisposable
         _tempFilesToCleanup.Add(filePath);
     }
 
-    protected async Task<IPipelineExecutor> GetPipelineExecutorAsync()
+    protected IPipelineExecutor GetPipelineExecutor()
     {
         var serviceProvider = Services.BuildServiceProvider();
         return serviceProvider.GetRequiredService<IPipelineExecutor>();

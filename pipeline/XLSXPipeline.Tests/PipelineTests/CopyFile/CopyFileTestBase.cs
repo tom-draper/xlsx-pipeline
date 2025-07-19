@@ -45,7 +45,7 @@ public abstract class CopyFileTestBase : PipelineTestBase
     /// </summary>
     /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
     /// <returns>The full input path for the pipeline</returns>
-    protected string GetInputPath(string? pipelineName = null)
+    protected new string GetInputPath(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
         return base.GetInputPath(pipelineName);
@@ -69,7 +69,7 @@ public abstract class CopyFileTestBase : PipelineTestBase
             AddTempFile(inputPath);
             AddTempFile(outputPath);
 
-            var pipelineExecutor = await GetPipelineExecutorAsync();
+            var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
 
             return File.Exists(outputPath);

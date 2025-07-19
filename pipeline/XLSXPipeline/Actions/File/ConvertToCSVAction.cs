@@ -59,7 +59,7 @@ namespace XLSXPipeline.Actions.File
                     }
                 }
 
-                var outputPath = GetOutputPath()
+                var outputPath = GetOutputPath();
                 await System.IO.File.WriteAllTextAsync(outputPath, csvContent.ToString(), System.Text.Encoding.GetEncoding(Encoding));
             }
             catch (Exception ex)

@@ -46,7 +46,7 @@ public class RenameFileTest : RenameFileTestBase
             AddTempFile(inputPath);
             AddTempFile(outputPath);
 
-            var pipelineExecutor = await GetPipelineExecutorAsync();
+            var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
 
             VerifyRenamedFile(pipelineName);
