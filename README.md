@@ -63,7 +63,7 @@ Start-Service XLSXPipeline
 Or using `sc`:
 
 ```bash
-sc create XLSXPipeline binPath= "C:\Path\To\XLSXPipeline.exe"
+sc create XLSXPipeline binPath="C:\Path\To\XLSXPipeline.exe"
 ```
 
 ### Linux
