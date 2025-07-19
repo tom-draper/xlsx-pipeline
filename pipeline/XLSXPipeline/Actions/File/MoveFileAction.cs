@@ -39,7 +39,7 @@
                 if (System.IO.Path.IsPathRooted(DestinationPath) &&
                     (System.IO.Path.HasExtension(DestinationPath) ||
                      DestinationPath.Contains(System.IO.Path.DirectorySeparatorChar) ||
-                     DestinationPath.Contains(System.IO.Path.AltDirectorySeparatorChar)))
+                     DestinationPath.Contains(System.IO.Path.AltDirectorySeparatorChar)) || DestinationPath.EndsWith(".xlsx"))
                 {
                     // Treat DestinationPath as a full file path
                     destinationFilePath = DestinationPath;

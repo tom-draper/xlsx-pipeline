@@ -21,6 +21,8 @@ namespace XLSXPipeline.Models
             {
                 // File Actions
                 "CopyFile" => JsonSerializer.Deserialize<CopyFileAction>(jsonDoc.RootElement.GetRawText(), options),
+                "MoveFile" => JsonSerializer.Deserialize<MoveFileAction>(jsonDoc.RootElement.GetRawText(), options),
+                "RenameFile" => JsonSerializer.Deserialize<RenameFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "ConvertToCSV" => JsonSerializer.Deserialize<ConvertToCSVAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Worksheet Actions

@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Rename File",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "RenameFile",
+      "newName":  "Output"
+    }
+  ]
+}

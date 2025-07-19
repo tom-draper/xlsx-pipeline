@@ -44,7 +44,7 @@
                 if (Path.IsPathRooted(DestinationPath) &&
                     (Path.HasExtension(DestinationPath) ||
                      DestinationPath.Contains(Path.DirectorySeparatorChar) ||
-                     DestinationPath.Contains(Path.AltDirectorySeparatorChar)))
+                     DestinationPath.Contains(Path.AltDirectorySeparatorChar)) || DestinationPath.EndsWith(".xlsx"))
                 {
                     // Treat DestinationPath as a full file path
                     destinationFilePath = DestinationPath;
@@ -53,7 +53,7 @@
                 {
                     // Treat DestinationPath as a directory and combine with source filename
                     var fileName = Path.GetFileName(sourceFilePath);
-                    destinationFilePath =Path.Combine(DestinationPath, fileName);
+                    destinationFilePath = Path.Combine(DestinationPath, fileName);
                 }
 
                 // Ensure destination directory exists

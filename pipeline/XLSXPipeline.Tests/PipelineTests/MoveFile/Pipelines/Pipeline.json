@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Move File",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MoveFile",
+      "destinationPath":  ".\\Output\\Output.xlsx"
+    }
+  ]
+}

@@ -15,7 +15,6 @@
 
                 // Use the Path property if provided, otherwise use the filePath argument
                 var sourceFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
-
                 if (string.IsNullOrWhiteSpace(sourceFilePath))
                     throw new ArgumentException("Source file path cannot be null or empty");
 
@@ -32,15 +31,30 @@
                 {
                     // Treat NewName as a full file path
                     destinationFilePath = NewName;
+
+                    // If the full path doesn't have an extension, add the original file's extension
+                    if (string.IsNullOrEmpty(Path.GetExtension(destinationFilePath)))
+                    {
+                        var originalExtension = Path.GetExtension(sourceFilePath);
+                        destinationFilePath = Path.ChangeExtension(destinationFilePath, originalExtension);
+                    }
                 }
                 else
                 {
-                    // Treat NewName as just a filename and combine with the source directory
+                    // Treat NewName as just a filename
                     var sourceDirectory = Path.GetDirectoryName(sourceFilePath);
                     if (string.IsNullOrEmpty(sourceDirectory))
                         sourceDirectory = Directory.GetCurrentDirectory();
 
-                    destinationFilePath = Path.Combine(sourceDirectory, NewName);
+                    // If NewName doesn't have an extension, add the original file's extension
+                    var newNameWithExtension = NewName;
+                    if (string.IsNullOrEmpty(Path.GetExtension(NewName)))
+                    {
+                        var originalExtension = Path.GetExtension(sourceFilePath);
+                        newNameWithExtension = Path.ChangeExtension(NewName, originalExtension);
+                    }
+
+                    destinationFilePath = Path.Combine(sourceDirectory, newNameWithExtension);
                 }
 
                 // Ensure destination directory exists
@@ -61,7 +75,6 @@
             {
                 return Task.FromException(new InvalidOperationException(
                     $"Failed to rename file to '{NewName}': {ex.Message}", ex));
-
             }
         }
     }
