@@ -49,7 +49,7 @@ Pipelines can have scheduled triggers (e.g. every week), or file watcher trigger
 
 ## Getting Started
 
-.NET Runtime 9.0 is required
+<a href="https://dotnet.microsoft.com/en-us/download/dotnet/9.0">.NET Runtime 9.0 is required</a>
 
 ### Windows
 
@@ -70,7 +70,7 @@ sc create XLSXPipeline binPath= "C:\Path\To\xlsx-pipeline.exe"
 
 Create a new file: `/etc/systemd/system/xlsx-pipeline.service`
 
-```toml
+```
 [Unit]
 Description=My .NET Worker Service
 After=network.target
