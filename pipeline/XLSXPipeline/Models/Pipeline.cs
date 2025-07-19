@@ -4,15 +4,15 @@ namespace XLSXPipeline.Models
 {
     public class Pipeline
     {
-        public string PipelineName { get; set; }
-        public Trigger Trigger { get; set; }
-        public List<ActionBase> Actions { get; set; }
+        public required string PipelineName { get; set; }
+        public required Trigger Trigger { get; set; }
+        public required List<ActionBase> Actions { get; set; }
     }
 
     public class Trigger
     {
-        public string Type { get; set; }
-        public string Path { get; set; }
+        public required string Type { get; set; }
+        public required string Path { get; set; }
     }
 
     public class ScheduledPipeline

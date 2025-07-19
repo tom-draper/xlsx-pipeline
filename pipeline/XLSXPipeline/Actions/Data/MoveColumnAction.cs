@@ -4,8 +4,8 @@ namespace XLSXPipeline.Actions.Data
 {
     public class MoveColumnAction : ActionBase
     {
-        public string From { get; set; }
-        public string To { get; set; }
+        public required string From { get; set; }
+        public required string To { get; set; }
 
         public override Task ExecuteAsync(string filePath)
         {

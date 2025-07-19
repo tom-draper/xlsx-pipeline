@@ -5,8 +5,8 @@ namespace XLSXPipeline.Actions.Data
     public class CopyColumnAction : ActionBase
     {
         public string SheetName { get; set; } = "";
-        public string SourceColumn { get; set; }
-        public string DestinationColumn { get; set; }
+        public required string SourceColumn { get; set; }
+        public required string DestinationColumn { get; set; }
         public int Count { get; set; } = 1;
         public string DestinationSheetName { get; set; } = "";
         public bool InsertColumns { get; set; } = false; // If true, insert new columns; if false, overwrite existing
@@ -26,18 +26,14 @@ namespace XLSXPipeline.Actions.Data
 
                 // If destination sheet doesn't exist, create it
                 if (destSheet == null && !string.IsNullOrEmpty(DestinationSheetName))
-                {
                     destSheet = workbook.Worksheets.Add(DestinationSheetName);
-                }
 
                 var sourceColumnNumber = sourceSheet.Column(SourceColumn).ColumnNumber();
                 var destColumnNumber = destSheet.Column(DestinationColumn).ColumnNumber();
 
                 // If we need to insert columns at destination
                 if (InsertColumns && destSheet != null)
-                {
                     destSheet.Column(destColumnNumber).InsertColumnsAfter(Count);
-                }
 
                 // Copy the columns
                 for (int i = 0; i < Count; i++)

@@ -5,9 +5,9 @@ namespace XLSXPipeline.Actions.Data
     public class FilterDataAction : ActionBase
     {
         public string SheetName { get; set; } = "";
-        public string Range { get; set; }
+        public required string Range { get; set; }
         public int FilterColumnIndex { get; set; }
-        public string FilterValue { get; set; }
+        public required string FilterValue { get; set; }
         public string FilterOperator { get; set; } = "Equal"; // Equal, NotEqual, Contains, StartsWith, EndsWith, GreaterThan, LessThan
         public bool CaseSensitive { get; set; } = false; // This property won't be used directly for standard ClosedXML string filters
 

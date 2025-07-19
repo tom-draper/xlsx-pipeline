@@ -5,9 +5,9 @@ namespace XLSXPipeline.Models
 {
     public class IfAction : ActionBase
     {
-        public Condition Condition { get; set; }
-        public List<ActionBase> Then { get; set; }
-        public List<ActionBase> Else { get; set; }
+        public required Condition Condition { get; set; }
+        public required List<ActionBase> Then { get; set; }
+        public List<ActionBase>? Else { get; set; }
 
         public override async Task ExecuteAsync(string filePath)
         {
@@ -26,13 +26,13 @@ namespace XLSXPipeline.Models
 
     public abstract class Condition
     {
-        public string Type { get; set; }
+        public required string Type { get; set; }
         public abstract bool Evaluate(string filePath);
     }
 
     public class SheetExistsCondition : Condition
     {
-        public string SheetName { get; set; }
+        public required string SheetName { get; set; }
 
         public override bool Evaluate(string filePath)
         {
@@ -43,7 +43,7 @@ namespace XLSXPipeline.Models
 
     public class AndCondition : Condition
     {
-        public List<Condition> Conditions { get; set; }
+        public required List<Condition> Conditions { get; set; }
 
         public override bool Evaluate(string filePath)
         {
@@ -53,7 +53,7 @@ namespace XLSXPipeline.Models
 
     public class OrCondition : Condition
     {
-        public List<Condition> Conditions { get; set; }
+        public required List<Condition> Conditions { get; set; }
 
         public override bool Evaluate(string filePath)
         {
