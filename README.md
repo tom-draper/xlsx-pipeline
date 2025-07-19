@@ -34,7 +34,7 @@ Pipelines like the one below are defined using a flexible DML in JSON.
 }
 ```
 
-You can have any number of pipelines running at once, just add a new file to the `pipelines/` directory.
+You can have any number of pipelines running at once, just add a new file to the `Pipelines/` directory.
 
 ```text
 XLSXPipeline.exe
@@ -68,11 +68,11 @@ sc create XLSXPipeline binPath="C:\Path\To\XLSXPipeline.exe"
 
 ### Linux
 
-Create a new file: `/etc/systemd/system/xlsxpipeline.service`
+Create a new file: `/etc/systemd/system/xlsx-pipeline.service`
 
 ```
 [Unit]
-Description=My .NET Worker Service
+Description=XLSX Pipeline Service
 After=network.target
 
 [Service]
