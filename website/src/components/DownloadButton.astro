@@ -1,45 +1,82 @@
 ---
-const links = {
-	windows: {
-		label: "Download for Windows",
-		url: "https://example.com/download/windows",
-	},
-	mac: {
-		label: "Download for macOS",
-		url: "https://example.com/download/macos",
-	},
-	linux: {
-		label: "Download for Linux",
-		url: "https://example.com/download/linux",
-	},
+// Server-side code
+const osLabels = {
+    windows: "Download for Windows",
+    mac: "Download for macOS", 
+    linux: "Download for Linux",
 };
+
+const getDownloadUrl = async () => {
+    try {
+        const response = await fetch(
+            "https://api.github.com/repos/tom-draper/xlsx-pipeline/releases/latest",
+        );
+        if (response.ok) {
+            const release = await response.json();
+            if (release.assets && release.assets.length > 0) {
+                const asset = release.assets.find((asset: any) =>
+                    asset.name.endsWith(".zip"),
+                );
+                if (asset) {
+                    return asset.browser_download_url;
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Failed to fetch latest release:", error);
+    }
+    return null;
+};
+
+const githubDownloadUrl = await getDownloadUrl();
 ---
 
-<button
-	id="download-btn"
-	class="bg-[#107b43] text-white p-4 rounded-sm px-6 text-xl cursor-pointer hover:bg-[#175935] transition-colors duration-200"
-	client:load
+<download-button
+    data-os-labels={JSON.stringify(osLabels)}
+    data-github-url={githubDownloadUrl}
+    class="bg-[#107b43] text-white p-4 rounded-sm px-6 text-xl cursor-pointer hover:bg-[#175935] transition-colors duration-200 inline-block"
 >
-	Download
-</button>
+    Download
+</download-button>
 
-<script is:inline define:vars={{ links }}>
-	const btn = document.getElementById("download-btn");
+<script>
+    class DownloadButton extends HTMLElement {
+        connectedCallback() {
+            const osLabels = JSON.parse(this.dataset.osLabels ?? '{}');
+            const githubUrl = this.dataset.githubUrl;
+            
+            // Detect OS
+            const detectOS = () => {
+                const platform = navigator.userAgent.toLowerCase();
+                if (platform.includes("mac")) return "mac";
+                if (platform.includes("linux")) return "linux";
+                return "windows";
+            };
+            
+            const os = detectOS();
+            
+            // Update button text
+            this.textContent = osLabels[os];
+            
+            // Handle click
+            this.onclick = (e) => {
+                e.preventDefault();
 
-	// Detect operating system
-	const platform = navigator.userAgent.toLowerCase();
-	let os = "windows"; // default fallback
-
-	if (platform.includes("mac")) {
-		os = "mac";
-	} else if (platform.includes("linux")) {
-		os = "linux";
-	}
-
-	// Update button text and add click handler
-	const link = links[os];
-	btn.textContent = link.label;
-	btn.onclick = () => {
-		window.location.href = link.url;
-	};
+                if (!githubUrl) {
+                    console.error("Download URL is not available.");
+                    return;
+                }
+                
+                // Always use the GitHub URL
+                const tempLink = document.createElement('a');
+                tempLink.href = githubUrl;
+                tempLink.download = '';
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+            };
+        }
+    }
+    
+    customElements.define('download-button', DownloadButton);
 </script>
