@@ -7,7 +7,7 @@
   "actions": [
     {
       "type": "RenameFile",
-      "newName":  "Output"
+      "newName":  "Output.xlsx"
     }
   ]
 }

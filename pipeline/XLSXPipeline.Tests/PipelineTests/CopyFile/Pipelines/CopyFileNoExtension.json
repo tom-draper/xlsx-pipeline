@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Copy File No Extension",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CopyFile",
+      "destinationPath":  ".\\Output\\Output"
+    }
+  ]
+}

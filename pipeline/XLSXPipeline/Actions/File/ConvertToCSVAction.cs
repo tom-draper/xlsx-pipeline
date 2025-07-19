@@ -59,7 +59,8 @@ namespace XLSXPipeline.Actions.File
                     }
                 }
 
-                await System.IO.File.WriteAllTextAsync(GetOutputPath(), csvContent.ToString(), System.Text.Encoding.GetEncoding(Encoding));
+                var outputPath = GetOutputPath()
+                await System.IO.File.WriteAllTextAsync(outputPath, csvContent.ToString(), System.Text.Encoding.GetEncoding(Encoding));
             }
             catch (Exception ex)
             {
@@ -69,9 +70,15 @@ namespace XLSXPipeline.Actions.File
 
         private string GetOutputPath()
         {
-            if (!Path.HasExtension(OutputPath))
-                return OutputPath + ".csv";
-            return OutputPath;
+            var outputPath = Path.HasExtension(OutputPath) ? OutputPath : OutputPath + ".csv";
+
+            var directory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            return outputPath;
         }
 
         private static string GetCellValueAsString(IXLCell cell)

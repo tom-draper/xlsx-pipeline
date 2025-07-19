@@ -2,25 +2,58 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.ConvertToCSV;
 
+[Collection("FileAccess")]
 public class ConvertToCSVTest : ConvertToCSVTestBase
 {
     [Fact]
-    public async Task ConvertToCSV_ConvertToCSV()
+    public async Task ConvertToCSVPipeline()
     {
-        // Execute the test
-        var success = await ExecuteConvertToCSVAsync();
+        string pipelineName = "Convert To CSV";
+        var success = await ExecuteConvertToCSVTestAsync(pipelineName);
 
         // Verify results
         Assert.True(success, "Convert to CSV operation should succeed");
 
-        // Re-create files for verification (since cleanup happened in ExecuteCopyFileTestAsync)
-        ExcelTestHelpers.CreateTestFile(InputPath);
-        AddTempFile(InputPath);
-        AddTempFile(OutputPath);
+        // Re-execute for verification
+        await VerifyPipelineOutput(pipelineName);
+    }
 
-        var pipelineExecutor = await GetPipelineExecutorAsync();
-        await pipelineExecutor.ExecutePipelineAsync(Pipeline, InputPath);
+    [Fact]
+    public async Task ConvertToCSVNoExtensionPipeline()
+    {
+        string pipelineName = "Convert To CSV No Extension";
+        var success = await ExecuteConvertToCSVTestAsync(pipelineName);
 
-        VerifyFileIntegrity();
+        // Verify results
+        Assert.True(success, "Convert to CSV operation should succeed");
+
+        // Re-execute for verification
+        await VerifyPipelineOutput(pipelineName);
+    }
+
+
+    private async Task VerifyPipelineOutput(string? pipelineName = null)
+    {
+        pipelineName ??= DefaultPipelineName;
+
+        string inputPath = GetInputPath(pipelineName);
+        string outputPath = GetOutputPath(pipelineName);
+        var pipeline = GetPipeline(pipelineName);
+
+        try
+        {
+            ExcelTestHelpers.CreateTestFile(inputPath);
+            AddTempFile(inputPath);
+            AddTempFile(outputPath);
+
+            var pipelineExecutor = await GetPipelineExecutorAsync();
+            await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
+
+            VerifyFileIntegrity(pipelineName);
+        }
+        finally
+        {
+            await CleanupTempFilesAsync();
+        }
     }
 }
