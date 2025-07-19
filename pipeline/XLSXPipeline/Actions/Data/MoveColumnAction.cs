@@ -1,0 +1,28 @@
+﻿using ClosedXML.Excel;
+
+namespace XLSXPipeline.Actions.Data
+{
+    public class MoveColumnAction : ActionBase
+    {
+        public string From { get; set; }
+        public string To { get; set; }
+
+        public override Task ExecuteAsync(string filePath)
+        {
+            try
+            {
+                using var workbook = new XLWorkbook(filePath);
+                var worksheet = workbook.Worksheets.First();
+                var columnToMove = worksheet.Column(From);
+                columnToMove.CopyTo(worksheet.Column(To));
+                columnToMove.Delete();
+                workbook.Save();
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException(ex);
+            }
+        }
+    }
+}
