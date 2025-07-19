@@ -37,12 +37,12 @@ Pipelines like the one below are defined using a flexible DML in JSON.
 You can have any number of pipelines running at once, just add a new file to the `pipelines/` directory.
 
 ```text
-xlsx-pipeline.exe
-pipelines/
-├── clean-report.json
-├── transfer-sales-data.json
-├── apply-analytics.json
-└── update-leads.json
+XLSXPipeline.exe
+Pipelines/
+├── CleanReport.json
+├── TransferSalesData.json
+├── ApplyAnalytics.json
+└── UpdateLeads.json
 ```
 
 Pipelines can have scheduled triggers (e.g. every week), or file watcher triggers (e.g. when a new file is created in a directory).
@@ -56,19 +56,19 @@ Pipelines can have scheduled triggers (e.g. every week), or file watcher trigger
 Create a new service with PowerShell.
 
 ```powershell
-New-Service -Name "XLSXPipeline" -BinaryPathName "C:\Path\To\xlsx-pipeline.exe" -DisplayName "XLSX Pipeline" -StartupType Automatic
+New-Service -Name "XLSXPipeline" -BinaryPathName "C:\Path\To\XLSXPipeline.exe" -DisplayName "XLSX Pipeline" -StartupType Automatic
 Start-Service XLSXPipeline
 ```
 
 Or using `sc`:
 
 ```bash
-sc create XLSXPipeline binPath= "C:\Path\To\xlsx-pipeline.exe"
+sc create XLSXPipeline binPath= "C:\Path\To\XLSXPipeline.exe"
 ```
 
 ### Linux
 
-Create a new file: `/etc/systemd/system/xlsx-pipeline.service`
+Create a new file: `/etc/systemd/system/xlsxpipeline.service`
 
 ```
 [Unit]
@@ -76,8 +76,8 @@ Description=My .NET Worker Service
 After=network.target
 
 [Service]
-WorkingDirectory=/opt/xlsx-pipeline
-ExecStart=/opt/xlsx-pipeline/xlsx-pipeline
+WorkingDirectory=/opt/XLSXPipeline
+ExecStart=/opt/XLSXPipeline/XLSXPipeline
 Restart=always
 # Optional: Set user/group
 # User=youruser
