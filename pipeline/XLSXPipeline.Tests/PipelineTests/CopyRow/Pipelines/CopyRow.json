@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Copy Row",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CopyRow",
+      "sourceRow": 1,
+      "destinationRow": 2
+    }
+  ]
+}

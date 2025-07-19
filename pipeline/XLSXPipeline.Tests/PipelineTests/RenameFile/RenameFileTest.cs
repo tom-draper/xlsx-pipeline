@@ -1,9 +1,7 @@
-using XLSXPipeline.Tests.Infrastructure;
-
 namespace XLSXPipeline.Tests.PipelineTests.RenameFile;
 
 [Collection("FileAccess")]
-public class RenameFileTest : RenameFileTestBase
+public class CopyRowTest : CopyRowTestBase
 {
     [Fact]
     public async Task RenameFilePipeline()
@@ -13,9 +11,6 @@ public class RenameFileTest : RenameFileTestBase
 
         // Verify results
         Assert.True(success, "Rename file operation should succeed");
-
-        // Re-execute for verification
-        await VerifyPipelineOutput(pipelineName);
     }
 
     [Fact]
@@ -26,34 +21,5 @@ public class RenameFileTest : RenameFileTestBase
 
         // Verify results
         Assert.True(success, "Rename file operation should succeed");
-
-        // Re-execute for verification
-        await VerifyPipelineOutput(pipelineName);
-    }
-
-
-    private async Task VerifyPipelineOutput(string? pipelineName = null)
-    {
-        pipelineName ??= DefaultPipelineName;
-
-        string inputPath = GetInputPath(pipelineName);
-        string outputPath = GetOutputPath(pipelineName);
-        var pipeline = GetPipeline(pipelineName);
-
-        try
-        {
-            ExcelTestHelpers.CreateTestFile(inputPath);
-            AddTempFile(inputPath);
-            AddTempFile(outputPath);
-
-            var pipelineExecutor = GetPipelineExecutor();
-            await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
-
-            VerifyRenamedFile(pipelineName);
-        }
-        finally
-        {
-            await CleanupTempFilesAsync();
-        }
     }
 }

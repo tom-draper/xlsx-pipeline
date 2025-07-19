@@ -20,24 +20,27 @@ namespace XLSXPipeline.Models
             return type switch
             {
                 // File Actions
+                "ConvertToCSV" => JsonSerializer.Deserialize<ConvertToCSVAction>(jsonDoc.RootElement.GetRawText(), options),
                 "CopyFile" => JsonSerializer.Deserialize<CopyFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "MoveFile" => JsonSerializer.Deserialize<MoveFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "RenameFile" => JsonSerializer.Deserialize<RenameFileAction>(jsonDoc.RootElement.GetRawText(), options),
-                "ConvertToCSV" => JsonSerializer.Deserialize<ConvertToCSVAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Worksheet Actions
                 "RenameSheet" => JsonSerializer.Deserialize<RenameSheetAction>(jsonDoc.RootElement.GetRawText(), options),
                 "ProtectSheet" => JsonSerializer.Deserialize<ProtectSheetAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Data Actions
-                "MoveColumn" => JsonSerializer.Deserialize<MoveColumnAction>(jsonDoc.RootElement.GetRawText(), options),
-                "DeleteRow" => JsonSerializer.Deserialize<DeleteRowAction>(jsonDoc.RootElement.GetRawText(), options),
+                "CopyColumn" => JsonSerializer.Deserialize<CopyColumnAction>(jsonDoc.RootElement.GetRawText(), options),
+                "CopyRow" => JsonSerializer.Deserialize<CopyRowAction>(jsonDoc.RootElement.GetRawText(), options),
                 "DeleteColumn" => JsonSerializer.Deserialize<DeleteColumnAction>(jsonDoc.RootElement.GetRawText(), options),
-                "InsertRow" => JsonSerializer.Deserialize<InsertRowAction>(jsonDoc.RootElement.GetRawText(), options),
-                "InsertColumn" => JsonSerializer.Deserialize<InsertColumnAction>(jsonDoc.RootElement.GetRawText(), options),
-                "SortData" => JsonSerializer.Deserialize<SortDataAction>(jsonDoc.RootElement.GetRawText(), options),
+                "DeleteRow" => JsonSerializer.Deserialize<DeleteRowAction>(jsonDoc.RootElement.GetRawText(), options),
                 "FilterData" => JsonSerializer.Deserialize<FilterDataAction>(jsonDoc.RootElement.GetRawText(), options),
+                "InsertColumn" => JsonSerializer.Deserialize<InsertColumnAction>(jsonDoc.RootElement.GetRawText(), options),
+                "InsertRow" => JsonSerializer.Deserialize<InsertRowAction>(jsonDoc.RootElement.GetRawText(), options),
                 "MergeData" => JsonSerializer.Deserialize<MergeDataAction>(jsonDoc.RootElement.GetRawText(), options),
+                "MoveColumn" => JsonSerializer.Deserialize<MoveColumnAction>(jsonDoc.RootElement.GetRawText(), options),
+                "MoveRow" => JsonSerializer.Deserialize<MoveRowAction>(jsonDoc.RootElement.GetRawText(), options),
+                "SortData" => JsonSerializer.Deserialize<SortDataAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Formatting Actions
                 "FormatCells" => JsonSerializer.Deserialize<FormatCellsAction>(jsonDoc.RootElement.GetRawText(), options),

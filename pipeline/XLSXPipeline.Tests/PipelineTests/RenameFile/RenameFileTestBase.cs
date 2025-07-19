@@ -4,11 +4,11 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.RenameFile;
 
-public abstract class RenameFileTestBase : PipelineTestBase
+public abstract class CopyRowTestBase : PipelineTestBase
 {
     protected readonly string DefaultPipelineName;
 
-    protected RenameFileTestBase(string? defaultPipelineName = null)
+    protected CopyRowTestBase(string? defaultPipelineName = null)
         : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "RenameFile"))
     {
         DefaultPipelineName = defaultPipelineName ?? GetFirstRenameFilePipelineName();
