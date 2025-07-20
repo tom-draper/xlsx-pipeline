@@ -77,12 +77,25 @@ public abstract class PipelineTestBase : IDisposable
         if (destinationProperty != null && destinationProperty.CanWrite)
         {
             var currentDestination = destinationProperty.GetValue(action) as string;
-            if (!string.IsNullOrEmpty(currentDestination))
+            if (!string.IsNullOrWhiteSpace(currentDestination))
             {
-                string fullPath = Path.Combine(BaseDir, currentDestination);
+                // Normalize input path
+                var sanitizedDestination = NormalizePathSeparators(currentDestination);
+
+                // If already rooted, don't combine with BaseDir
+                string fullPath = Path.IsPathRooted(sanitizedDestination)
+                    ? Path.GetFullPath(sanitizedDestination)
+                    : Path.GetFullPath(Path.Combine(BaseDir, sanitizedDestination));
+
                 destinationProperty.SetValue(action, fullPath);
             }
         }
+    }
+
+    private static string NormalizePathSeparators(string path)
+    {
+        return path.Replace('\\', Path.DirectorySeparatorChar)
+                   .Replace('/', Path.DirectorySeparatorChar);
     }
 
     protected Pipeline GetPipeline(string pipelineName)
