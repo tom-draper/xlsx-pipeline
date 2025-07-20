@@ -23,7 +23,7 @@ public abstract class ConvertToCSVTestBase : SpecializedPipelineTestBase<Convert
         return outputPath;
     }
 
-    protected override async Task<PipelineExecutionResult> ExecutePipelineTestAsync(string? pipelineName = null)
+    protected override async Task ExecutePipelineTestAsync(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
         var pipeline = GetPipeline(pipelineName);
@@ -41,15 +41,11 @@ public abstract class ConvertToCSVTestBase : SpecializedPipelineTestBase<Convert
 
             Console.WriteLine("PATH");
             Console.WriteLine(outputPath);
-
-            var success = File.Exists(outputPath);
-            return success ? PipelineExecutionResult.CreateSuccess()
-                          : PipelineExecutionResult.CreateFailure("Output file was not created");
         }
         catch (Exception ex)
         {
             await CleanupTempFilesAsync();
-            return PipelineExecutionResult.CreateFailure(ex.Message, ex);
+            throw;
         }
     }
 

@@ -11,7 +11,7 @@ public abstract class CopyColumnTestBase : SpecializedPipelineTestBase<CopyColum
     {
     }
 
-    protected override async Task<PipelineExecutionResult> ExecutePipelineTestAsync(string? pipelineName = null)
+    protected override async Task ExecutePipelineTestAsync(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
         var pipeline = GetPipeline(pipelineName);
@@ -24,13 +24,11 @@ public abstract class CopyColumnTestBase : SpecializedPipelineTestBase<CopyColum
 
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
-
-            return PipelineExecutionResult.CreateSuccess();
         }
         catch (Exception ex)
         {
             await CleanupTempFilesAsync();
-            return PipelineExecutionResult.CreateFailure(ex.Message, ex);
+            throw;
         }
     }
 

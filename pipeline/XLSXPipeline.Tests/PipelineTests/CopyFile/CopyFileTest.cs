@@ -11,8 +11,7 @@ public class CopyFileTest : CopyFileTestBase
     {
         try
         {
-            var result = await ExecutePipelineTestAsync(pipelineName);
-            Assert.True(result.Success, $"Pipeline '{pipelineName}' should succeed. Error: {result.ErrorMessage}");
+            await ExecutePipelineTestAsync(pipelineName);
             VerifyFileIntegrity(pipelineName);
         }
         finally

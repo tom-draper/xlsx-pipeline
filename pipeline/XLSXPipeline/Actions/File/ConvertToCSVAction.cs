@@ -70,13 +70,12 @@ namespace XLSXPipeline.Actions.File
 
         private string GetOutputPath()
         {
-            var outputPath = Path.HasExtension(OutputPath) ? OutputPath : OutputPath + ".csv";
+            var rawPath = Path.HasExtension(OutputPath) ? OutputPath : OutputPath + ".csv";
+            var outputPath = Path.GetFullPath(rawPath);  // Normalize and resolve relative path
 
             var directory = Path.GetDirectoryName(outputPath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
                 Directory.CreateDirectory(directory);
-            }
 
             return outputPath;
         }

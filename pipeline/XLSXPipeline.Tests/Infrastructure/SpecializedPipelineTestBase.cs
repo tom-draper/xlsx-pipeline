@@ -56,18 +56,15 @@ public abstract class SpecializedPipelineTestBase<TAction> : PipelineTestBase
         return pipelineName;
     }
 
-    protected async Task<Dictionary<string, PipelineExecutionResult>> ExecuteAllPipelinesAsync()
+    protected async Task ExecuteAllPipelinesAsync()
     {
-        var results = new Dictionary<string, PipelineExecutionResult>();
         var pipelineNames = GetPipelineNamesWithAction();
 
         foreach (var pipelineName in pipelineNames)
-            results[pipelineName] = await ExecutePipelineTestAsync(pipelineName);
-
-        return results;
+            await ExecutePipelineTestAsync(pipelineName);
     }
 
-    protected abstract Task<PipelineExecutionResult> ExecutePipelineTestAsync(string? pipelineName = null);
+    protected abstract Task ExecutePipelineTestAsync(string? pipelineName = null);
 }
 
 // Result classes for better error handling

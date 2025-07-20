@@ -24,23 +24,22 @@
         {
             try
             {
-                // Validate inputs
                 if (string.IsNullOrWhiteSpace(DestinationPath))
                     throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
 
-                // Use the Path property if provided, otherwise use the filePath argument
-                var sourceFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
+                // Normalize paths
+                var rawSource = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
+                var sourceFilePath = Path.GetFullPath(NormalizePathSeparators(rawSource));
+                var normalizedDestinationPath = Path.GetFullPath(NormalizePathSeparators(DestinationPath));
 
                 if (string.IsNullOrWhiteSpace(sourceFilePath))
                     throw new ArgumentException("Source file path cannot be null or empty");
 
-                // Validate source file exists
                 if (!System.IO.File.Exists(sourceFilePath))
                     throw new FileNotFoundException($"Source file not found: {sourceFilePath}");
 
-                string destinationFilePath = DetermineDestinationFilePath(sourceFilePath, DestinationPath);
+                string destinationFilePath = DetermineDestinationFilePath(sourceFilePath, normalizedDestinationPath);
 
-                // Ensure destination directory exists
                 var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
                 if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
                 {
@@ -50,17 +49,14 @@
                         throw new DirectoryNotFoundException($"Destination directory does not exist: {destinationDirectory}");
                 }
 
-                // Check if destination file already exists and handle accordingly
                 if (System.IO.File.Exists(destinationFilePath))
                 {
                     if (!OverwriteIfExists)
                         throw new InvalidOperationException($"Destination file already exists and OverwriteIfExists is false: {destinationFilePath}");
 
-                    // Delete the existing file if we're overwriting
                     System.IO.File.Delete(destinationFilePath);
                 }
 
-                // Perform the move operation
                 System.IO.File.Move(sourceFilePath, destinationFilePath);
 
                 return Task.CompletedTask;
@@ -70,6 +66,12 @@
                 return Task.FromException(new InvalidOperationException(
                     $"Failed to move file from '{FilePath ?? filePath}' to '{DestinationPath}': {ex.Message}", ex));
             }
+        }
+
+        private static string NormalizePathSeparators(string path)
+        {
+            return path.Replace('\\', Path.DirectorySeparatorChar)
+                       .Replace('/', Path.DirectorySeparatorChar);
         }
 
         private string DetermineDestinationFilePath(string sourceFilePath, string destinationPath)
