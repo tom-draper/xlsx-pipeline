@@ -39,7 +39,8 @@ public abstract class ConvertToCSVTestBase : SpecializedPipelineTestBase<Convert
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
 
-            Console.WriteLine("PATH", outputPath);
+            Console.WriteLine("PATH")
+            Console.WriteLine(outputPath);
 
             var success = File.Exists(outputPath);
             return success ? PipelineExecutionResult.CreateSuccess()
