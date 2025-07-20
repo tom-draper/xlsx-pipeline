@@ -54,10 +54,7 @@ public static class ExcelTestHelpers
     {
         var usedRange = worksheet.RangeUsed();
         if (usedRange == null)
-        {
-            // No data in worksheet, rows are considered identical
-            return;
-        }
+            return; // No data in worksheet, rows are considered identical
 
         int firstCol = startColumn ?? usedRange.FirstColumn().ColumnNumber();
         int lastCol = endColumn ?? usedRange.LastColumn().ColumnNumber();
@@ -71,13 +68,9 @@ public static class ExcelTestHelpers
 
             // Also verify formulas if present
             if (!string.IsNullOrEmpty(cell1.FormulaA1))
-            {
                 Assert.Equal(cell1.FormulaA1, cell2.FormulaA1);
-            }
             else if (!string.IsNullOrEmpty(cell2.FormulaA1))
-            {
-                Assert.True(false, $"Row {rowIndex1} has no formula at column {col}, but row {rowIndex2} has formula: {cell2.FormulaA1}");
-            }
+                Assert.Fail($"Row {rowIndex1} has no formula at column {col}, but row {rowIndex2} has formula: {cell2.FormulaA1}");
         }
     }
 
@@ -94,10 +87,7 @@ public static class ExcelTestHelpers
     {
         var usedRange = worksheet.RangeUsed();
         if (usedRange == null)
-        {
-            // No data in worksheet, columns are considered identical
-            return;
-        }
+            return; // No data in worksheet, columns are considered identical
 
         int firstRow = startRow ?? usedRange.FirstRow().RowNumber();
         int lastRow = endRow ?? usedRange.LastRow().RowNumber();
@@ -111,13 +101,9 @@ public static class ExcelTestHelpers
 
             // Also verify formulas if present
             if (!string.IsNullOrEmpty(cell1.FormulaA1))
-            {
                 Assert.Equal(cell1.FormulaA1, cell2.FormulaA1);
-            }
             else if (!string.IsNullOrEmpty(cell2.FormulaA1))
-            {
-                Assert.True(false, $"Column {columnIndex1} has no formula at row {row}, but column {columnIndex2} has formula: {cell2.FormulaA1}");
-            }
+                Assert.Fail($"Column {columnIndex1} has no formula at row {row}, but column {columnIndex2} has formula: {cell2.FormulaA1}");
         }
     }
 
@@ -137,10 +123,7 @@ public static class ExcelTestHelpers
         var usedRange2 = worksheet2.RangeUsed();
 
         if (usedRange1 == null && usedRange2 == null)
-        {
-            // No data in either worksheet, rows are considered identical
-            return;
-        }
+            return; // No data in either worksheet, rows are considered identical
 
         int firstCol = startColumn ?? Math.Min(
             usedRange1?.FirstColumn().ColumnNumber() ?? 1,
@@ -158,13 +141,9 @@ public static class ExcelTestHelpers
 
             // Also verify formulas if present
             if (!string.IsNullOrEmpty(cell1.FormulaA1))
-            {
                 Assert.Equal(cell1.FormulaA1, cell2.FormulaA1);
-            }
             else if (!string.IsNullOrEmpty(cell2.FormulaA1))
-            {
-                Assert.True(false, $"Worksheet '{worksheet1.Name}' row {rowIndex1} has no formula at column {col}, but worksheet '{worksheet2.Name}' row {rowIndex2} has formula: {cell2.FormulaA1}");
-            }
+                Assert.Fail($"Worksheet '{worksheet1.Name}' row {rowIndex1} has no formula at column {col}, but worksheet '{worksheet2.Name}' row {rowIndex2} has formula: {cell2.FormulaA1}");
         }
     }
 
@@ -184,10 +163,7 @@ public static class ExcelTestHelpers
         var usedRange2 = worksheet2.RangeUsed();
 
         if (usedRange1 == null && usedRange2 == null)
-        {
-            // No data in either worksheet, columns are considered identical
-            return;
-        }
+            return; // No data in either worksheet, columns are considered identical
 
         int firstRow = startRow ?? Math.Min(
             usedRange1?.FirstRow().RowNumber() ?? 1,
@@ -205,13 +181,9 @@ public static class ExcelTestHelpers
 
             // Also verify formulas if present
             if (!string.IsNullOrEmpty(cell1.FormulaA1))
-            {
                 Assert.Equal(cell1.FormulaA1, cell2.FormulaA1);
-            }
             else if (!string.IsNullOrEmpty(cell2.FormulaA1))
-            {
-                Assert.True(false, $"Worksheet '{worksheet1.Name}' column {columnIndex1} has no formula at row {row}, but worksheet '{worksheet2.Name}' column {columnIndex2} has formula: {cell2.FormulaA1}");
-            }
+                Assert.Fail($"Worksheet '{worksheet1.Name}' column {columnIndex1} has no formula at row {row}, but worksheet '{worksheet2.Name}' column {columnIndex2} has formula: {cell2.FormulaA1}");
         }
     }
 

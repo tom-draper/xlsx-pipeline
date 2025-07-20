@@ -44,7 +44,7 @@ public abstract class CopyFileTestBase : SpecializedPipelineTestBase<CopyFileAct
 
             var success = File.Exists(outputPath);
             return success ? PipelineExecutionResult.CreateSuccess()
-                          : PipelineExecutionResult.CreateFailure("File was not moved");
+                          : PipelineExecutionResult.CreateFailure("File was not copied");
         }
         catch (Exception ex)
         {
@@ -59,10 +59,10 @@ public abstract class CopyFileTestBase : SpecializedPipelineTestBase<CopyFileAct
         var outputPath = GetOutputPath(pipelineName);
 
         if (!File.Exists(outputPath))
-            throw new FileNotFoundException($"Renamed file should exist for pipeline '{pipelineName}'.");
+            throw new FileNotFoundException($"Copied file should exist for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);
         if (outputFileInfo.Length == 0)
-            throw new InvalidOperationException($"Renamed file should not be empty for pipeline '{pipelineName}'.");
+            throw new InvalidOperationException($"Copied file should not be empty for pipeline '{pipelineName}'.");
     }
 }
