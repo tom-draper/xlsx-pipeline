@@ -50,6 +50,7 @@ body {
     display: none;
   }
   .action-container {
-    padding-bottom: 20vh;
+    padding-top: 10vh;
+    position: relative;
   }
 }
