@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Copy File Nested",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CopyFile",
+      "destinationPath":  ".\\Output\\Nested\\Output.xlsx"
+    }
+  ]
+}

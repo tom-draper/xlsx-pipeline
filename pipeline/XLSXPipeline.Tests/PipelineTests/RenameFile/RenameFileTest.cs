@@ -1,25 +1,23 @@
 namespace XLSXPipeline.Tests.PipelineTests.RenameFile;
 
 [Collection("FileAccess")]
-public class CopyRowTest : CopyRowTestBase
+public class RenameFileTest : RenameFileTestBase
 {
-    [Fact]
-    public async Task RenameFilePipeline()
+    [Theory]
+    [InlineData("Rename File")]
+    [InlineData("Rename File No Extension")]
+    [InlineData("Rename File Output Path")]
+    public async Task RenameFile_SpecificPipeline_ShouldSucceed(string pipelineName)
     {
-        string pipelineName = "Rename File";
-        var success = await ExecuteRenameFileTestAsync(pipelineName);
-
-        // Verify results
-        Assert.True(success, "Rename file operation should succeed");
-    }
-
-    [Fact]
-    public async Task RenameFileNoExtensionPipeline()
-    {
-        string pipelineName = "Rename File No Extension";
-        var success = await ExecuteRenameFileTestAsync(pipelineName);
-
-        // Verify results
-        Assert.True(success, "Rename file operation should succeed");
+        try
+        {
+            var result = await ExecutePipelineTestAsync(pipelineName);
+            Assert.True(result.Success, $"Pipeline '{pipelineName}' should succeed. Error: {result.ErrorMessage}");
+            VerifyRenamedFile(pipelineName);
+        }
+        finally
+        {
+            await CleanupTempFilesAsync();
+        }
     }
 }

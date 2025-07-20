@@ -1,50 +1,28 @@
-﻿using XLSXPipeline.Actions.File;
-using XLSXPipeline.Models;
+﻿
+using XLSXPipeline.Actions.File;
 using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.RenameFile;
 
-public abstract class CopyRowTestBase : PipelineTestBase
+public abstract class RenameFileTestBase : SpecializedPipelineTestBase<RenameFileAction>
 {
-    protected readonly string DefaultPipelineName;
-
-    protected CopyRowTestBase(string? defaultPipelineName = null)
-        : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "RenameFile"))
+    protected RenameFileTestBase(string? defaultPipelineName = null)
+        : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "RenameFile"), defaultPipelineName)
     {
-        DefaultPipelineName = defaultPipelineName ?? GetFirstRenameFilePipelineName();
     }
 
-    protected override void UpdatePipelinePaths(Pipeline pipeline)
-    {
-        UpdatePipelinePathsForAction<RenameFileAction>(pipeline);
-    }
-
-    /// <summary>
-    /// Gets the new name for a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
-    /// <returns>The new name for the file</returns>
-    protected string GetRenameFileNewName(string? pipelineName = null)
+    protected string GetNewName(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
-        var pipeline = GetPipeline(pipelineName);
-
-        return pipeline.Actions
-            .OfType<RenameFileAction>()
-            .FirstOrDefault(x => !string.IsNullOrEmpty(x.NewName))?
-            .NewName ?? throw new InvalidOperationException($"No RenameFileAction with NewName found in pipeline '{pipelineName}'");
+        var action = GetFirstAction(pipelineName);
+        return action.NewName ?? throw new InvalidOperationException($"No NewName found in RenameFileAction for pipeline '{pipelineName}'");
     }
 
-    /// <summary>
-    /// Gets the output path (renamed file path) for a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
-    /// <returns>The full output path for the renamed file</returns>
     protected string GetOutputPath(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
-        var inputPath = base.GetInputPath(pipelineName);
-        var newName = GetRenameFileNewName(pipelineName);
+        var inputPath = GetInputPath(pipelineName);
+        var newName = GetNewName(pipelineName);
 
         string filename = newName;
         if (string.IsNullOrEmpty(Path.GetExtension(newName)))
@@ -56,27 +34,21 @@ public abstract class CopyRowTestBase : PipelineTestBase
         return Path.Combine(Path.GetDirectoryName(inputPath)!, filename);
     }
 
-    /// <summary>
-    /// Gets the input path for a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
-    /// <returns>The full input path for the pipeline</returns>
-    protected new string GetInputPath(string? pipelineName = null)
+    protected (string InputPath, string OutputPath, string NewName) GetRenameInfo(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
-        return base.GetInputPath(pipelineName);
+        var inputPath = GetInputPath(pipelineName);
+        var outputPath = GetOutputPath(pipelineName);
+        var newName = GetNewName(pipelineName);
+
+        return (inputPath, outputPath, newName);
     }
 
-    /// <summary>
-    /// Executes the RenameFile pipeline test
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline to execute. If null, uses the default pipeline.</param>
-    /// <returns>True if the output file was created successfully</returns>
-    protected async Task<bool> ExecuteRenameFileTestAsync(string? pipelineName = null)
+    protected override async Task<PipelineExecutionResult> ExecutePipelineTestAsync(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
         var pipeline = GetPipeline(pipelineName);
-        var inputPath = base.GetInputPath(pipelineName);
+        var inputPath = GetInputPath(pipelineName);
         var outputPath = GetOutputPath(pipelineName);
 
         try
@@ -88,138 +60,35 @@ public abstract class CopyRowTestBase : PipelineTestBase
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
 
-            return File.Exists(outputPath);
-        }
-        catch (FileNotFoundException ex)
-        {
-            Console.WriteLine($"Input file not found: {ex.Message}");
-            return false;
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            Console.WriteLine($"Access denied: {ex.Message}");
-            return false;
+            var success = File.Exists(outputPath);
+            return success ? PipelineExecutionResult.CreateSuccess()
+                          : PipelineExecutionResult.CreateFailure("Renamed file was not created");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Unexpected error: {ex}");
-            return false;
-        }
-
-        finally
-        {
             await CleanupTempFilesAsync();
+            return PipelineExecutionResult.CreateFailure(ex.Message, ex);
         }
     }
 
-    /// <summary>
-    /// Executes all RenameFile pipelines
-    /// </summary>
-    /// <returns>Dictionary of pipeline names and their execution results</returns>
-    protected async Task<Dictionary<string, bool>> ExecuteAllRenameFileTestsAsync()
-    {
-        var results = new Dictionary<string, bool>();
-        var renameFilePipelines = GetRenameFilePipelineNames();
-
-        foreach (var pipelineName in renameFilePipelines)
-        {
-            results[pipelineName] = await ExecuteRenameFileTestAsync(pipelineName);
-        }
-
-        return results;
-    }
-
-    /// <summary>
-    /// Verifies the renamed file for a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
     protected void VerifyRenamedFile(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
-        var inputPath = base.GetInputPath(pipelineName);
+        var inputPath = GetInputPath(pipelineName);
         var outputPath = GetOutputPath(pipelineName);
 
-        Assert.True(File.Exists(outputPath), $"Renamed file should exist for pipeline '{pipelineName}'.");
+        if (!File.Exists(outputPath))
+            throw new FileNotFoundException($"Renamed file should exist for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);
-        Assert.True(outputFileInfo.Length > 0, $"Renamed file should not be empty for pipeline '{pipelineName}'.");
+        if (outputFileInfo.Length == 0)
+            throw new InvalidOperationException($"Renamed file should not be empty for pipeline '{pipelineName}'.");
 
         // Verify the original file no longer exists (unless it's the same path)
         if (!string.Equals(inputPath, outputPath, StringComparison.OrdinalIgnoreCase))
         {
-            Assert.False(File.Exists(inputPath), $"Original file should no longer exist after rename for pipeline '{pipelineName}'.");
+            if (File.Exists(inputPath))
+                throw new InvalidOperationException($"Original file should no longer exist after rename for pipeline '{pipelineName}'.");
         }
-    }
-
-    /// <summary>
-    /// Gets all pipeline names that contain RenameFile actions
-    /// </summary>
-    /// <returns>Collection of pipeline names with RenameFile actions</returns>
-    protected IEnumerable<string> GetRenameFilePipelineNames()
-    {
-        return Pipelines
-            .Where(kvp => kvp.Value.Actions.OfType<RenameFileAction>().Any())
-            .Select(kvp => kvp.Key);
-    }
-
-    /// <summary>
-    /// Gets the first available RenameFile pipeline name
-    /// </summary>
-    /// <returns>The name of the first RenameFile pipeline</returns>
-    /// <exception cref="InvalidOperationException">Thrown when no RenameFile pipelines are found</exception>
-    private string GetFirstRenameFilePipelineName()
-    {
-        var renameFilePipelineName = GetRenameFilePipelineNames().FirstOrDefault();
-
-        if (renameFilePipelineName == null)
-        {
-            throw new InvalidOperationException("No pipelines with RenameFile actions found. Available pipelines: " +
-                                              string.Join(", ", GetPipelineNames()));
-        }
-
-        return renameFilePipelineName;
-    }
-
-    /// <summary>
-    /// Gets the RenameFile action from a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
-    /// <returns>The RenameFile action</returns>
-    protected RenameFileAction GetRenameFileAction(string? pipelineName = null)
-    {
-        pipelineName ??= DefaultPipelineName;
-        var pipeline = GetPipeline(pipelineName);
-
-        return pipeline.Actions
-            .OfType<RenameFileAction>()
-            .FirstOrDefault() ?? throw new InvalidOperationException($"No RenameFileAction found in pipeline '{pipelineName}'");
-    }
-
-    /// <summary>
-    /// Gets all RenameFile actions from a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
-    /// <returns>Collection of RenameFile actions</returns>
-    protected IEnumerable<RenameFileAction> GetRenameFileActions(string? pipelineName = null)
-    {
-        pipelineName ??= DefaultPipelineName;
-        var pipeline = GetPipeline(pipelineName);
-
-        return pipeline.Actions.OfType<RenameFileAction>();
-    }
-
-    /// <summary>
-    /// Gets the complete rename information for a specific pipeline
-    /// </summary>
-    /// <param name="pipelineName">The name of the pipeline. If null, uses the default pipeline.</param>
-    /// <returns>Tuple containing input path, output path, and new name</returns>
-    protected (string InputPath, string OutputPath, string NewName) GetRenameInfo(string? pipelineName = null)
-    {
-        pipelineName ??= DefaultPipelineName;
-        var inputPath = base.GetInputPath(pipelineName);
-        var outputPath = GetOutputPath(pipelineName);
-        var newName = GetRenameFileNewName(pipelineName);
-
-        return (inputPath, outputPath, newName);
     }
 }

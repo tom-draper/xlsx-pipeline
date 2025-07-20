@@ -3,13 +3,19 @@ namespace XLSXPipeline.Tests.PipelineTests.CopyColumn;
 [Collection("FileAccess")]
 public class CopyColumnTest : CopyColumnTestBase
 {
-    [Fact]
-    public async Task CopyColumnPipeline()
+    [Theory]
+    [InlineData("Copy Column")]
+    public async Task CopyColumn_SpecificPipeline_ShouldSucceed(string pipelineName)
     {
-        string pipelineName = "Copy Column";
-        var success = await ExecuteCopyColumnTestAsync(pipelineName);
-
-        // Verify results
-        Assert.True(success, "Copy row operation should succeed");
+        try
+        {
+            var result = await ExecutePipelineTestAsync(pipelineName);
+            Assert.True(result.Success, $"Pipeline '{pipelineName}' should succeed. Error: {result.ErrorMessage}");
+            VerifyCopyColumn(pipelineName);
+        }
+        finally
+        {
+            await CleanupTempFilesAsync();
+        }
     }
 }
