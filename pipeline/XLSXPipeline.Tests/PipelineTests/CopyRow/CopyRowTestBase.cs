@@ -25,7 +25,7 @@ public abstract class CopyRowTestBase : SpecializedPipelineTestBase<CopyRowActio
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await CleanupTempFilesAsync();
             throw;

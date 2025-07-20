@@ -51,7 +51,7 @@ Pipelines can have:
 
 ## Getting Started
 
-<a href="https://dotnet.microsoft.com/en-us/download/dotnet/9.0">.NET Runtime 9.0 is required</a>
+<a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0">.NET Runtime 8.0 is required</a>
 
 ### Windows
 

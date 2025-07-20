@@ -42,7 +42,7 @@ public abstract class ConvertToCSVTestBase : SpecializedPipelineTestBase<Convert
             Console.WriteLine("PATH");
             Console.WriteLine(outputPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await CleanupTempFilesAsync();
             throw;

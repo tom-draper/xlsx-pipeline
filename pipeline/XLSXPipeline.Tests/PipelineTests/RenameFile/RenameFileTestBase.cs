@@ -60,7 +60,7 @@ public abstract class RenameFileTestBase : SpecializedPipelineTestBase<RenameFil
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await CleanupTempFilesAsync();
             throw;

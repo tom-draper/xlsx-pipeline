@@ -42,7 +42,7 @@ public abstract class MoveFileTestBase : SpecializedPipelineTestBase<MoveFileAct
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await CleanupTempFilesAsync();
             throw;

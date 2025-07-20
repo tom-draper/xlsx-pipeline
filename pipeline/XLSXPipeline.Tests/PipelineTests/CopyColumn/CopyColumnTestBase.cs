@@ -25,7 +25,7 @@ public abstract class CopyColumnTestBase : SpecializedPipelineTestBase<CopyColum
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await CleanupTempFilesAsync();
             throw;
