@@ -2,27 +2,50 @@
 @import "tailwindcss";
 
 h1 {
-    font-family: 'VT323';
-    color: rgb(0, 49, 25);
+  font-family: 'VT323';
+  color: rgb(0, 49, 25);
 }
 
 html {
   background-color: #ffffff;
-  background-image: 
+  background-image:
     linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  background-size: 100px 30px; /* Adjust cell size here (width x height) */
+  background-size: 100px 30px;
+  /* Adjust cell size here (width x height) */
 }
 
 body {
-    /* background: linear-gradient(rgba(140, 220, 140, 0.215), rgb(203, 255, 203));
+  /* background: linear-gradient(rgba(140, 220, 140, 0.215), rgb(203, 255, 203));
     background: linear-gradient(#31bf7d62, transparent, transparent); */
 }
 
 .pipes {
-    background-image: url(../assets/Pipes.png);
-    background-position: 0;
-    background-size: cover;       /* Makes the image cover the container */
-    background-position: center;  /* Center the image */
-    background-repeat: no-repeat; /* Prevent tiling */
+  background-image: url(../assets/Pipes.png);
+  background-position: 0;
+  background-size: cover;
+  /* Makes the image cover the container */
+  background-position: center;
+  /* Center the image */
+  background-repeat: no-repeat;
+  /* Prevent tiling */
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 0.9em;
+  }
+
+  h1 {
+    font-size: 4.5em;
+    /* Adjust font size for smaller screens */
+  }
+
+  .version-tag {
+    margin-top: 0
+  }
+
+  .github-container {
+    display: none;
+  }
 }

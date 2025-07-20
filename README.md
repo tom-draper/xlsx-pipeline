@@ -46,6 +46,7 @@ Pipelines/
 ```
 
 Pipelines can have:
+
 - scheduled triggers (e.g. 6pm every day), or
 - file watcher triggers (e.g. when a new file is created in a directory).
 
