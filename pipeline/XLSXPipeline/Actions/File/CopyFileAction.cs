@@ -29,22 +29,23 @@
         {
             try
             {
+                // Validate inputs
                 if (string.IsNullOrWhiteSpace(DestinationPath))
                     throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
 
-                // Normalize FilePath and DestinationPath
-                var rawSource = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
-                var sourceFilePath = Path.GetFullPath(NormalizePathSeparators(rawSource));
-                var normalizedDestinationPath = Path.GetFullPath(NormalizePathSeparators(DestinationPath));
+                // Use the Path property if provided, otherwise use the filePath argument
+                var sourceFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
 
                 if (string.IsNullOrWhiteSpace(sourceFilePath))
                     throw new ArgumentException("Source file path cannot be null or empty");
 
+                // Validate source file exists
                 if (!System.IO.File.Exists(sourceFilePath))
                     throw new FileNotFoundException($"Source file not found: {sourceFilePath}");
 
-                string destinationFilePath = DetermineDestinationFilePath(sourceFilePath, normalizedDestinationPath);
+                string destinationFilePath = DetermineDestinationFilePath(sourceFilePath, DestinationPath);
 
+                // Ensure destination directory exists
                 var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
                 if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
                 {
@@ -54,6 +55,7 @@
                         throw new DirectoryNotFoundException($"Destination directory does not exist: {destinationDirectory}");
                 }
 
+                // Check if destination file already exists and handle accordingly
                 if (System.IO.File.Exists(destinationFilePath) && !OverwriteIfExists)
                 {
                     if (AutoRenameIfExists)
@@ -66,6 +68,7 @@
                     }
                 }
 
+                // Perform the copy operation
                 System.IO.File.Copy(sourceFilePath, destinationFilePath, OverwriteIfExists);
 
                 return Task.CompletedTask;
@@ -75,12 +78,6 @@
                 return Task.FromException(new InvalidOperationException(
                     $"Failed to copy file from '{FilePath ?? filePath}' to '{DestinationPath}': {ex.Message}", ex));
             }
-        }
-
-        private static string NormalizePathSeparators(string path)
-        {
-            return path.Replace('\\', Path.DirectorySeparatorChar)
-                       .Replace('/', Path.DirectorySeparatorChar); // handles both
         }
 
         private string DetermineDestinationFilePath(string sourceFilePath, string destinationPath)
@@ -141,7 +138,7 @@
             }
         }
 
-        private static string GetAvailableFileName(string destinationFilePath)
+        private string GetAvailableFileName(string destinationFilePath)
         {
             var directory = Path.GetDirectoryName(destinationFilePath)!;
             var originalFileName = Path.GetFileNameWithoutExtension(destinationFilePath);
