@@ -38,6 +38,7 @@ body {
 
   h1 {
     font-size: 4.5em;
+    padding-top: 20vh;
     /* Adjust font size for smaller screens */
   }
 
@@ -47,5 +48,8 @@ body {
 
   .github-container {
     display: none;
+  }
+  .action-container {
+    padding-bottom: 20vh;
   }
 }
