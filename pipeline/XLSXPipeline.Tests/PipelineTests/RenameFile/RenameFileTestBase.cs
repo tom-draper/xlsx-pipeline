@@ -90,6 +90,22 @@ public abstract class CopyRowTestBase : PipelineTestBase
 
             return File.Exists(outputPath);
         }
+        catch (FileNotFoundException ex)
+        {
+            Console.WriteLine($"Input file not found: {ex.Message}");
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine($"Access denied: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error: {ex}");
+            return false;
+        }
+
         finally
         {
             await CleanupTempFilesAsync();

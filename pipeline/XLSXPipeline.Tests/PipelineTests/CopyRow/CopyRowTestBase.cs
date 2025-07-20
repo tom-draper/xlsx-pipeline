@@ -49,6 +49,22 @@ public abstract class CopyColumnTestBase : PipelineTestBase
             ExcelTestHelpers.VerifyRowsAreIdentical(worksheet, 1, 2);
             return true;
         }
+        catch (FileNotFoundException ex)
+        {
+            Console.WriteLine($"Input file not found: {ex.Message}");
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine($"Access denied: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error: {ex}");
+            return false;
+        }
+
         finally
         {
             await CleanupTempFilesAsync();

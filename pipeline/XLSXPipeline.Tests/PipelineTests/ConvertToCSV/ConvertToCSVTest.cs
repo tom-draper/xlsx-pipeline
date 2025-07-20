@@ -22,4 +22,15 @@ public class ConvertToCSVTest : ConvertToCSVTestBase
         // Verify results
         Assert.True(success, "Convert to CSV operation should succeed");
     }
+
+    [Fact]
+    public async Task ConvertToCSVNested()
+    {
+        string pipelineName = "Convert To CSV Nested";
+        var success = await ExecuteConvertToCSVTestAsync(pipelineName);
+
+        // Verify results
+        Assert.True(success, "Convert to CSV operation should succeed");
+    }
+
 }
