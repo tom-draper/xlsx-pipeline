@@ -28,12 +28,18 @@ namespace XLSXPipeline.Actions.Data
                 if (destSheet == null && !string.IsNullOrEmpty(DestinationSheetName))
                     destSheet = workbook.Worksheets.Add(DestinationSheetName);
 
+                if (destSheet == null)
+                    throw new InvalidOperationException("Destination sheet is null.");
+
                 var sourceColumnNumber = sourceSheet.Column(SourceColumn).ColumnNumber();
                 var destColumnNumber = destSheet.Column(DestinationColumn).ColumnNumber();
 
                 // If we need to insert columns at destination
                 if (InsertColumns && destSheet != null)
                     destSheet.Column(destColumnNumber).InsertColumnsAfter(Count);
+
+                if (destSheet == null)
+                    throw new InvalidOperationException("Destination sheet is null.");
 
                 // Copy the columns
                 for (int i = 0; i < Count; i++)

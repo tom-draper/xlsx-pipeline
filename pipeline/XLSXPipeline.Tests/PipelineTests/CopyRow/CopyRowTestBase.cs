@@ -4,13 +4,8 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.CopyRow;
 
-public abstract class CopyRowTestBase : SpecializedPipelineTestBase<CopyRowAction>
+public abstract class CopyRowTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<CopyRowAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "CopyRow"), defaultPipelineName)
 {
-    protected CopyRowTestBase(string? defaultPipelineName = null)
-        : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "CopyRow"), defaultPipelineName)
-    {
-    }
-
     protected override async Task ExecutePipelineTestAsync(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;

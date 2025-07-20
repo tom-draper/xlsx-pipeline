@@ -23,11 +23,19 @@ namespace XLSXPipeline.Models
                 "ConvertToCSV" => JsonSerializer.Deserialize<ConvertToCSVAction>(jsonDoc.RootElement.GetRawText(), options),
                 "CopyFile" => JsonSerializer.Deserialize<CopyFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "MoveFile" => JsonSerializer.Deserialize<MoveFileAction>(jsonDoc.RootElement.GetRawText(), options),
+                "ProtectFile" => JsonSerializer.Deserialize<ProtectFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "RenameFile" => JsonSerializer.Deserialize<RenameFileAction>(jsonDoc.RootElement.GetRawText(), options),
+                "UnprotectFileAction" => JsonSerializer.Deserialize<UnprotectFileAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Worksheet Actions
-                "RenameSheet" => JsonSerializer.Deserialize<RenameSheetAction>(jsonDoc.RootElement.GetRawText(), options),
+                "AddSheet" => JsonSerializer.Deserialize<AddSheetAction>(jsonDoc.RootElement.GetRawText(), options),
+                "CopySheet" => JsonSerializer.Deserialize<CopySheetAction>(jsonDoc.RootElement.GetRawText(), options),
+                "DeleteHiddenSheets" => JsonSerializer.Deserialize<DeleteHiddenSheetsAction>(jsonDoc.RootElement.GetRawText(), options),
+                "DeleteSheet" => JsonSerializer.Deserialize<DeleteSheetAction>(jsonDoc.RootElement.GetRawText(), options),
+                "MoveSheet" => JsonSerializer.Deserialize<MoveSheetAction>(jsonDoc.RootElement.GetRawText(), options),
                 "ProtectSheet" => JsonSerializer.Deserialize<ProtectSheetAction>(jsonDoc.RootElement.GetRawText(), options),
+                "RenameSheet" => JsonSerializer.Deserialize<RenameSheetAction>(jsonDoc.RootElement.GetRawText(), options),
+                "UnprotectSheet" => JsonSerializer.Deserialize<UnprotectSheetAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Data Actions
                 "CopyColumn" => JsonSerializer.Deserialize<CopyColumnAction>(jsonDoc.RootElement.GetRawText(), options),

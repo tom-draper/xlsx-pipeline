@@ -3,13 +3,8 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.MoveFile;
 
-public abstract class MoveFileTestBase : SpecializedPipelineTestBase<MoveFileAction>
+public abstract class MoveFileTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<MoveFileAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "MoveFile"), defaultPipelineName)
 {
-    protected MoveFileTestBase(string? defaultPipelineName = null)
-        : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "MoveFile"), defaultPipelineName)
-    {
-    }
-
     protected string GetOutputPath(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;

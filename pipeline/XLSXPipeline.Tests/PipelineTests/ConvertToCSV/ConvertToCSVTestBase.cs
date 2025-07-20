@@ -3,13 +3,8 @@ using XLSXPipeline.Tests.Infrastructure;
 
 namespace XLSXPipeline.Tests.PipelineTests.ConvertToCSV;
 
-public abstract class ConvertToCSVTestBase : SpecializedPipelineTestBase<ConvertToCSVAction>
+public abstract class ConvertToCSVTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<ConvertToCSVAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "ConvertToCSV"), defaultPipelineName)
 {
-    protected ConvertToCSVTestBase(string? defaultPipelineName = null)
-        : base(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "ConvertToCSV"), defaultPipelineName)
-    {
-    }
-
     protected string GetOutputPath(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;

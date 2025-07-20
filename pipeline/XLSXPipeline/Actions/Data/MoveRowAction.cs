@@ -22,16 +22,15 @@ namespace XLSXPipeline.Actions.Data
                 var rowsToMove = worksheet.Rows(FromRow, FromRow + Count - 1);
 
                 // Copy the rows to a temporary location
-                var tempRange = worksheet.Range(FromRow, 1, FromRow + Count - 1, worksheet.RangeUsed().LastColumn().ColumnNumber());
+                var lastColumn = worksheet.RangeUsed()?.LastColumn()?.ColumnNumber() ?? worksheet.ColumnCount();
+                var tempRange = worksheet.Range(FromRow, 1, FromRow + Count - 1, lastColumn);
                 var tempData = new object[Count, tempRange.ColumnCount()];
 
                 // Store the data
                 for (int i = 0; i < Count; i++)
                 {
                     for (int j = 0; j < tempRange.ColumnCount(); j++)
-                    {
                         tempData[i, j] = worksheet.Cell(FromRow + i, j + 1).Value;
-                    }
                 }
 
                 // Delete the original rows
@@ -47,9 +46,7 @@ namespace XLSXPipeline.Actions.Data
                 for (int i = 0; i < Count; i++)
                 {
                     for (int j = 0; j < tempRange.ColumnCount(); j++)
-                    {
                         worksheet.Cell(adjustedToRow + i, j + 1).Value = (XLCellValue)tempData[i, j];
-                    }
                 }
 
                 workbook.Save();

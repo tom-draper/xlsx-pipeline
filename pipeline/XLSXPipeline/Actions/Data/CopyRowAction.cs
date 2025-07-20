@@ -26,20 +26,21 @@ namespace XLSXPipeline.Actions.Data
 
                 // If destination sheet doesn't exist, create it
                 if (destSheet == null && !string.IsNullOrEmpty(DestinationSheetName))
-                {
                     destSheet = workbook.Worksheets.Add(DestinationSheetName);
-                }
+
 
                 // If we need to insert rows at destination
                 if (InsertRows && destSheet != null)
-                {
                     destSheet.Row(DestinationRow).InsertRowsAbove(Count);
-                }
+
+                if (destSheet == null)
+                    throw new InvalidOperationException("Destination sheet is null.");
 
                 // Copy the rows
                 for (int i = 0; i < Count; i++)
                 {
                     var sourceRowRange = sourceSheet.Row(SourceRow + i);
+
                     var destRowRange = destSheet.Row(DestinationRow + i);
                     sourceRowRange.CopyTo(destRowRange);
                 }
