@@ -15,22 +15,36 @@ namespace XLSXPipeline.Models
         public required string Path { get; set; }
     }
 
+    public static class TriggerTypes
+    {
+        public const string OnChange = "onchange";
+        public const string OnNewFile = "onnewfile";
+        public const string Once = "once";
+        public const string Scheduled = "scheduled";
+    }
+
+    public enum ScheduleType
+    {
+        Once,
+        Recurring,
+        Cron,
+        Daily,
+        Weekly,
+        Monthly,
+        Quarterly,
+        Yearly,
+        WeekdaysOnly,
+        WeekendsOnly
+    }
+
     public class ScheduledPipeline
     {
         public Pipeline Pipeline { get; set; } = null!;
         public string FilePath { get; set; } = string.Empty;
-        public string TriggerType { get; set; } = string.Empty;
         public DateTime NextRunTime { get; set; }
-        public bool IsRecurring { get; set; }
-        public TimeSpan RecurrenceInterval { get; set; }
-        public bool IsMonthly { get; set; }
-        public bool IsWeekdaysOnly { get; set; }
-        public bool IsCron { get; set; }
-        public string CronExpression { get; set; } = string.Empty;
-        public bool IsQuarterly { get; set; }
-        public bool IsYearly { get; set; }
-        public bool IsWeekly { get; set; }
-        public bool IsWeekendsOnly { get; set; }
+        public ScheduleType ScheduleType { get; set; }
+        public TimeSpan? RecurrenceInterval { get; set; }
+        public string? CronExpression { get; set; }
     }
 
     public class FileWatcherPipeline

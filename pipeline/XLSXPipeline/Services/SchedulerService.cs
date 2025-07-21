@@ -29,7 +29,7 @@ namespace XLSXPipeline.Services
                         await _pipelineExecutor.ExecutePipelineAsync(scheduledPipeline.Pipeline);
 
                         // Update next run time for recurring pipelines
-                        if (scheduledPipeline.IsRecurring)
+                        if (scheduledPipeline.ScheduleType == ScheduleType.Recurring)
                         {
                             UpdateNextRunTime(scheduledPipeline, now);
                             _logger.LogInformation("Pipeline {FileName} rescheduled for: {NextRunTime}",
@@ -57,13 +57,13 @@ namespace XLSXPipeline.Services
 
         private void UpdateNextRunTime(ScheduledPipeline scheduledPipeline, DateTime now)
         {
-            if (scheduledPipeline.IsMonthly)
+            if (scheduledPipeline.ScheduleType == ScheduleType.Monthly)
             {
                 // For monthly, calculate next month
                 var currentNext = scheduledPipeline.NextRunTime;
                 scheduledPipeline.NextRunTime = currentNext.AddMonths(1);
             }
-            else if (scheduledPipeline.IsCron)
+            else if (scheduledPipeline.ScheduleType == ScheduleType.Cron && scheduledPipeline.CronExpression != null)
             {
                 // For cron expressions, calculate next run time
                 if (_triggerParser.TryParseCronExpression(scheduledPipeline.CronExpression, out var nextCronTime))
@@ -76,9 +76,9 @@ namespace XLSXPipeline.Services
                         Path.GetFileName(scheduledPipeline.FilePath));
                 }
             }
-            else
+            else if (scheduledPipeline.RecurrenceInterval.HasValue)
             {
-                scheduledPipeline.NextRunTime = now.Add(scheduledPipeline.RecurrenceInterval);
+                scheduledPipeline.NextRunTime = now.Add((TimeSpan)scheduledPipeline.RecurrenceInterval);
             }
         }
     }

@@ -2,6 +2,7 @@
 using XLSXPipeline.Actions.Data;
 using XLSXPipeline.Actions.File;
 using XLSXPipeline.Actions.Worksheet;
+using XLSXPipeline.Actions.Time;
 using XLSXPipeline.Actions.Formatting;
 using XLSXPipeline.Actions.Cells;
 using XLSXPipeline.Actions.Advanced;
@@ -23,6 +24,7 @@ namespace XLSXPipeline.Models
                 "ConvertToCSV" => JsonSerializer.Deserialize<ConvertToCSVAction>(jsonDoc.RootElement.GetRawText(), options),
                 "CopyFile" => JsonSerializer.Deserialize<CopyFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "MoveFile" => JsonSerializer.Deserialize<MoveFileAction>(jsonDoc.RootElement.GetRawText(), options),
+                "OpenFile" => JsonSerializer.Deserialize<OpenFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "ProtectFile" => JsonSerializer.Deserialize<ProtectFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "RenameFile" => JsonSerializer.Deserialize<RenameFileAction>(jsonDoc.RootElement.GetRawText(), options),
                 "UnprotectFileAction" => JsonSerializer.Deserialize<UnprotectFileAction>(jsonDoc.RootElement.GetRawText(), options),
@@ -49,6 +51,9 @@ namespace XLSXPipeline.Models
                 "MoveColumn" => JsonSerializer.Deserialize<MoveColumnAction>(jsonDoc.RootElement.GetRawText(), options),
                 "MoveRow" => JsonSerializer.Deserialize<MoveRowAction>(jsonDoc.RootElement.GetRawText(), options),
                 "SortData" => JsonSerializer.Deserialize<SortDataAction>(jsonDoc.RootElement.GetRawText(), options),
+
+                // Time Actions
+                "WaitActions" => JsonSerializer.Deserialize<WaitAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Formatting Actions
                 "FormatCells" => JsonSerializer.Deserialize<FormatCellsAction>(jsonDoc.RootElement.GetRawText(), options),

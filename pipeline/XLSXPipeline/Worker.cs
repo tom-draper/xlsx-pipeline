@@ -1,30 +1,30 @@
 using XLSXPipeline.Services;
 
-namespace XLSXPipeline
+namespace XLSXPipeline;
+
+public partial class Worker(ILogger<Worker> logger, IPipelineService pipelineService) : BackgroundService
 {
-    public partial class Worker(ILogger<Worker> logger, IPipelineLoader pipelineLoader, ISchedulerService schedulerService, IFileWatcherService fileWatcherService) : BackgroundService
+    private readonly ILogger<Worker> _logger = logger;
+    private readonly IPipelineService _pipelineService = pipelineService;
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly ILogger<Worker> _logger = logger;
-        private readonly IPipelineLoader _pipelineLoader = pipelineLoader;
-        private readonly ISchedulerService _schedulerService = schedulerService;
-        private readonly IFileWatcherService _fileWatcherService = fileWatcherService;
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        try
         {
-            // Load all JSON pipeline files
-            var (scheduledPipelines, fileWatcherPipelines) = await _pipelineLoader.LoadPipelineFilesAsync(stoppingToken);
-
-            // Start file watchers
-            _fileWatcherService.StartFileWatchers(fileWatcherPipelines);
-
-            // Start the scheduler
-            await _schedulerService.RunSchedulerAsync(scheduledPipelines, stoppingToken);
+            _logger.LogInformation("Worker starting...");
+            await _pipelineService.StartAsync(stoppingToken);
         }
-
-        public override async Task StopAsync(CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            _fileWatcherService.StopFileWatchers();
-            await base.StopAsync(cancellationToken);
+            _logger.LogError(ex, "Worker encountered an error");
+            throw;
         }
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Worker stopping...");
+        await _pipelineService.StopAsync();
+        await base.StopAsync(cancellationToken);
     }
 }

@@ -59,13 +59,9 @@
                 if (System.IO.File.Exists(destinationFilePath) && !OverwriteIfExists)
                 {
                     if (AutoRenameIfExists)
-                    {
                         destinationFilePath = GetAvailableFileName(destinationFilePath);
-                    }
                     else
-                    {
                         throw new InvalidOperationException($"Destination file already exists and OverwriteIfExists is false: {destinationFilePath}");
-                    }
                 }
 
                 // Perform the copy operation

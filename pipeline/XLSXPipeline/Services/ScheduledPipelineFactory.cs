@@ -14,7 +14,7 @@ namespace XLSXPipeline.Services
 
         public ScheduledPipeline? CreateScheduledPipeline(Pipeline pipeline, string filePath)
         {
-            var triggerType = pipeline.Trigger.Type?.ToLowerInvariant() ?? "once";
+            var triggerType = pipeline.Trigger.Type?.ToLowerInvariant() ?? TriggerTypes.Once;
             var now = DateTime.Now;
 
             try
@@ -22,25 +22,24 @@ namespace XLSXPipeline.Services
                 var scheduledPipeline = new ScheduledPipeline
                 {
                     Pipeline = pipeline,
-                    FilePath = filePath,
-                    TriggerType = triggerType
+                    FilePath = filePath
                 };
 
                 switch (triggerType)
                 {
-                    case "once":
+                    case TriggerTypes.Once:
                         scheduledPipeline.NextRunTime = now;
-                        scheduledPipeline.IsRecurring = false;
+                        scheduledPipeline.ScheduleType = ScheduleType.Once;
                         break;
 
                     case var t when t.StartsWith("at ") && _triggerParser.TryParseDateTime(t.Substring(3), out var specificDateTime):
                         scheduledPipeline.NextRunTime = specificDateTime;
-                        scheduledPipeline.IsRecurring = false;
+                        scheduledPipeline.ScheduleType = ScheduleType.Once;
                         break;
 
                     case var t when t.StartsWith("at ") && _triggerParser.TryParseTimeOfDay(t.Substring(3), out var timeOfDay):
                         scheduledPipeline.NextRunTime = _triggerParser.GetNextRunTimeForDaily(timeOfDay);
-                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Daily;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
                         break;
 
@@ -48,8 +47,7 @@ namespace XLSXPipeline.Services
                         if (_triggerParser.TryParseCronExpression(t, out var nextCronTime))
                         {
                             scheduledPipeline.NextRunTime = nextCronTime;
-                            scheduledPipeline.IsRecurring = true;
-                            scheduledPipeline.IsCron = true;
+                            scheduledPipeline.ScheduleType = ScheduleType.Cron;
                             scheduledPipeline.CronExpression = t;
                         }
                         else
@@ -64,7 +62,7 @@ namespace XLSXPipeline.Services
                         if (_triggerParser.TryParseInterval(t.Substring(6), out var interval))
                         {
                             scheduledPipeline.NextRunTime = now.Add(interval);
-                            scheduledPipeline.IsRecurring = true;
+                            scheduledPipeline.ScheduleType = ScheduleType.Recurring;
                             scheduledPipeline.RecurrenceInterval = interval;
                         }
                         else
@@ -80,7 +78,7 @@ namespace XLSXPipeline.Services
                     case "every day":
                     case "daily":
                         scheduledPipeline.NextRunTime = now.AddDays(1).Date; // Next day at midnight
-                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Daily;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
                         break;
 
@@ -89,9 +87,8 @@ namespace XLSXPipeline.Services
                     case "every week":
                     case "weekly":
                         scheduledPipeline.NextRunTime = now.AddDays(7);
-                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Weekly;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(7);
-                        scheduledPipeline.IsWeekly = true;
                         break;
 
                     // Hourly options
@@ -99,7 +96,7 @@ namespace XLSXPipeline.Services
                     case "every hour":
                     case "hourly":
                         scheduledPipeline.NextRunTime = now.AddHours(1);
-                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Recurring;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromHours(1);
                         break;
 
@@ -109,9 +106,7 @@ namespace XLSXPipeline.Services
                     case "monthly":
                         var nextMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1);
                         scheduledPipeline.NextRunTime = nextMonth;
-                        scheduledPipeline.IsRecurring = true;
-                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(30);
-                        scheduledPipeline.IsMonthly = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Monthly;
                         break;
 
                     // Quarterly options
@@ -120,9 +115,7 @@ namespace XLSXPipeline.Services
                     case "quarterly":
                         var nextQuarter = GetNextQuarterStart(now);
                         scheduledPipeline.NextRunTime = nextQuarter;
-                        scheduledPipeline.IsRecurring = true;
-                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(90);
-                        scheduledPipeline.IsQuarterly = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Quarterly;
                         break;
 
                     // Yearly options
@@ -132,9 +125,7 @@ namespace XLSXPipeline.Services
                     case "annually":
                         var nextYear = new DateTime(now.Year + 1, 1, 1);
                         scheduledPipeline.NextRunTime = nextYear;
-                        scheduledPipeline.IsRecurring = true;
-                        scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(365);
-                        scheduledPipeline.IsYearly = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.Yearly;
                         break;
 
                     // Weekday options
@@ -142,9 +133,8 @@ namespace XLSXPipeline.Services
                     case "every weekday":
                         var nextWeekday = GetNextWeekday(now);
                         scheduledPipeline.NextRunTime = nextWeekday;
-                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.WeekdaysOnly;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
-                        scheduledPipeline.IsWeekdaysOnly = true;
                         break;
 
                     // Weekend options
@@ -152,9 +142,8 @@ namespace XLSXPipeline.Services
                     case "every weekend":
                         var nextWeekend = GetNextWeekend(now);
                         scheduledPipeline.NextRunTime = nextWeekend;
-                        scheduledPipeline.IsRecurring = true;
+                        scheduledPipeline.ScheduleType = ScheduleType.WeekendsOnly;
                         scheduledPipeline.RecurrenceInterval = TimeSpan.FromDays(1);
-                        scheduledPipeline.IsWeekendsOnly = true;
                         break;
 
                     default:

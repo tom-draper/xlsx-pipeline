@@ -1,0 +1,26 @@
+{
+    "pipelineName": "Run Once",
+    "trigger": {
+        "type": "Once",
+        "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+    },
+    "actions": [
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\Sales\\Summaries\\",
+            "fileName": "Summary.xlsx"
+        },
+        {
+            "type": "OpenFile",
+            "fileName": "C:\\Sales\\Summaries\\Summary.xlsx"
+        },
+        {
+            "type": "Wait",
+            "time": 60000
+        },
+        {
+            "type": "CloseFile",
+            "fileName": "C:\\Sales\\Summaries\\Summary.xlsx"
+        }
+    ]
+}

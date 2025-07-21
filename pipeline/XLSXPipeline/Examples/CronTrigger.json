@@ -1,0 +1,25 @@
+{
+    "pipelineName": "Every day at 9AM",
+    "trigger": {
+        "type": "30 9 * * *",
+        "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+    },
+    "actions": [
+        {
+            "type": "DuplicateSheet",
+            "sourceName": "Template",
+            "newName": "Summary"
+        },
+        {
+            "type": "FillFormula",
+            "sheet": "Summary",
+            "range": "B2:B100",
+            "formula": "=SUM(Sales!B2:D2)"
+        },
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\Sales\\Summaries\\",
+            "fileName": "Summary_{month}_{year}.xlsx"
+        }
+    ]
+}
