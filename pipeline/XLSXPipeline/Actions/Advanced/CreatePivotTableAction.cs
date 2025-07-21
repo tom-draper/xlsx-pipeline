@@ -12,7 +12,7 @@ namespace XLSXPipeline.Actions.Advanced
         public List<string> ColumnFields { get; set; } = [];
         public List<string> DataFields { get; set; } = [];
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

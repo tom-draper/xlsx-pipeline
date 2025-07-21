@@ -8,7 +8,7 @@ namespace XLSXPipeline.Actions.Data
         public required string ColumnName { get; set; }
         public int Count { get; set; } = 1;
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

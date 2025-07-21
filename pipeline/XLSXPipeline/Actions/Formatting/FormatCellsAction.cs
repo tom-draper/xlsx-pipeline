@@ -14,7 +14,7 @@ namespace XLSXPipeline.Actions.Formatting
         public string? BackgroundColor { get; set; }
         public string? FontColor { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

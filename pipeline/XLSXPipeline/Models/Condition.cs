@@ -9,7 +9,7 @@ namespace XLSXPipeline.Models
         public required List<ActionBase> Then { get; set; }
         public List<ActionBase>? Else { get; set; }
 
-        public override async Task ExecuteAsync(string filePath)
+        protected override async Task ExecuteInternalAsync(string filePath)
         {
             if (Condition.Evaluate(filePath))
             {

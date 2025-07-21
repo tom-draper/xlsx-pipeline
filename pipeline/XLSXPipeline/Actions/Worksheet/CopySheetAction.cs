@@ -8,7 +8,7 @@ namespace XLSXPipeline.Actions.Worksheet
         public required string NewSheetName { get; set; }
         public string? DestinationFilePath { get; set; } // Optional
 
-        public override Task ExecuteAsync(string sourceFilePath)
+        protected override Task ExecuteInternalAsync(string sourceFilePath)
         {
             try
             {

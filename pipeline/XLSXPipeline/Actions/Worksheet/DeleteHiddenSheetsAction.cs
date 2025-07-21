@@ -4,7 +4,7 @@ namespace XLSXPipeline.Actions.Worksheet
 {
     public class DeleteHiddenSheetsAction : ActionBase
     {
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

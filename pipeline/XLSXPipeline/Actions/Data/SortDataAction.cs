@@ -9,7 +9,7 @@ namespace XLSXPipeline.Actions.Data
         public required string SortColumn { get; set; }
         public bool Ascending { get; set; } = true;
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

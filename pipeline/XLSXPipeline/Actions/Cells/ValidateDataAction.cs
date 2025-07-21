@@ -10,7 +10,7 @@ namespace XLSXPipeline.Actions.Cells
         public required string ValidationCriteria { get; set; }
         public string? ErrorMessage { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

@@ -9,7 +9,7 @@ namespace XLSXPipeline.Actions.Data
         public int ToRow { get; set; }
         public int Count { get; set; } = 1;
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

@@ -7,7 +7,7 @@ namespace XLSXPipeline.Actions.Worksheet
         public required string OriginalName { get; set; }
         public required string NewName { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

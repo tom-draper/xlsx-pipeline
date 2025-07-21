@@ -8,7 +8,7 @@ namespace XLSXPipeline.Actions.Cells
         public required string CellAddress { get; set; }
         public required string Formula { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

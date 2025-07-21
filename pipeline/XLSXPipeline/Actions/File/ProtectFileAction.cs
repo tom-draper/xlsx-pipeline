@@ -6,10 +6,17 @@ namespace XLSXPipeline.Actions.File
     {
         public required string Password { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(filePath))
+                    throw new ArgumentException("Source file path cannot be null or empty");
+
+                // Validate source file exists
+                if (!System.IO.File.Exists(filePath))
+                    throw new FileNotFoundException($"Source file not found: {filePath}");
+
                 using var workbook = new XLWorkbook(filePath);
 
                 if (workbook.IsProtected)

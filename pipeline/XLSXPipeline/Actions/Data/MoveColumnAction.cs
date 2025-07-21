@@ -7,7 +7,7 @@ namespace XLSXPipeline.Actions.Data
         public required string From { get; set; }
         public required string To { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

@@ -11,7 +11,7 @@ namespace XLSXPipeline.Actions.Data
         public string? DestinationSheetName { get; set; }
         public bool InsertRows { get; set; } = false; // If true, insert new rows; if false, overwrite existing
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

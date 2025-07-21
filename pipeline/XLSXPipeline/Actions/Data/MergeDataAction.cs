@@ -10,7 +10,7 @@ namespace XLSXPipeline.Actions.Data
         public string DestinationCell { get; set; } = "A1";
         public bool IncludeHeaders { get; set; } = true;
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

@@ -3,7 +3,6 @@
     public class CopyFileAction : ActionBase
     {
         public required string DestinationPath { get; set; }
-        public string? FilePath { get; set; }
 
         /// <summary>
         /// Whether to overwrite the destination file if it already exists
@@ -25,7 +24,7 @@
         /// </summary>
         public bool AppendSourceExtension { get; set; } = true;
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {
@@ -33,17 +32,14 @@
                 if (string.IsNullOrWhiteSpace(DestinationPath))
                     throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
 
-                // Use the Path property if provided, otherwise use the filePath argument
-                var sourceFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
-
-                if (string.IsNullOrWhiteSpace(sourceFilePath))
+                if (string.IsNullOrWhiteSpace(filePath))
                     throw new ArgumentException("Source file path cannot be null or empty");
 
                 // Validate source file exists
-                if (!System.IO.File.Exists(sourceFilePath))
-                    throw new FileNotFoundException($"Source file not found: {sourceFilePath}");
+                if (!System.IO.File.Exists(filePath))
+                    throw new FileNotFoundException($"Source file not found: {filePath}");
 
-                string destinationFilePath = DetermineDestinationFilePath(sourceFilePath, DestinationPath);
+                string destinationFilePath = DetermineDestinationFilePath(filePath, DestinationPath);
 
                 // Ensure destination directory exists
                 var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
@@ -65,7 +61,7 @@
                 }
 
                 // Perform the copy operation
-                System.IO.File.Copy(sourceFilePath, destinationFilePath, OverwriteIfExists);
+                System.IO.File.Copy(filePath, destinationFilePath, OverwriteIfExists);
 
                 return Task.CompletedTask;
             }

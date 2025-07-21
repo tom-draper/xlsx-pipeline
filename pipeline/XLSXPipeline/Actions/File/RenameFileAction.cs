@@ -3,9 +3,8 @@
     public class RenameFileAction : ActionBase
     {
         public required string NewName { get; set; }
-        public string? FilePath { get; set; }
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {
@@ -13,14 +12,12 @@
                 if (string.IsNullOrWhiteSpace(NewName))
                     throw new ArgumentException("NewName cannot be null or empty", nameof(NewName));
 
-                // Use the Path property if provided, otherwise use the filePath argument
-                var sourceFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : filePath;
-                if (string.IsNullOrWhiteSpace(sourceFilePath))
+                if (string.IsNullOrWhiteSpace(filePath))
                     throw new ArgumentException("Source file path cannot be null or empty");
 
                 // Validate source file exists
-                if (!System.IO.File.Exists(sourceFilePath))
-                    throw new FileNotFoundException($"Source file not found: {sourceFilePath}");
+                if (!System.IO.File.Exists(filePath))
+                    throw new FileNotFoundException($"Source file not found: {filePath}");
 
                 string destinationFilePath;
 
@@ -35,14 +32,14 @@
                     // If the full path doesn't have an extension, add the original file's extension
                     if (string.IsNullOrEmpty(Path.GetExtension(destinationFilePath)))
                     {
-                        var originalExtension = Path.GetExtension(sourceFilePath);
+                        var originalExtension = Path.GetExtension(filePath);
                         destinationFilePath = Path.ChangeExtension(destinationFilePath, originalExtension);
                     }
                 }
                 else
                 {
                     // Treat NewName as just a filename
-                    var sourceDirectory = Path.GetDirectoryName(sourceFilePath);
+                    var sourceDirectory = Path.GetDirectoryName(filePath);
                     if (string.IsNullOrEmpty(sourceDirectory))
                         sourceDirectory = Directory.GetCurrentDirectory();
 
@@ -50,7 +47,7 @@
                     var newNameWithExtension = NewName;
                     if (string.IsNullOrEmpty(Path.GetExtension(NewName)))
                     {
-                        var originalExtension = Path.GetExtension(sourceFilePath);
+                        var originalExtension = Path.GetExtension(filePath);
                         newNameWithExtension = Path.ChangeExtension(NewName, originalExtension);
                     }
 
@@ -67,7 +64,7 @@
                     throw new InvalidOperationException($"Destination file already exists: {destinationFilePath}");
 
                 // Perform the rename/move operation
-                System.IO.File.Move(sourceFilePath, destinationFilePath);
+                System.IO.File.Move(filePath, destinationFilePath);
 
                 return Task.CompletedTask;
             }

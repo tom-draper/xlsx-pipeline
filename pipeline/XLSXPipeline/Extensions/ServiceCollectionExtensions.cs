@@ -12,6 +12,7 @@ namespace XLSXPipeline.Extensions
             services.AddSingleton<ISchedulerService, SchedulerService>();
             services.AddSingleton<IFileWatcherService, FileWatcherService>();
             services.AddSingleton<IPipelineExecutor, PipelineExecutor>();
+            services.AddSingleton<IPipelineService, PipelineService>();
 
             return services;
         }

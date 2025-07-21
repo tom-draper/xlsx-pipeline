@@ -11,7 +11,7 @@ namespace XLSXPipeline.Actions.Data
         public string FilterOperator { get; set; } = "Equal"; // Equal, NotEqual, Contains, StartsWith, EndsWith, GreaterThan, LessThan
         public bool CaseSensitive { get; set; } = false; // This property won't be used directly for standard ClosedXML string filters
 
-        public override Task ExecuteAsync(string filePath)
+        protected override Task ExecuteInternalAsync(string filePath)
         {
             try
             {

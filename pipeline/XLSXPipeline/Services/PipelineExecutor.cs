@@ -17,12 +17,12 @@ namespace XLSXPipeline.Services
 
             if (pipeline.Actions != null)
             {
+                var currentFilePath = triggeredFilePath ?? pipeline.Trigger.Path;
+
                 foreach (var action in pipeline.Actions)
                 {
                     _logger.LogInformation("Executing action: {Action}", action.Type);
-                    // Use the triggered file path if available, otherwise use the pipeline trigger path
-                    var actionPath = triggeredFilePath ?? pipeline.Trigger.Path;
-                    await action.ExecuteAsync(actionPath);
+                    await action.ExecuteAsync(currentFilePath);
                 }
             }
         }
