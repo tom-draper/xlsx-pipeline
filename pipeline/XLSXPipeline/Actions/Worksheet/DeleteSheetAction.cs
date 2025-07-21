@@ -1,30 +1,29 @@
 ﻿using ClosedXML.Excel;
 
-namespace XLSXPipeline.Actions.Worksheet
+namespace XLSXPipeline.Actions.Worksheet;
+
+public class DeleteSheetAction : ActionBase
 {
-    public class DeleteSheetAction : ActionBase
+    public required string SheetName { get; set; }
+
+    protected override Task ExecuteInternalAsync(string filePath)
     {
-        public required string SheetName { get; set; }
-
-        protected override Task ExecuteInternalAsync(string filePath)
+        try
         {
-            try
-            {
-                using var workbook = new XLWorkbook(filePath);
-                var worksheet = workbook.Worksheet(SheetName);
+            using var workbook = new XLWorkbook(filePath);
+            var worksheet = workbook.Worksheet(SheetName);
 
-                if (worksheet == null)
-                    throw new InvalidOperationException($"Sheet '{SheetName}' does not exist.");
+            if (worksheet == null)
+                throw new InvalidOperationException($"Sheet '{SheetName}' does not exist.");
 
-                worksheet.Delete();
-                workbook.Save();
+            worksheet.Delete();
+            workbook.Save();
 
-                return Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                return Task.FromException(ex);
-            }
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
         }
     }
 }

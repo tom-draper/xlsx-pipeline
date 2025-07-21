@@ -37,7 +37,7 @@ public class PipelineService(
     // Handles initial setup before ExecuteAsync is called.
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting Pipeline Service...");
+        _logger.LogInformation("Starting pipeline service...");
 
         // Load pipelines and start file watchers.
         var (scheduledPipelines, fileWatcherPipelines) = await _pipelineLoader.LoadPipelineFilesAsync(cancellationToken);
@@ -52,15 +52,12 @@ public class PipelineService(
         // Let the base class handle the call to ExecuteAsync.
         await base.StartAsync(cancellationToken);
 
-        var remainingScheduled = _scheduledPipelines?.Count ?? 0;
-        if (remainingScheduled > 0)
-            _logger.LogInformation("Pipeline Service started successfully with {Count} scheduled pipelines.", remainingScheduled);
     }
 
     // Handles cleanup.
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Stopping Pipeline Service...");
+        _logger.LogInformation("Stopping pipeline service...");
 
         _fileWatcherService.StopFileWatchers();
         _logger.LogInformation("File watchers stopped.");
@@ -68,6 +65,6 @@ public class PipelineService(
         // The base class will gracefully handle stopping ExecuteAsync.
         await base.StopAsync(cancellationToken);
 
-        _logger.LogInformation("Pipeline Service stopped successfully.");
+        _logger.LogInformation("Pipeline service stopped successfully.");
     }
 }

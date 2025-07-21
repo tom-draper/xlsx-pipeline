@@ -1,31 +1,30 @@
 ﻿using ClosedXML.Excel;
 
-namespace XLSXPipeline.Actions.Data
+namespace XLSXPipeline.Actions.Data;
+
+public class InsertRowAction : ActionBase
 {
-    public class InsertRowAction : ActionBase
+    public string? SheetName { get; set; }
+    public int RowNumber { get; set; }
+    public int Count { get; set; } = 1;
+
+    protected override Task ExecuteInternalAsync(string filePath)
     {
-        public string? SheetName { get; set; }
-        public int RowNumber { get; set; }
-        public int Count { get; set; } = 1;
-
-        protected override Task ExecuteInternalAsync(string filePath)
+        try
         {
-            try
-            {
-                using var workbook = new XLWorkbook(filePath);
-                var worksheet = string.IsNullOrEmpty(SheetName)
-                    ? workbook.Worksheets.First()
-                    : workbook.Worksheet(SheetName);
+            using var workbook = new XLWorkbook(filePath);
+            var worksheet = string.IsNullOrEmpty(SheetName)
+                ? workbook.Worksheets.First()
+                : workbook.Worksheet(SheetName);
 
-                worksheet.Row(RowNumber).InsertRowsAbove(Count);
+            worksheet.Row(RowNumber).InsertRowsAbove(Count);
 
-                workbook.Save();
-                return Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                return Task.FromException(ex);
-            }
+            workbook.Save();
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
         }
     }
 }

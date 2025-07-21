@@ -1,29 +1,28 @@
 ﻿using XLSXPipeline.Models;
 
-namespace XLSXPipeline.Services
+namespace XLSXPipeline.Services;
+
+public interface IPipelineExecutor
 {
-    public interface IPipelineExecutor
-    {
-        Task ExecutePipelineAsync(Pipeline pipeline, string? triggeredFilePath = null);
-    }
+    Task ExecutePipelineAsync(Pipeline pipeline, string? triggeredFilePath = null);
+}
 
-    public class PipelineExecutor(ILogger<PipelineExecutor> logger) : IPipelineExecutor
-    {
-        private readonly ILogger<PipelineExecutor> _logger = logger;
+public class PipelineExecutor(ILogger<PipelineExecutor> logger) : IPipelineExecutor
+{
+    private readonly ILogger<PipelineExecutor> _logger = logger;
 
-        public async Task ExecutePipelineAsync(Pipeline pipeline, string? triggeredFilePath = null)
+    public async Task ExecutePipelineAsync(Pipeline pipeline, string? triggeredFilePath = null)
+    {
+        _logger.LogInformation("Executing pipeline [{Name}] with {ActionCount} actions.", pipeline.PipelineName, pipeline.Actions?.Count ?? 0);
+
+        if (pipeline.Actions != null)
         {
-            _logger.LogInformation("Executing pipeline [{Name}] with {ActionCount} actions", pipeline.PipelineName, pipeline.Actions?.Count ?? 0);
+            var currentFilePath = triggeredFilePath ?? pipeline.Trigger.Path;
 
-            if (pipeline.Actions != null)
+            foreach (var action in pipeline.Actions)
             {
-                var currentFilePath = triggeredFilePath ?? pipeline.Trigger.Path;
-
-                foreach (var action in pipeline.Actions)
-                {
-                    _logger.LogInformation("[{Name}]: Executing action: {Action}", pipeline.PipelineName, action.Type);
-                    await action.ExecuteAsync(currentFilePath);
-                }
+                _logger.LogInformation("[{Name}]: Executing action: {Action}", pipeline.PipelineName, action.Type);
+                await action.ExecuteAsync(currentFilePath);
             }
         }
     }

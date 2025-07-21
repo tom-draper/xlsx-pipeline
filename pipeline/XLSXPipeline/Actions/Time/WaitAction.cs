@@ -1,5 +1,4 @@
-﻿
-namespace XLSXPipeline.Actions.Time;
+﻿namespace XLSXPipeline.Actions.Time;
 
 public class WaitAction : ActionBase
 {

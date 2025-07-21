@@ -4,7 +4,6 @@ namespace XLSXPipeline.Actions.File;
 
 public class OpenFileAction : ActionBase
 {
-
     protected override Task ExecuteInternalAsync(string filePath)
     {
         try

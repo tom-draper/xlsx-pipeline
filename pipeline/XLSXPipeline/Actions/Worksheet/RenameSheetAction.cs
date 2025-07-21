@@ -1,29 +1,28 @@
 ﻿using ClosedXML.Excel;
 
-namespace XLSXPipeline.Actions.Worksheet
-{
-    public class RenameSheetAction : ActionBase
-    {
-        public required string OriginalName { get; set; }
-        public required string NewName { get; set; }
+namespace XLSXPipeline.Actions.Worksheet;
 
-        protected override Task ExecuteInternalAsync(string filePath)
+public class RenameSheetAction : ActionBase
+{
+    public required string OriginalName { get; set; }
+    public required string NewName { get; set; }
+
+    protected override Task ExecuteInternalAsync(string filePath)
+    {
+        try
         {
-            try
+            using var workbook = new XLWorkbook(filePath);
+            var worksheet = workbook.Worksheet(OriginalName);
+            if (worksheet != null)
             {
-                using var workbook = new XLWorkbook(filePath);
-                var worksheet = workbook.Worksheet(OriginalName);
-                if (worksheet != null)
-                {
-                    worksheet.Name = NewName;
-                    workbook.Save();
-                }
-                return Task.CompletedTask;
+                worksheet.Name = NewName;
+                workbook.Save();
             }
-            catch (Exception ex)
-            {
-                return Task.FromException(ex);
-            }
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
         }
     }
 }

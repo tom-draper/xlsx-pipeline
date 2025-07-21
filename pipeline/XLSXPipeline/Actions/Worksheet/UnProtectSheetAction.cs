@@ -1,34 +1,33 @@
 ﻿using ClosedXML.Excel;
 
-namespace XLSXPipeline.Actions.Worksheet
+namespace XLSXPipeline.Actions.Worksheet;
+
+public class UnprotectSheetAction : ActionBase
 {
-    public class UnprotectSheetAction : ActionBase
+    public string? SheetName { get; set; }
+    public required string Password { get; set; }
+
+    protected override Task ExecuteInternalAsync(string filePath)
     {
-        public string? SheetName { get; set; }
-        public required string Password { get; set; }
-
-        protected override Task ExecuteInternalAsync(string filePath)
+        try
         {
-            try
-            {
-                using var workbook = new XLWorkbook(filePath);
-                var worksheet = string.IsNullOrEmpty(SheetName)
-                    ? workbook.Worksheets.First()
-                    : workbook.Worksheet(SheetName);
+            using var workbook = new XLWorkbook(filePath);
+            var worksheet = string.IsNullOrEmpty(SheetName)
+                ? workbook.Worksheets.First()
+                : workbook.Worksheet(SheetName);
 
-                // Check if sheet is protected before attempting to unprotect
-                if (worksheet.Protection.IsProtected)
-                {
-                    worksheet.Unprotect(Password);
-                    workbook.Save();
-                }
-
-                return Task.CompletedTask;
-            }
-            catch (Exception ex)
+            // Check if sheet is protected before attempting to unprotect
+            if (worksheet.Protection.IsProtected)
             {
-                return Task.FromException(ex);
+                worksheet.Unprotect(Password);
+                workbook.Save();
             }
+
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
         }
     }
 }
