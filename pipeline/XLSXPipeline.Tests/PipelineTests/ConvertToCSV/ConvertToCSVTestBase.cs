@@ -33,9 +33,6 @@ public abstract class ConvertToCSVTestBase(string? defaultPipelineName = null) :
 
             var pipelineExecutor = GetPipelineExecutor();
             await pipelineExecutor.ExecutePipelineAsync(pipeline, inputPath);
-
-            Console.WriteLine("PATH");
-            Console.WriteLine(outputPath);
         }
         catch (Exception)
         {
