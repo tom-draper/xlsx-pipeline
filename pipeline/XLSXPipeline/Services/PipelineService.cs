@@ -20,8 +20,11 @@ public class PipelineService(
     {
         try
         {
-            // The token passed here is automatically cancelled on shutdown.
-            await _schedulerService.RunSchedulerAsync(_scheduledPipelines, stoppingToken);
+            if (_scheduledPipelines.Count > 0)
+            {
+                // The token passed here is automatically cancelled on shutdown.
+                await _schedulerService.RunSchedulerAsync(_scheduledPipelines, stoppingToken);
+            }
         }
         catch (OperationCanceledException)
         {
