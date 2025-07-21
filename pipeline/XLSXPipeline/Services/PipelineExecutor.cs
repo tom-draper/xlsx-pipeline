@@ -13,7 +13,7 @@ public class PipelineExecutor(ILogger<PipelineExecutor> logger) : IPipelineExecu
 
     public async Task ExecutePipelineAsync(Pipeline pipeline, string? triggeredFilePath = null)
     {
-        _logger.LogInformation("Executing pipeline [{Name}] with {ActionCount} actions.", pipeline.PipelineName, pipeline.Actions?.Count ?? 0);
+        _logger.LogInformation("Executing pipeline '{Name}' with {ActionCount} action(s).", pipeline.PipelineName, pipeline.Actions?.Count ?? 0);
 
         if (pipeline.Actions != null)
         {
