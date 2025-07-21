@@ -53,7 +53,7 @@ namespace XLSXPipeline.Models
                 "SortData" => JsonSerializer.Deserialize<SortDataAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Time Actions
-                "WaitActions" => JsonSerializer.Deserialize<WaitAction>(jsonDoc.RootElement.GetRawText(), options),
+                "Wait" => JsonSerializer.Deserialize<WaitAction>(jsonDoc.RootElement.GetRawText(), options),
 
                 // Formatting Actions
                 "FormatCells" => JsonSerializer.Deserialize<FormatCellsAction>(jsonDoc.RootElement.GetRawText(), options),

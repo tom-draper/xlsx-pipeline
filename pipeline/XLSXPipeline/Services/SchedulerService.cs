@@ -32,15 +32,15 @@ namespace XLSXPipeline.Services
                         if (scheduledPipeline.ScheduleType == ScheduleType.Recurring)
                         {
                             UpdateNextRunTime(scheduledPipeline, now);
-                            _logger.LogInformation("Pipeline {FileName} rescheduled for: {NextRunTime}",
-                                Path.GetFileName(scheduledPipeline.FilePath), scheduledPipeline.NextRunTime);
+                            _logger.LogInformation("Pipeline [{FileName}] rescheduled for: {NextRunTime}",
+                                scheduledPipeline.Pipeline.PipelineName, scheduledPipeline.NextRunTime);
                         }
                         else
                         {
                             // Remove one-time pipelines after execution
                             scheduledPipelines.Remove(scheduledPipeline);
-                            _logger.LogInformation("One-time pipeline {FileName} completed and removed",
-                                Path.GetFileName(scheduledPipeline.FilePath));
+                            _logger.LogInformation("One-time pipeline [{FileName}] completed and removed",
+                                scheduledPipeline.Pipeline.PipelineName);
                         }
                     }
                     catch (Exception ex)

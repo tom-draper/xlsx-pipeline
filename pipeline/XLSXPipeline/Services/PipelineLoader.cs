@@ -57,8 +57,7 @@ public class PipelineLoader(ILogger<PipelineLoader> logger, IScheduledPipelineFa
                                 WatchPath = pipeline.Trigger.Path
                             };
                             fileWatcherPipelines.Add(fileWatcherPipeline);
-                            _logger.LogInformation("Loaded file watcher pipeline: {FileName} watching: {WatchPath}",
-                                Path.GetFileName(filePath), pipeline.Trigger.Path);
+                            _logger.LogInformation("Loaded file watcher pipeline: {FileName}", Path.GetFileName(filePath));
                         }
                         else
                         {
@@ -66,8 +65,7 @@ public class PipelineLoader(ILogger<PipelineLoader> logger, IScheduledPipelineFa
                             if (scheduledPipeline != null)
                             {
                                 scheduledPipelines.Add(scheduledPipeline);
-                                _logger.LogInformation("Loaded scheduled pipeline: {FileName} with trigger: {TriggerType}",
-                                    Path.GetFileName(filePath), pipeline.Trigger.Type);
+                                _logger.LogInformation("Loaded scheduled pipeline: {FileName}", Path.GetFileName(filePath));
                             }
                         }
                     }

@@ -19,8 +19,4 @@
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pipelines\" />
-  </ItemGroup>
 </Project>

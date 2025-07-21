@@ -13,7 +13,7 @@ namespace XLSXPipeline.Services
 
         public async Task ExecutePipelineAsync(Pipeline pipeline, string? triggeredFilePath = null)
         {
-            _logger.LogInformation("Executing pipeline with {ActionCount} actions", pipeline.Actions?.Count ?? 0);
+            _logger.LogInformation("Executing pipeline [{Name}] with {ActionCount} actions", pipeline.PipelineName, pipeline.Actions?.Count ?? 0);
 
             if (pipeline.Actions != null)
             {
@@ -21,7 +21,7 @@ namespace XLSXPipeline.Services
 
                 foreach (var action in pipeline.Actions)
                 {
-                    _logger.LogInformation("Executing action: {Action}", action.Type);
+                    _logger.LogInformation("[{Name}]: Executing action: {Action}", pipeline.PipelineName, action.Type);
                     await action.ExecuteAsync(currentFilePath);
                 }
             }
