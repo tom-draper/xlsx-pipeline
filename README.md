@@ -60,7 +60,7 @@ Check out the docs to help build your own pipelines, or browse the [examples](/p
 
 ## Getting Started
 
-<a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0" target="_blank">.NET Runtime 8.0 is required</a>
+<a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0" target="_blank">.NET Runtime 8.0 is required.</a>
 
 No Excel or spreadsheet software required.
 
