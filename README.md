@@ -2,6 +2,8 @@
 
 Automate your local .xlsx files.
 
+<img height="365" alt="Drawing 1 (1)" src="https://github.com/user-attachments/assets/1d97a67e-bd9c-4a3e-8cc8-02d9d5e88248" />
+
 XLSX Pipeline runs as a background service processing automated workflows (pipelines) on your sheets.
 
 Pipelines like the one below are defined using a flexible DML in JSON.
