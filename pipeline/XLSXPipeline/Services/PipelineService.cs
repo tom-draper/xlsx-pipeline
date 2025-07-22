@@ -18,13 +18,13 @@ public class PipelineService(
     // The main long-running task is handled here.
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (_scheduledPipelines.Count == 0)
+            return;
+
         try
         {
-            if (_scheduledPipelines.Count > 0)
-            {
-                // The token passed here is automatically cancelled on shutdown.
-                await _schedulerService.RunSchedulerAsync(_scheduledPipelines, stoppingToken);
-            }
+            // The token passed here is automatically cancelled on shutdown.
+            await _schedulerService.RunSchedulerAsync(_scheduledPipelines, stoppingToken);
         }
         catch (OperationCanceledException)
         {
@@ -34,6 +34,7 @@ public class PipelineService(
         {
             _logger.LogError(ex, "An unhandled error occurred in the scheduler.");
         }
+
         _logger.LogInformation("Scheduler has stopped.");
     }
 

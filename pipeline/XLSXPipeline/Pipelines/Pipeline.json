@@ -1,5 +1,5 @@
 {
-    "pipelineName": "Test Pipeline Cron",
+    "pipelineName": "Test OnChange",
     "trigger": {
         "type": "OnChange",
         "path": "C:\\Sheets\\Test.xlsx"
@@ -7,7 +7,7 @@
     "actions": [
         {
           "type": "ConvertToCSV",
-          "outputPath": "C:\\Sheets\\Test3.csv"
+          "outputPath": "C:\\Sheets"
         }
     ]
 }

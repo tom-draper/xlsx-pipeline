@@ -35,7 +35,7 @@ public class PipelineLoader(ILogger<PipelineLoader> logger, IScheduledPipelineFa
                 return (scheduledPipelines, fileWatcherPipelines);
             }
 
-            _logger.LogInformation("Found {FileCount} pipeline files to process.", jsonFiles.Length);
+            _logger.LogInformation("Found {FileCount} pipeline(s) files to process.", jsonFiles.Length);
 
             foreach (var filePath in jsonFiles)
             {
