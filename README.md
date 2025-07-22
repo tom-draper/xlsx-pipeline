@@ -62,6 +62,8 @@ Check out the docs to help build your own pipelines, or browse the [examples](/p
 
 <a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0" target="_blank">.NET Runtime 8.0 is required</a>
 
+No Excel or spreadsheet software required.
+
 ### Windows
 
 Create a new service with PowerShell.
