@@ -47,8 +47,12 @@ Pipelines/
 
 Pipelines can have:
 
-- scheduled triggers (e.g. 6pm every day), or
-- file watcher triggers (e.g. when a new file is created in a directory).
+- scheduled triggers (e.g., 6pm every day), or
+- file watcher triggers (e.g., when a new file is created in a directory),
+
+followed by a series of actions that will execute sequentially.
+
+Check out the docs to help build your own pipelines, or browse the [examples](/pipeline/XLSXPipeline/Examples).
 
 ## Getting Started
 
