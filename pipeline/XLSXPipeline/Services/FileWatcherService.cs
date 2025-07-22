@@ -29,7 +29,8 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
                     // It's a file - watch its directory with specific filter
                     directoryPath = Path.GetDirectoryName(fileWatcherPipeline.WatchPath)!;
                     fileFilter = Path.GetFileName(fileWatcherPipeline.WatchPath);
-                    _logger.LogInformation("Watching specific file: {FilePath}", fileWatcherPipeline.WatchPath);
+                    _logger.LogInformation("Watching specific file: {WatchPath} (Directory: {DirectoryPath}, Filter: {FileFilter})",
+                        fileWatcherPipeline.WatchPath, directoryPath, fileFilter);
                 }
                 else if (Directory.Exists(fileWatcherPipeline.WatchPath))
                 {
@@ -83,8 +84,6 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
                 };
 
                 _fileWatchers.Add(watcher);
-                _logger.LogInformation("Started file watcher for: {WatchPath} (Directory: {DirectoryPath}, Filter: {FileFilter})",
-                    fileWatcherPipeline.WatchPath, directoryPath, fileFilter);
             }
             catch (Exception ex)
             {

@@ -1,0 +1,13 @@
+{
+    "pipelineName": "Test Cron",
+    "trigger": {
+        "type": "Once",
+        "path": "C:\\Sheets\\Test.xlsx"
+    },
+    "actions": [
+        {
+          "type": "ConvertToCSV",
+          "outputPath": "C:\\Sheets\\Test5.xlsx"
+        }
+    ]
+}

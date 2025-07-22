@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-BackgroundService-f68fa028-b3e7-4421-843e-177ffdb4b3a2</UserSecretsId>
     <AssemblyName>$(MSAssemblyName)</AssemblyName>
+    <PackageIcon>favicon.svg</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,13 @@
     <Content Remove="Rules\**" />
     <EmbeddedResource Remove="Rules\**" />
     <None Remove="Rules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\website\public\favicon.svg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
