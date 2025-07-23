@@ -21,7 +21,7 @@ body {
 }
 
 .pipes {
-  background-image: url(../assets/Pipes.png);
+  background-image: url(../assets/pipes.png);
   background-position: 0;
   background-size: cover;
   /* Makes the image cover the container */

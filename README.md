@@ -1,5 +1,5 @@
 
-<img width="1290" height="786" alt="XLSX-Pipeline-07-23-2025_04_57_PM (4)" src="https://github.com/user-attachments/assets/9ebadabf-cff3-4966-91a2-ae7ead537be7" />
+<img width="1290" height="786" alt="xlsx pipeline" src="/website/src/assets/banner.png" />
 
 <br>
 <br>
