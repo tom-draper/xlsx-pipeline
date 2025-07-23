@@ -117,7 +117,7 @@ public class PipelineService(
             // Add a small delay to handle rapid file changes (like when saving from an editor)
             await Task.Delay(500);
 
-            _logger.LogInformation("Pipeline configuration changed: {FileName}. Reloading all pipelines...", e.Name);
+            _logger.LogInformation("Pipeline configuration changed: {FileName}. Hot-reloading pipelines...", e.Name);
 
             // Stop current file watchers
             _fileWatcherService.StopFileWatchers();

@@ -1,14 +1,14 @@
 {
-  "pipelineName": "Test OnChange 2",
+  "pipelineName": "Rename Back",
   "trigger": {
-    "type": "Once",
-    "path": "C:\\Sheets\\Test.xlsx"
+    "type": "Every minute",
+    "path":  ""
   },
   "actions": [
     {
-      "type": "CopyFile",
-      "destinationPath": "C:\\Sheets\\BBBB"
+      "type": "RenameFile",
+      "filePath": "C:\\Sheets\\Renamed.xlsx",
+      "newName":  "Test.xlsx"
     }
-  ],
-  "disabled": true
+  ]
 }

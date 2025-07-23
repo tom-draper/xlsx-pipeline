@@ -7,6 +7,7 @@ public interface ITriggerParser
     bool TryParseDateTime(string dateTimeString, out DateTime dateTime);
     bool TryParseTimeOfDay(string timeString, out TimeSpan timeOfDay);
     bool TryParseInterval(string intervalString, out TimeSpan interval);
+    bool TryParseNaturalLanguage(string naturalLanguage, out string cronExpression);
     bool IsCronExpression(string expression);
     bool TryParseCronExpression(string cronExpression, out DateTime nextRunTime);
     DateTime GetNextRunTimeForDaily(TimeSpan timeOfDay);
@@ -134,6 +135,52 @@ public partial class TriggerParser : ITriggerParser
         return interval != default;
     }
 
+    public bool TryParseNaturalLanguage(string naturalLanguage, out string cronExpression)
+    {
+        cronExpression = string.Empty;
+        naturalLanguage = naturalLanguage.Trim().ToLowerInvariant();
+
+        // Handle "every X" patterns
+        var everyRegex = EveryRegex();
+        var match = everyRegex.Match(naturalLanguage);
+
+        if (match.Success)
+        {
+            var unit = match.Groups[1].Value;
+            var number = match.Groups[2].Success ? match.Groups[2].Value : "1";
+
+            if (!int.TryParse(number, out int value))
+                value = 1;
+
+            cronExpression = unit switch
+            {
+                "second" => value == 1 ? "* * * * * *" : $"*/{value} * * * * *",
+                "minute" => value == 1 ? "0 * * * * *" : $"0 */{value} * * * *",
+                "hour" => value == 1 ? "0 0 * * * *" : $"0 0 */{value} * * *",
+                "day" => value == 1 ? "0 0 0 * * *" : $"0 0 0 */{value} * *",
+                _ => string.Empty
+            };
+
+            return !string.IsNullOrEmpty(cronExpression);
+        }
+
+        // Handle specific common phrases
+        cronExpression = naturalLanguage switch
+        {
+            "every minute" => "0 * * * * *",
+            "every hour" => "0 0 * * * *",
+            "every day" => "0 0 0 * * *",
+            "every second" => "* * * * * *",
+            "hourly" => "0 0 * * * *",
+            "daily" => "0 0 0 * * *",
+            "minutely" => "0 * * * * *",
+            _ => string.Empty
+        };
+
+        return !string.IsNullOrEmpty(cronExpression);
+    }
+
+
     public bool IsCronExpression(string expression)
     {
         // Basic check for cron expression format (5 or 6 parts separated by spaces)
@@ -178,7 +225,7 @@ public partial class TriggerParser : ITriggerParser
                 if (!IsValidDay(checkDate.Day, daysPart))
                     continue;
 
-                // Find valid hours and minutes for this day
+                // Find valid hours, minutes, and seconds for this day
                 for (int hour = 0; hour < 24; hour++)
                 {
                     if (!IsValidHour(hour, hoursPart))
@@ -189,11 +236,17 @@ public partial class TriggerParser : ITriggerParser
                         if (!IsValidMinute(minute, minutesPart))
                             continue;
 
-                        var candidateTime = new DateTime(checkDate.Year, checkDate.Month, checkDate.Day, hour, minute, 0);
-                        if (candidateTime > now)
+                        for (int second = 0; second < 60; second++)
                         {
-                            nextRunTime = candidateTime;
-                            return true;
+                            if (!IsValidSecond(second, secondsPart))
+                                continue;
+
+                            var candidateTime = new DateTime(checkDate.Year, checkDate.Month, checkDate.Day, hour, minute, second);
+                            if (candidateTime > now)
+                            {
+                                nextRunTime = candidateTime;
+                                return true;
+                            }
                         }
                     }
                 }
@@ -232,17 +285,13 @@ public partial class TriggerParser : ITriggerParser
                 var start = ParseDayOfWeek(range[0]);
                 var end = ParseDayOfWeek(range[1]);
                 if (start != -1 && end != -1)
-                {
                     return dayNumber >= start && dayNumber <= end;
-                }
             }
         }
 
         // Handle specific days
         if (int.TryParse(cronPart, out int specificDay))
-        {
             return dayNumber == specificDay;
-        }
 
         // Handle named days
         return dayNumber == ParseDayOfWeek(cronPart);
@@ -269,9 +318,7 @@ public partial class TriggerParser : ITriggerParser
             return true;
 
         if (int.TryParse(cronPart, out int specificMonth))
-        {
             return month == specificMonth;
-        }
 
         return false;
     }
@@ -282,9 +329,7 @@ public partial class TriggerParser : ITriggerParser
             return true;
 
         if (int.TryParse(cronPart, out int specificDay))
-        {
             return day == specificDay;
-        }
 
         return false;
     }
@@ -295,19 +340,15 @@ public partial class TriggerParser : ITriggerParser
             return true;
 
         // Handle ranges like 9-17
-        if (cronPart.Contains("-"))
+        if (cronPart.Contains('-'))
         {
             var range = cronPart.Split('-');
             if (range.Length == 2 && int.TryParse(range[0], out int start) && int.TryParse(range[1], out int end))
-            {
                 return hour >= start && hour <= end;
-            }
         }
 
         if (int.TryParse(cronPart, out int specificHour))
-        {
             return hour == specificHour;
-        }
 
         return false;
     }
@@ -321,15 +362,29 @@ public partial class TriggerParser : ITriggerParser
         if (cronPart.StartsWith("*/"))
         {
             if (int.TryParse(cronPart.AsSpan(2), out int step))
-            {
                 return minute % step == 0;
-            }
         }
 
         if (int.TryParse(cronPart, out int specificMinute))
-        {
             return minute == specificMinute;
+
+        return false;
+    }
+
+    private static bool IsValidSecond(int second, string cronPart)
+    {
+        if (cronPart == "*")
+            return true;
+
+        // Handle step values like */30
+        if (cronPart.StartsWith("*/"))
+        {
+            if (int.TryParse(cronPart.AsSpan(2), out int step))
+                return second % step == 0;
         }
+
+        if (int.TryParse(cronPart, out int specificSecond))
+            return second == specificSecond;
 
         return false;
     }
@@ -345,4 +400,7 @@ public partial class TriggerParser : ITriggerParser
 
     [GeneratedRegex(@"^(\d+)\s*(second|minute|hour|day)s?$")]
     private static partial Regex IntervalRegex();
+
+    [GeneratedRegex(@"^every\s+(?:(\d+)\s+)?(second|minute|hour|day)s?$")]
+    private static partial Regex EveryRegex();
 }

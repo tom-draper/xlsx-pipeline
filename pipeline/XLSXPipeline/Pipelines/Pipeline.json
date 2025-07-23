@@ -1,13 +1,14 @@
 {
-    "pipelineName": "Test OnChange",
-    "trigger": {
-        "type": "OnChange",
-        "path": "C:\\Sheets\\Test.xlsx"
-    },
-    "actions": [
-        {
-          "type": "ConvertToCSV",
-          "outputPath": "C:\\Sheets"
-        }
-    ]
+  "pipelineName": "Rename",
+  "trigger": {
+    "type": "30 * * * * *",
+    "path":  ""
+  },
+  "actions": [
+    {
+      "type": "RenameFile",
+      "filePath": "C:\\Sheets\\Test.xlsx",
+      "newName":  "Renamed"
+    }
+  ]
 }

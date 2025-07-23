@@ -29,6 +29,10 @@ public class SchedulerService(
 
         _logger.LogInformation("Starting scheduler with {ScheduledCount} scheduled pipeline(s).", scheduledPipelines.Count);
 
+        foreach (var scheduledPipeline in _currentPipelines)
+            _logger.LogInformation("Pipeline '{PipelineName}' scheduled for: {NextRunTime}",
+                scheduledPipeline.Pipeline.PipelineName, scheduledPipeline.NextRunTime);
+
         while (!stoppingToken.IsCancellationRequested)
         {
             List<ScheduledPipeline> pipelinesToCheck;
@@ -122,56 +126,228 @@ public class SchedulerService(
     }
 
     private void UpdateNextRunTime(ScheduledPipeline scheduledPipeline, DateTime now)
+{
+    try
     {
         switch (scheduledPipeline.ScheduleType)
         {
             case ScheduleType.Recurring:
                 if (scheduledPipeline.RecurrenceInterval.HasValue)
+                {
                     scheduledPipeline.NextRunTime = now.Add(scheduledPipeline.RecurrenceInterval.Value);
+                }
+                else
+                {
+                    _logger.LogWarning("Recurring schedule missing interval for: {FileName}", 
+                        Path.GetFileName(scheduledPipeline.FilePath));
+                    // Fallback to 1 hour
+                    scheduledPipeline.NextRunTime = now.AddHours(1);
+                }
                 break;
 
             case ScheduleType.Cron:
-                if (scheduledPipeline.CronExpression != null &&
+                if (!string.IsNullOrEmpty(scheduledPipeline.CronExpression) &&
                     _triggerParser.TryParseCronExpression(scheduledPipeline.CronExpression, out var nextCronTime))
+                {
                     scheduledPipeline.NextRunTime = nextCronTime;
+                }
                 else
-                    _logger.LogWarning("Failed to calculate next cron time for: {FileName}",
+                {
+                    _logger.LogWarning("Failed to calculate next cron time for: {FileName}", 
                         Path.GetFileName(scheduledPipeline.FilePath));
+                    // Fallback to 1 hour from now
+                    scheduledPipeline.NextRunTime = now.AddHours(1);
+                }
                 break;
 
             case ScheduleType.Daily:
-                scheduledPipeline.NextRunTime = scheduledPipeline.NextRunTime.AddDays(1);
+                // Calculate next day at the same time, accounting for potential delays
+                var dailyTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextDaily = now.Date.Add(dailyTime);
+                if (nextDaily <= now)
+                    nextDaily = nextDaily.AddDays(1);
+                scheduledPipeline.NextRunTime = nextDaily;
                 break;
 
             case ScheduleType.Weekly:
-                scheduledPipeline.NextRunTime = scheduledPipeline.NextRunTime.AddDays(7);
+                // Calculate next week at the same day/time, accounting for potential delays
+                var weeklyDayOfWeek = scheduledPipeline.NextRunTime.DayOfWeek;
+                var weeklyTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextWeekly = GetNextWeekdayOccurrence(now, weeklyDayOfWeek, weeklyTime);
+                scheduledPipeline.NextRunTime = nextWeekly;
                 break;
 
             case ScheduleType.Monthly:
-                scheduledPipeline.NextRunTime = scheduledPipeline.NextRunTime.AddMonths(1);
+                // Calculate next month at the same day/time, handling month-end edge cases
+                var monthlyDay = scheduledPipeline.NextRunTime.Day;
+                var monthlyTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextMonthly = GetNextMonthlyOccurrence(now, monthlyDay, monthlyTime);
+                scheduledPipeline.NextRunTime = nextMonthly;
                 break;
 
             case ScheduleType.Quarterly:
-                scheduledPipeline.NextRunTime = scheduledPipeline.NextRunTime.AddMonths(3);
+                // Calculate next quarter at the same day/time
+                var quarterlyDay = scheduledPipeline.NextRunTime.Day;
+                var quarterlyTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextQuarterly = GetNextQuarterlyOccurrence(now, quarterlyDay, quarterlyTime);
+                scheduledPipeline.NextRunTime = nextQuarterly;
                 break;
 
             case ScheduleType.Yearly:
-                scheduledPipeline.NextRunTime = scheduledPipeline.NextRunTime.AddYears(1);
+                // Calculate next year at the same date/time
+                var yearlyMonth = scheduledPipeline.NextRunTime.Month;
+                var yearlyDay = scheduledPipeline.NextRunTime.Day;
+                var yearlyTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextYearly = GetNextYearlyOccurrence(now, yearlyMonth, yearlyDay, yearlyTime);
+                scheduledPipeline.NextRunTime = nextYearly;
                 break;
 
             case ScheduleType.WeekdaysOnly:
-                var nextDay = scheduledPipeline.NextRunTime.AddDays(1);
-                while (nextDay.DayOfWeek == DayOfWeek.Saturday || nextDay.DayOfWeek == DayOfWeek.Sunday)
-                    nextDay = nextDay.AddDays(1);
-                scheduledPipeline.NextRunTime = nextDay;
+                var weekdayTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextWeekday = GetNextWeekday(now, weekdayTime);
+                scheduledPipeline.NextRunTime = nextWeekday;
                 break;
 
             case ScheduleType.WeekendsOnly:
-                var nextWeekendDay = scheduledPipeline.NextRunTime.AddDays(1);
-                while (nextWeekendDay.DayOfWeek != DayOfWeek.Saturday && nextWeekendDay.DayOfWeek != DayOfWeek.Sunday)
-                    nextWeekendDay = nextWeekendDay.AddDays(1);
-                scheduledPipeline.NextRunTime = nextWeekendDay;
+                var weekendTime = scheduledPipeline.NextRunTime.TimeOfDay;
+                var nextWeekend = GetNextWeekend(now, weekendTime);
+                scheduledPipeline.NextRunTime = nextWeekend;
+                break;
+
+            default:
+                _logger.LogWarning("Unknown schedule type {ScheduleType} for: {FileName}", 
+                    scheduledPipeline.ScheduleType, Path.GetFileName(scheduledPipeline.FilePath));
+                // Fallback to 1 hour
+                scheduledPipeline.NextRunTime = now.AddHours(1);
                 break;
         }
+
+        _logger.LogDebug("Updated next run time for {FileName}: {NextRunTime}", 
+            Path.GetFileName(scheduledPipeline.FilePath), scheduledPipeline.NextRunTime);
     }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error updating next run time for: {FileName}", 
+            Path.GetFileName(scheduledPipeline.FilePath));
+        // Fallback to 1 hour from now
+        scheduledPipeline.NextRunTime = now.AddHours(1);
+    }
+}
+
+private DateTime GetNextWeekdayOccurrence(DateTime now, DayOfWeek targetDay, TimeSpan targetTime)
+{
+    var candidate = now.Date.Add(targetTime);
+    
+    // If today is the target day and time hasn't passed, use today
+    if (now.DayOfWeek == targetDay && candidate > now)
+        return candidate;
+    
+    // Otherwise find the next occurrence of this day
+    var daysUntilTarget = ((int)targetDay - (int)now.DayOfWeek + 7) % 7;
+    if (daysUntilTarget == 0) daysUntilTarget = 7; // Next week
+    
+    return now.Date.AddDays(daysUntilTarget).Add(targetTime);
+}
+
+private DateTime GetNextMonthlyOccurrence(DateTime now, int targetDay, TimeSpan targetTime)
+{
+    var currentMonth = now.Month;
+    var currentYear = now.Year;
+    
+    // Try current month first
+    var candidate = TryCreateDateTime(currentYear, currentMonth, targetDay, targetTime);
+    if (candidate.HasValue && candidate.Value > now)
+        return candidate.Value;
+    
+    // Try next month
+    var nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
+    var nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
+    
+    candidate = TryCreateDateTime(nextYear, nextMonth, targetDay, targetTime);
+    return candidate ?? now.AddMonths(1); // Fallback
+}
+
+private DateTime GetNextQuarterlyOccurrence(DateTime now, int targetDay, TimeSpan targetTime)
+{
+    var currentQuarter = (now.Month - 1) / 3;
+    var nextQuarterStartMonth = (currentQuarter + 1) * 3 + 1;
+    var nextYear = now.Year;
+    
+    if (nextQuarterStartMonth > 12)
+    {
+        nextQuarterStartMonth -= 12;
+        nextYear++;
+    }
+    
+    var candidate = TryCreateDateTime(nextYear, nextQuarterStartMonth, targetDay, targetTime);
+    return candidate ?? now.AddMonths(3); // Fallback
+}
+
+private DateTime GetNextYearlyOccurrence(DateTime now, int targetMonth, int targetDay, TimeSpan targetTime)
+{
+    var currentYear = now.Year;
+    
+    // Try current year first
+    var candidate = TryCreateDateTime(currentYear, targetMonth, targetDay, targetTime);
+    if (candidate.HasValue && candidate.Value > now)
+        return candidate.Value;
+    
+    // Try next year
+    candidate = TryCreateDateTime(currentYear + 1, targetMonth, targetDay, targetTime);
+    return candidate ?? now.AddYears(1); // Fallback
+}
+
+private DateTime GetNextWeekday(DateTime now, TimeSpan targetTime)
+{
+    var candidate = now.Date.Add(targetTime);
+    
+    // If today is a weekday and time hasn't passed, use today
+    if (IsWeekday(now.DayOfWeek) && candidate > now)
+        return candidate;
+    
+    // Find next weekday
+    var nextDay = now.Date.AddDays(1);
+    while (!IsWeekday(nextDay.DayOfWeek))
+        nextDay = nextDay.AddDays(1);
+    
+    return nextDay.Add(targetTime);
+}
+
+private DateTime GetNextWeekend(DateTime now, TimeSpan targetTime)
+{
+    var candidate = now.Date.Add(targetTime);
+    
+    // If today is a weekend and time hasn't passed, use today
+    if (IsWeekend(now.DayOfWeek) && candidate > now)
+        return candidate;
+    
+    // Find next weekend
+    var nextDay = now.Date.AddDays(1);
+    while (!IsWeekend(nextDay.DayOfWeek))
+        nextDay = nextDay.AddDays(1);
+    
+    return nextDay.Add(targetTime);
+}
+
+private static bool IsWeekday(DayOfWeek day) => 
+    day != DayOfWeek.Saturday && day != DayOfWeek.Sunday;
+
+private static bool IsWeekend(DayOfWeek day) => 
+    day == DayOfWeek.Saturday || day == DayOfWeek.Sunday;
+
+private static DateTime? TryCreateDateTime(int year, int month, int day, TimeSpan time)
+{
+    try
+    {
+        // Handle cases where the target day doesn't exist in the target month (e.g., Feb 30)
+        var daysInMonth = DateTime.DaysInMonth(year, month);
+        var actualDay = Math.Min(day, daysInMonth);
+        
+        return new DateTime(year, month, actualDay).Add(time);
+    }
+    catch
+    {
+        return null;
+    }
+}
 }
