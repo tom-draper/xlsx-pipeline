@@ -1,32 +1,60 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-BackgroundService-f68fa028-b3e7-4421-843e-177ffdb4b3a2</UserSecretsId>
-    <AssemblyName>$(MSAssemblyName)</AssemblyName>
-    <PackageIcon>favicon.svg</PackageIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>dotnet-BackgroundService-f68fa028-b3e7-4421-843e-177ffdb4b3a2</UserSecretsId>
+		<AssemblyName>$(MSAssemblyName)</AssemblyName>
+		<PackageIcon>icon.png</PackageIcon>
+		<AssemblyVersion>0.1.0.*</AssemblyVersion>
+		<FileVersion>0.1.0.0</FileVersion>
+		<PackageVersion>0.1.0</PackageVersion>
+		<Title>XLSX Pipeline</Title>
+		<Platforms>AnyCPU;ARM64</Platforms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Rules\**" />
-    <Content Remove="Rules\**" />
-    <EmbeddedResource Remove="Rules\**" />
-    <None Remove="Rules\**" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<Deterministic>False</Deterministic>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\website\public\favicon.svg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+	  <Deterministic>False</Deterministic>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.105.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
-    <PackageReference Include="NLog" Version="6.0.2" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="6.0.2" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<Deterministic>False</Deterministic>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+	  <Deterministic>False</Deterministic>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Rules\**" />
+		<Content Remove="Rules\**" />
+		<EmbeddedResource Remove="Rules\**" />
+		<None Remove="Rules\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+		<PackageReference Include="NLog" Version="6.0.2" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="6.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="Examples\**">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Resources\icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
 </Project>
