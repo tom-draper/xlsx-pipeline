@@ -1,10 +1,5 @@
-# XLSX Pipeline
 
-Automate your local .xlsx files.
-
-<p align="center">
-    <img height="365" alt="Diagram" src="https://github.com/user-attachments/assets/4ca8b40d-44e8-4536-a5c3-032df0afa6db" />
-</p>
+<img width="1290" height="786" alt="XLSX-Pipeline-07-23-2025_04_57_PM (3)" src="https://github.com/user-attachments/assets/7aec1efa-4847-4783-919a-778eb46a1787" />
 
 XLSX Pipeline runs as a background service processing automated workflows (pipelines) on your sheets.
 
