@@ -7,6 +7,7 @@ public class Pipeline
     public required string PipelineName { get; set; }
     public required Trigger Trigger { get; set; }
     public required List<ActionBase> Actions { get; set; }
+    public bool Disabled { get; set; } = false;
 }
 
 public class Trigger

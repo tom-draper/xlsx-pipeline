@@ -5,22 +5,40 @@ namespace XLSXPipeline.Services;
 public interface ISchedulerService
 {
     Task RunSchedulerAsync(List<ScheduledPipeline> scheduledPipelines, CancellationToken stoppingToken);
+    Task ReloadScheduledPipelinesAsync(List<ScheduledPipeline> pipelines);
 }
 
-public class SchedulerService(ILogger<SchedulerService> logger, IPipelineExecutor pipelineExecutor, ITriggerParser triggerParser) : ISchedulerService
+public class SchedulerService(
+    ILogger<SchedulerService> logger,
+    IPipelineExecutor pipelineExecutor,
+    ITriggerParser triggerParser,
+    IPipelineDisableService completionService) : ISchedulerService
 {
     private readonly ILogger<SchedulerService> _logger = logger;
     private readonly IPipelineExecutor _pipelineExecutor = pipelineExecutor;
     private readonly ITriggerParser _triggerParser = triggerParser;
+    private readonly IPipelineDisableService _completionService = completionService;
+
+    private List<ScheduledPipeline> _currentPipelines = [];
+    private readonly object _pipelinesLock = new();
 
     public async Task RunSchedulerAsync(List<ScheduledPipeline> scheduledPipelines, CancellationToken stoppingToken)
     {
+        lock (_pipelinesLock)
+            _currentPipelines = scheduledPipelines;
+
         _logger.LogInformation("Starting scheduler with {ScheduledCount} scheduled pipeline(s).", scheduledPipelines.Count);
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            List<ScheduledPipeline> pipelinesToCheck;
+
+            // Get a snapshot of current pipelines to avoid collection modification issues
+            lock (_pipelinesLock)
+                pipelinesToCheck = _currentPipelines.ToList();
+
             var now = DateTime.Now;
-            var pipelinesToRun = scheduledPipelines.Where(p => p.NextRunTime <= now).ToList();
+            var pipelinesToRun = pipelinesToCheck.Where(p => p.NextRunTime <= now).ToList();
 
             foreach (var scheduledPipeline in pipelinesToRun)
             {
@@ -28,19 +46,24 @@ public class SchedulerService(ILogger<SchedulerService> logger, IPipelineExecuto
                 {
                     await _pipelineExecutor.ExecutePipelineAsync(scheduledPipeline.Pipeline);
 
-                    // Update next run time for recurring pipelines
-                    if (scheduledPipeline.ScheduleType != ScheduleType.Once)
+                    // Mark "Once" pipelines as completed in their JSON file
+                    if (scheduledPipeline.ScheduleType == ScheduleType.Once)
                     {
-                        UpdateNextRunTime(scheduledPipeline, now);
-                        _logger.LogInformation("Pipeline '{FileName}' rescheduled for: {NextRunTime}",
-                            scheduledPipeline.Pipeline.PipelineName, scheduledPipeline.NextRunTime);
+                        await _completionService.MarkPipelineAsDisabled(scheduledPipeline.FilePath);
+
+                        // Remove from current pipelines list
+                        lock (_pipelinesLock)
+                            _currentPipelines.Remove(scheduledPipeline);
+
+                        _logger.LogInformation("One-time pipeline '{PipelineName}' completed and marked as disabled.",
+                            scheduledPipeline.Pipeline.PipelineName);
                     }
                     else
                     {
-                        // Remove one-time pipelines after execution
-                        scheduledPipelines.Remove(scheduledPipeline);
-                        _logger.LogInformation("One-time pipeline '{FileName}' completed.",
-                            scheduledPipeline.Pipeline.PipelineName);
+                        // Update next run time for recurring pipelines
+                        UpdateNextRunTime(scheduledPipeline, now);
+                        _logger.LogInformation("Pipeline '{PipelineName}' rescheduled for: {NextRunTime}",
+                            scheduledPipeline.Pipeline.PipelineName, scheduledPipeline.NextRunTime);
                     }
                 }
                 catch (Exception ex)
@@ -53,6 +76,49 @@ public class SchedulerService(ILogger<SchedulerService> logger, IPipelineExecuto
             // Wait 1 second before checking again
             await Task.Delay(1000, stoppingToken);
         }
+    }
+
+    public async Task ReloadScheduledPipelinesAsync(List<ScheduledPipeline> pipelines)
+    {
+        _logger.LogInformation("Reloading scheduled pipelines. New count: {Count}", pipelines.Count);
+
+        lock (_pipelinesLock)
+        {
+            // Preserve next run times for pipelines that haven't changed
+            var updatedPipelines = new List<ScheduledPipeline>();
+
+            foreach (var newPipeline in pipelines)
+            {
+                // Try to find existing pipeline with same file path
+                var existingPipeline = _currentPipelines
+                    .FirstOrDefault(p => p.FilePath.Equals(newPipeline.FilePath, StringComparison.OrdinalIgnoreCase));
+
+                if (existingPipeline != null &&
+                    existingPipeline.ScheduleType == newPipeline.ScheduleType &&
+                    PipelineContentUnchanged(existingPipeline, newPipeline))
+                {
+                    // Keep the existing next run time if pipeline hasn't changed
+                    newPipeline.NextRunTime = existingPipeline.NextRunTime;
+                    _logger.LogDebug("Preserved next run time for unchanged pipeline: {PipelineName}",
+                        newPipeline.Pipeline.PipelineName);
+                }
+
+                updatedPipelines.Add(newPipeline);
+            }
+
+            _currentPipelines = updatedPipelines;
+        }
+
+        _logger.LogInformation("Pipeline reload completed successfully.");
+        await Task.CompletedTask;
+    }
+
+    private static bool PipelineContentUnchanged(ScheduledPipeline existing, ScheduledPipeline updated)
+    {
+        // Simple comparison - you could make this more sophisticated
+        return existing.Pipeline.PipelineName == updated.Pipeline.PipelineName &&
+               existing.CronExpression == updated.CronExpression &&
+               existing.RecurrenceInterval == updated.RecurrenceInterval;
     }
 
     private void UpdateNextRunTime(ScheduledPipeline scheduledPipeline, DateTime now)

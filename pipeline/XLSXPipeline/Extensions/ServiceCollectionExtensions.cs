@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddSingleton<IFileWatcherService, FileWatcherService>();
         services.AddSingleton<IPipelineExecutor, PipelineExecutor>();
+        services.AddSingleton<IPipelineDisableService, PipelineDisableService>();
 
         return services;
     }

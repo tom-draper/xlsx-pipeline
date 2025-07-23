@@ -8,10 +8,14 @@ public interface IPipelineLoader
     Task<(List<ScheduledPipeline>, List<FileWatcherPipeline>)> LoadPipelineFilesAsync(CancellationToken stoppingToken);
 }
 
-public class PipelineLoader(ILogger<PipelineLoader> logger, IScheduledPipelineFactory scheduledPipelineFactory) : IPipelineLoader
+public class PipelineLoader(
+    ILogger<PipelineLoader> logger,
+    IScheduledPipelineFactory scheduledPipelineFactory,
+    IPipelineDisableService completionService) : IPipelineLoader
 {
     private readonly ILogger<PipelineLoader> _logger = logger;
     private readonly IScheduledPipelineFactory _scheduledPipelineFactory = scheduledPipelineFactory;
+    private readonly IPipelineDisableService _completionService = completionService;
     private readonly string _pipelinesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Pipelines");
 
     public async Task<(List<ScheduledPipeline>, List<FileWatcherPipeline>)> LoadPipelineFilesAsync(CancellationToken stoppingToken)
@@ -47,6 +51,18 @@ public class PipelineLoader(ILogger<PipelineLoader> logger, IScheduledPipelineFa
                     if (pipeline != null)
                     {
                         var triggerType = pipeline.Trigger.Type?.ToLowerInvariant() ?? TriggerTypes.Once;
+
+
+                        // Check if this is a "Once" pipeline that has already been completed
+                        if (triggerType == TriggerTypes.Once)
+                        {
+                            var isDisabled = await _completionService.IsPipelineDisabledAsync(filePath);
+                            if (isDisabled)
+                            {
+                                _logger.LogInformation("Skipping disabled pipeline: {FileName}", Path.GetFileName(filePath));
+                                continue;
+                            }
+                        }
 
                         if (triggerType == TriggerTypes.OnChange || triggerType == TriggerTypes.OnNewFile)
                         {

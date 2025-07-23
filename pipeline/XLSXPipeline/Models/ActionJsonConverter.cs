@@ -20,7 +20,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
 
         return type switch
         {
-            // File Actions
+            // File actions
             "ConvertToCSV" => JsonSerializer.Deserialize<ConvertToCSVAction>(jsonDoc.RootElement.GetRawText(), options),
             "CopyFile" => JsonSerializer.Deserialize<CopyFileAction>(jsonDoc.RootElement.GetRawText(), options),
             "MoveFile" => JsonSerializer.Deserialize<MoveFileAction>(jsonDoc.RootElement.GetRawText(), options),
@@ -29,7 +29,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "RenameFile" => JsonSerializer.Deserialize<RenameFileAction>(jsonDoc.RootElement.GetRawText(), options),
             "UnprotectFileAction" => JsonSerializer.Deserialize<UnprotectFileAction>(jsonDoc.RootElement.GetRawText(), options),
 
-            // Worksheet Actions
+            // Worksheet actions
             "AddSheet" => JsonSerializer.Deserialize<AddSheetAction>(jsonDoc.RootElement.GetRawText(), options),
             "CopySheet" => JsonSerializer.Deserialize<CopySheetAction>(jsonDoc.RootElement.GetRawText(), options),
             "DeleteHiddenSheets" => JsonSerializer.Deserialize<DeleteHiddenSheetsAction>(jsonDoc.RootElement.GetRawText(), options),
@@ -39,7 +39,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "RenameSheet" => JsonSerializer.Deserialize<RenameSheetAction>(jsonDoc.RootElement.GetRawText(), options),
             "UnprotectSheet" => JsonSerializer.Deserialize<UnprotectSheetAction>(jsonDoc.RootElement.GetRawText(), options),
 
-            // Data Actions
+            // Data actions
             "CopyColumn" => JsonSerializer.Deserialize<CopyColumnAction>(jsonDoc.RootElement.GetRawText(), options),
             "CopyRow" => JsonSerializer.Deserialize<CopyRowAction>(jsonDoc.RootElement.GetRawText(), options),
             "DeleteColumn" => JsonSerializer.Deserialize<DeleteColumnAction>(jsonDoc.RootElement.GetRawText(), options),
@@ -52,18 +52,18 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "MoveRow" => JsonSerializer.Deserialize<MoveRowAction>(jsonDoc.RootElement.GetRawText(), options),
             "SortData" => JsonSerializer.Deserialize<SortDataAction>(jsonDoc.RootElement.GetRawText(), options),
 
-            // Time Actions
+            // Time actions
             "Wait" => JsonSerializer.Deserialize<WaitAction>(jsonDoc.RootElement.GetRawText(), options),
 
-            // Formatting Actions
+            // Formatting actions
             "FormatCells" => JsonSerializer.Deserialize<FormatCellsAction>(jsonDoc.RootElement.GetRawText(), options),
 
-            // Cell Actions
+            // Cell actions
             "SetCellValue" => JsonSerializer.Deserialize<SetCellValueAction>(jsonDoc.RootElement.GetRawText(), options),
             "ApplyFormula" => JsonSerializer.Deserialize<ApplyFormulaAction>(jsonDoc.RootElement.GetRawText(), options),
             "ValidateData" => JsonSerializer.Deserialize<ValidateDataAction>(jsonDoc.RootElement.GetRawText(), options),
 
-            // Advanced Actions
+            // Advanced actions
             "CreatePivotTable" => JsonSerializer.Deserialize<CreatePivotTableAction>(jsonDoc.RootElement.GetRawText(), options),
 
             _ => throw new NotSupportedException($"Unknown action type: {type}")
