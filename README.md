@@ -1,6 +1,9 @@
 
 <img width="1290" height="786" alt="XLSX-Pipeline-07-23-2025_04_57_PM (3)" src="https://github.com/user-attachments/assets/7aec1efa-4847-4783-919a-778eb46a1787" />
 
+<br>
+<br>
+
 XLSX Pipeline runs as a background service processing automated workflows (pipelines) on your sheets.
 
 Pipelines like the one below are defined using a flexible DML in JSON.
