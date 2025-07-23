@@ -1,4 +1,4 @@
-name: Release XLSX Pipeline
+name: Create Release
 
 on:
   push:
