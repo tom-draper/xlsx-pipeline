@@ -1,0 +1,79 @@
+---
+import "../styles/global.css";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <main>
+    <div class="pt-18">
+      <h2>Triggers</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Trigger</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Example Trigger</td>
+            <td>This is an example description.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Actions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Example Action</td>
+            <td>This is an example description.</td>
+          </tr>
+          <tr>
+            <td>Example Action</td>
+            <td>This is an example description.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1.5rem;
+    max-width: 1000px;
+  }
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 800;
+    margin: 0;
+  }
+  h2 {
+    font-size: 5rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+  }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  tr {
+    background: white;
+  }
+</style>
