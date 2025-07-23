@@ -101,6 +101,42 @@ jobs:
           zip -r "${{ github.workspace }}/${ZIP_FILE_NAME}" .
           cd -
 
+      # --- Build for macOS x64 (Single Executable, Framework-Dependent) ---
+      - name: Build for macOS x64
+        run: |
+          VERSION=${{ steps.vars.outputs.version }}
+          RID="osx-x64"
+          TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+
+          if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
+          if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
+
+          ZIP_FILE_PREFIX="xlsx-pipeline"
+          ZIP_FILE_NAME="${ZIP_FILE_PREFIX}-${VERSION}-${RID}.zip"
+
+          cd "${TEMP_PUBLISH_DIR}"
+          zip -r "${{ github.workspace }}/${ZIP_FILE_NAME}" .
+          cd -
+
+      # --- Build for macOS arm64 (Single Executable, Framework-Dependent) ---
+      - name: Build for macOS arm64
+        run: |
+          VERSION=${{ steps.vars.outputs.version }}
+          RID="osx-arm64"
+          TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+
+          if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
+          if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
+
+          ZIP_FILE_PREFIX="xlsx-pipeline"
+          ZIP_FILE_NAME="${ZIP_FILE_PREFIX}-${VERSION}-${RID}.zip"
+
+          cd "${TEMP_PUBLISH_DIR}"
+          zip -r "${{ github.workspace }}/${ZIP_FILE_NAME}" .
+          cd -
+
       - name: Create GitHub Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -109,6 +145,8 @@ jobs:
             xlsx-pipeline-${{ steps.vars.outputs.version }}-linux-arm64.zip
             xlsx-pipeline-${{ steps.vars.outputs.version }}-win-x64.zip
             xlsx-pipeline-${{ steps.vars.outputs.version }}-win-arm64.zip
+            xlsx-pipeline-${{ steps.vars.outputs.version }}-osx-x64.zip
+            xlsx-pipeline-${{ steps.vars.outputs.version }}-osx-arm64.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
