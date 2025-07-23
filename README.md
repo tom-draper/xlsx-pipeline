@@ -2,7 +2,6 @@
 <img width="1290" height="786" alt="xlsx pipeline" src="/website/src/assets/banner.png" />
 
 <br>
-<br>
 
 XLSX Pipeline runs as a background service processing automated workflows (pipelines) on your sheets.
 
