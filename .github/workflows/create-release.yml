@@ -1,0 +1,56 @@
+name: Build and Release XLSX Pipeline
+
+on:
+  workflow_dispatch:
+    tags:
+      - 'v*'  # Triggers on tags like v1.0.0
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    env:
+      PROJECT_PATH: ./YourProject.csproj  # <-- Change this
+      OUTPUT_DIR: ./publish
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Extract version from tag
+        id: vars
+        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build for win-x64
+        run: |
+          VERSION=${{ steps.vars.outputs.version }}
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r win-x64 --self-contained false -o ${{ env.OUTPUT_DIR }}/x64
+          cd ${{ env.OUTPUT_DIR }}/x64
+          zip -r ../../xlsx-pipeline-${VERSION}-x64.zip .
+          cd -
+
+      - name: Build for win-arm64
+        run: |
+          VERSION=${{ steps.vars.outputs.version }}
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r win-arm64 --self-contained false -o ${{ env.OUTPUT_DIR }}/arm64
+          cd ${{ env.OUTPUT_DIR }}/arm64
+          zip -r ../../xlsx-pipeline-${VERSION}-arm64.zip .
+          cd -
+
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            xlsx-pipeline-${{ steps.vars.outputs.version }}-x64.zip
+            xlsx-pipeline-${{ steps.vars.outputs.version }}-arm64.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
