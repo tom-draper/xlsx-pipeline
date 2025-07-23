@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_PATH: ./YourProject.csproj  # <-- Change this
+      PROJECT_PATH: ./pipeline/XLSXPipeline/XLSXPipeline.csproj
       OUTPUT_DIR: ./publish
 
     steps:
