@@ -1,7 +1,7 @@
 name: Build and Release XLSX Pipeline
 
 on:
-  workflow_dispatch:
+  push:
     tags:
       - 'v*'  # Triggers on tags like v1.0.0
 
