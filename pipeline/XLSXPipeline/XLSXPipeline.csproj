@@ -30,6 +30,12 @@
 	  <Deterministic>False</Deterministic>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugType>None</DebugType>
+		<DebugSymbols>False</DebugSymbols>
+		<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Compile Remove="Rules\**" />
 		<Content Remove="Rules\**" />
