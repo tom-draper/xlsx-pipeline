@@ -6,39 +6,16 @@ public class CopySheetAction : ActionBase
 {
     public required string SourceSheetName { get; set; }
     public required string NewSheetName { get; set; }
-    public string? DestinationFilePath { get; set; } // Optional
+    public string? TargetFilePath { get; set; }
 
-    protected override Task ExecuteInternalAsync(string sourceFilePath)
+    protected override Task ExecuteInternalAsync(string filePath)
     {
         try
         {
-            using var sourceWorkbook = new XLWorkbook(sourceFilePath);
-            var sourceSheet = sourceWorkbook.Worksheet(SourceSheetName);
-
-            if (sourceSheet == null)
-                throw new ArgumentException($"Worksheet '{SourceSheetName}' not found in '{sourceFilePath}'.");
-
-            if (string.IsNullOrWhiteSpace(DestinationFilePath) || DestinationFilePath == sourceFilePath)
-            {
-                // Copy within the same workbook
-                sourceSheet.CopyTo(NewSheetName);
-                sourceWorkbook.Save();
-            }
+            if (TargetFilePath == null || TargetFilePath == filePath)
+                CopySheetWithinSameWorkbook(filePath);
             else
-            {
-                // Copy to a different workbook
-                using var destWorkbook = System.IO.File.Exists(DestinationFilePath)
-                    ? new XLWorkbook(DestinationFilePath)
-                    : new XLWorkbook();
-
-                // Prevent name collision
-                if (destWorkbook.Worksheets.Any(ws => ws.Name == NewSheetName))
-                    throw new ArgumentException($"Worksheet '{NewSheetName}' already exists in destination workbook.");
-
-                // Add a copy of the sheet to the destination workbook
-                sourceSheet.CopyTo(destWorkbook, NewSheetName);
-                destWorkbook.SaveAs(DestinationFilePath);
-            }
+                CopySheetToDifferentWorkbook(filePath);
 
             return Task.CompletedTask;
         }
@@ -46,5 +23,49 @@ public class CopySheetAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private void CopySheetWithinSameWorkbook(string filePath)
+    {
+        using var workbook = new XLWorkbook(filePath);
+
+        var sourceWorksheet = GetWorksheet(workbook, SourceSheetName);
+        ValidateNewSheetName(workbook, NewSheetName);
+
+        sourceWorksheet.CopyTo(NewSheetName);
+        workbook.Save();
+    }
+
+    private void CopySheetToDifferentWorkbook(string filePath)
+    {
+        using var sourceWorkbook = new XLWorkbook(filePath);
+        using var targetWorkbook = LoadOrCreateTargetWorkbook(TargetFilePath!);
+
+        var sourceWorksheet = GetWorksheet(sourceWorkbook, SourceSheetName);
+        ValidateNewSheetName(targetWorkbook, NewSheetName);
+
+        sourceWorksheet.CopyTo(targetWorkbook, NewSheetName);
+        targetWorkbook.SaveAs(TargetFilePath!);
+    }
+
+    private static XLWorkbook LoadOrCreateTargetWorkbook(string targetFilePath)
+    {
+        return System.IO.File.Exists(targetFilePath)
+            ? new XLWorkbook(targetFilePath)
+            : new XLWorkbook();
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName)
+    {
+        var worksheet = workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
+        return worksheet;
+    }
+
+    private static void ValidateNewSheetName(XLWorkbook workbook, string newSheetName)
+    {
+        if (workbook.Worksheets.Any(ws => ws.Name == newSheetName))
+            throw new InvalidOperationException($"Sheet '{newSheetName}' already exists in the target workbook.");
     }
 }

@@ -13,11 +13,8 @@ public class DeleteRowAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = string.IsNullOrEmpty(SheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(SheetName);
-
-            worksheet.Rows(RowNumber, RowNumber + Count - 1).Delete();
+            var worksheet = GetWorksheet(workbook, SheetName);
+            DeleteRows(worksheet);
             workbook.Save();
             return Task.CompletedTask;
         }
@@ -25,5 +22,59 @@ public class DeleteRowAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
+    {
+        if (string.IsNullOrEmpty(sheetName))
+        {
+            if (workbook.Worksheets.Count == 0)
+                throw new InvalidOperationException("No worksheets found in the workbook.");
+            return workbook.Worksheets.First();
+        }
+
+        var worksheet = workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Worksheet '{sheetName}' does not exist.");
+
+        return worksheet;
+    }
+
+    private void DeleteRows(IXLWorksheet worksheet)
+    {
+        ValidateInputs();
+        ValidateRowRange(worksheet);
+        PerformRowDeletion(worksheet);
+    }
+
+    private void ValidateInputs()
+    {
+        if (RowNumber < 1)
+            throw new ArgumentOutOfRangeException(nameof(RowNumber), "Row number must be greater than 0.");
+
+        if (Count < 1)
+            throw new ArgumentOutOfRangeException(nameof(Count), "Count must be greater than 0.");
+    }
+
+    private void ValidateRowRange(IXLWorksheet worksheet)
+    {
+        int maxRow = XLHelper.MaxRowNumber;
+
+        if (RowNumber + Count - 1 > maxRow)
+            throw new ArgumentOutOfRangeException(nameof(Count),
+                $"Cannot delete {Count} rows starting from row {RowNumber}. " +
+                $"This would exceed the maximum row limit of {maxRow}.");
+
+        // Check if we're trying to delete more rows than exist with data
+        var lastUsedRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+        if (lastUsedRow > 0 && RowNumber > lastUsedRow)
+            throw new InvalidOperationException(
+                $"Cannot delete row {RowNumber}. The worksheet only has data up to row {lastUsedRow}.");
+    }
+
+    private void PerformRowDeletion(IXLWorksheet worksheet)
+    {
+        int endRowNumber = RowNumber + Count - 1;
+        worksheet.Rows(RowNumber, endRowNumber).Delete();
     }
 }

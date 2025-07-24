@@ -12,8 +12,7 @@ public class AddSheetAction : ActionBase
         {
             using var workbook = new XLWorkbook(filePath);
 
-            if (workbook.Worksheets.Any(ws => ws.Name == SheetName))
-                throw new InvalidOperationException($"Sheet '{SheetName}' already exists.");
+            ValidateNewSheetName(workbook, SheetName);
 
             workbook.AddWorksheet(SheetName);
             workbook.Save();
@@ -24,5 +23,11 @@ public class AddSheetAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private static void ValidateNewSheetName(XLWorkbook workbook, string newSheetName)
+    {
+        if (workbook.Worksheets.Any(ws => ws.Name == newSheetName))
+            throw new InvalidOperationException($"Sheet '{newSheetName}' already exists in the target workbook.");
     }
 }

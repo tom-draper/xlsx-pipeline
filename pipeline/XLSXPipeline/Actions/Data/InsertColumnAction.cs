@@ -13,12 +13,8 @@ public class InsertColumnAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = string.IsNullOrEmpty(SheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(SheetName);
-
-            worksheet.Column(ColumnName).InsertColumnsAfter(Count);
-
+            var worksheet = GetWorksheet(workbook, SheetName);
+            InsertColumns(worksheet);
             workbook.Save();
             return Task.CompletedTask;
         }
@@ -26,5 +22,67 @@ public class InsertColumnAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
+    {
+        if (string.IsNullOrEmpty(sheetName))
+        {
+            if (workbook.Worksheets.Count == 0)
+                throw new InvalidOperationException("No worksheets found in the workbook.");
+            return workbook.Worksheets.First();
+        }
+
+        var worksheet = workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Worksheet '{sheetName}' does not exist.");
+
+        return worksheet;
+    }
+
+    private void InsertColumns(IXLWorksheet worksheet)
+    {
+        ValidateInputs();
+        var targetColumn = GetTargetColumn(worksheet);
+        ValidateColumnInsertion(targetColumn);
+        PerformColumnInsertion(targetColumn);
+    }
+
+    private void ValidateInputs()
+    {
+        if (string.IsNullOrWhiteSpace(ColumnName))
+            throw new ArgumentException("Column name cannot be null or empty.", nameof(ColumnName));
+
+        if (Count < 1)
+            throw new ArgumentOutOfRangeException(nameof(Count), "Count must be greater than 0.");
+    }
+
+    private IXLColumn GetTargetColumn(IXLWorksheet worksheet)
+    {
+        try
+        {
+            return worksheet.Column(ColumnName);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Column '{ColumnName}' does not exist or is invalid.", ex);
+        }
+    }
+
+    private void ValidateColumnInsertion(IXLColumn targetColumn)
+    {
+        int maxColumn = XLHelper.MaxColumnNumber;
+        int targetColumnNumber = targetColumn.ColumnNumber();
+
+        // Check if inserting columns would exceed the maximum column limit
+        if (targetColumnNumber + Count > maxColumn)
+            throw new ArgumentOutOfRangeException(nameof(Count),
+                $"Cannot insert {Count} columns after column {targetColumnNumber}. " +
+                $"This would exceed the maximum column limit of {maxColumn}.");
+    }
+
+    private void PerformColumnInsertion(IXLColumn targetColumn)
+    {
+        targetColumn.InsertColumnsAfter(Count);
     }
 }

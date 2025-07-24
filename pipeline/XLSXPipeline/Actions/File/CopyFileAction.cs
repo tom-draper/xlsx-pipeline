@@ -129,7 +129,7 @@ public class CopyFileAction : ActionBase
         }
     }
 
-    private string GetAvailableFileName(string destinationFilePath)
+    private static string GetAvailableFileName(string destinationFilePath)
     {
         var directory = Path.GetDirectoryName(destinationFilePath)!;
         var originalFileName = Path.GetFileNameWithoutExtension(destinationFilePath);

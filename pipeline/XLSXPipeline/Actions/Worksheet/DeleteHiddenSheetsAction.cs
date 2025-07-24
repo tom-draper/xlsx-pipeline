@@ -10,10 +10,9 @@ public class DeleteHiddenSheetsAction : ActionBase
         {
             using var workbook = new XLWorkbook(filePath);
 
-            // Find and delete all hidden sheets
-            var hiddenSheets = workbook.Worksheets
-                .Where(ws => ws.Visibility != XLWorksheetVisibility.Visible)
-                .ToList(); // ToList() to avoid modifying during iteration
+            var hiddenSheets = GetHiddenSheets(workbook);
+            if (hiddenSheets.Count == 0)
+                return Task.CompletedTask; // No hidden sheets to delete
 
             foreach (var sheet in hiddenSheets)
                 sheet.Delete();
@@ -26,5 +25,10 @@ public class DeleteHiddenSheetsAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private static List<IXLWorksheet> GetHiddenSheets(XLWorkbook workbook)
+    {
+        return [.. workbook.Worksheets.Where(ws => ws.Visibility != XLWorksheetVisibility.Visible)];
     }
 }

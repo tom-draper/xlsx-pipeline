@@ -16,38 +16,11 @@ public class CopyColumnAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var sourceSheet = string.IsNullOrEmpty(SheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(SheetName);
 
-            var destSheet = string.IsNullOrEmpty(DestinationSheetName)
-                ? sourceSheet
-                : workbook.Worksheet(DestinationSheetName);
+            var sourceSheet = GetSourceSheet(workbook, SheetName);
+            var destSheet = GetOrCreateDestinationSheet(workbook, DestinationSheetName, sourceSheet);
 
-            // If destination sheet doesn't exist, create it
-            if (destSheet == null && !string.IsNullOrEmpty(DestinationSheetName))
-                destSheet = workbook.Worksheets.Add(DestinationSheetName);
-
-            if (destSheet == null)
-                throw new InvalidOperationException("Destination sheet is null.");
-
-            var sourceColumnNumber = sourceSheet.Column(SourceColumn).ColumnNumber();
-            var destColumnNumber = destSheet.Column(DestinationColumn).ColumnNumber();
-
-            // If we need to insert columns at destination
-            if (InsertColumns && destSheet != null)
-                destSheet.Column(destColumnNumber).InsertColumnsAfter(Count);
-
-            if (destSheet == null)
-                throw new InvalidOperationException("Destination sheet is null.");
-
-            // Copy the columns
-            for (int i = 0; i < Count; i++)
-            {
-                var sourceCol = sourceSheet.Column(sourceColumnNumber + i);
-                var destCol = destSheet.Column(destColumnNumber + i);
-                sourceCol.CopyTo(destCol);
-            }
+            CopyColumns(sourceSheet, destSheet);
 
             workbook.Save();
             return Task.CompletedTask;
@@ -55,6 +28,84 @@ public class CopyColumnAction : ActionBase
         catch (Exception ex)
         {
             return Task.FromException(ex);
+        }
+    }
+
+    private static IXLWorksheet GetSourceSheet(XLWorkbook workbook, string? sheetName)
+    {
+        if (string.IsNullOrEmpty(sheetName))
+        {
+            if (workbook.Worksheets.Count == 0)
+                throw new InvalidOperationException("No worksheets found in the workbook.");
+            return workbook.Worksheets.First();
+        }
+
+        var sheet = workbook.Worksheet(sheetName);
+        if (sheet == null)
+            throw new InvalidOperationException($"Source sheet '{sheetName}' does not exist.");
+
+        return sheet;
+    }
+
+    private static IXLWorksheet GetOrCreateDestinationSheet(XLWorkbook workbook, string? destinationSheetName, IXLWorksheet sourceSheet)
+    {
+        if (string.IsNullOrEmpty(destinationSheetName))
+            return sourceSheet;
+
+        var destSheet = workbook.Worksheet(destinationSheetName);
+        if (destSheet == null)
+            destSheet = workbook.Worksheets.Add(destinationSheetName);
+
+        return destSheet;
+    }
+
+    private void CopyColumns(IXLWorksheet sourceSheet, IXLWorksheet destSheet)
+    {
+        var sourceColumnNumber = GetColumnNumber(sourceSheet, SourceColumn, "Source");
+        var destColumnNumber = GetColumnNumber(destSheet, DestinationColumn, "Destination");
+
+        ValidateColumnRange(sourceSheet, sourceColumnNumber, Count, "source");
+
+        if (InsertColumns)
+            InsertColumnsAtDestination(destSheet, destColumnNumber);
+
+        CopyColumnRange(sourceSheet, destSheet, sourceColumnNumber, destColumnNumber);
+    }
+
+    private static int GetColumnNumber(IXLWorksheet sheet, string columnReference, string columnType)
+    {
+        try
+        {
+            return sheet.Column(columnReference).ColumnNumber();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"{columnType} column '{columnReference}' is not valid.");
+        }
+    }
+
+    private static void ValidateColumnRange(IXLWorksheet sheet, int startColumn, int count, string sheetType)
+    {
+        int maxColumn = XLHelper.MaxColumnNumber;
+        if (startColumn + count - 1 > maxColumn)
+            throw new ArgumentOutOfRangeException(nameof(count),
+                $"Cannot copy {count} columns starting from column {startColumn} in {sheetType} sheet. " +
+                $"This would exceed the maximum column limit of {maxColumn}.");
+    }
+
+    private void InsertColumnsAtDestination(IXLWorksheet destSheet, int destColumnNumber)
+    {
+        if (Count > 1)
+            destSheet.Column(destColumnNumber).InsertColumnsAfter(Count - 1);
+    }
+
+    private void CopyColumnRange(IXLWorksheet sourceSheet, IXLWorksheet destSheet, int sourceColumnNumber, int destColumnNumber)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            var sourceCol = sourceSheet.Column(sourceColumnNumber + i);
+            var destCol = destSheet.Column(destColumnNumber + i);
+            sourceCol.CopyTo(destCol);
         }
     }
 }

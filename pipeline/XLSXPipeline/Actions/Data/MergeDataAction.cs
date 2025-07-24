@@ -17,21 +17,10 @@ public class MergeDataAction : ActionBase
             using var destWorkbook = new XLWorkbook(filePath);
             using var sourceWorkbook = new XLWorkbook(SourceFilePath);
 
-            var sourceSheet = string.IsNullOrEmpty(SourceSheetName)
-                ? sourceWorkbook.Worksheets.First()
-                : sourceWorkbook.Worksheet(SourceSheetName);
+            var sourceSheet = GetSourceSheet(sourceWorkbook, SourceSheetName);
+            var destSheet = GetDestinationSheet(destWorkbook, DestinationSheetName);
 
-            var destSheet = string.IsNullOrEmpty(DestinationSheetName)
-                ? destWorkbook.Worksheets.First()
-                : destWorkbook.Worksheet(DestinationSheetName);
-
-            var usedRange = sourceSheet.RangeUsed();
-            if (usedRange != null)
-            {
-                var startRow = IncludeHeaders ? 1 : 2;
-                var dataRange = sourceSheet.Range(startRow, 1, usedRange.LastRow().RowNumber(), usedRange.LastColumn().ColumnNumber());
-                dataRange.CopyTo(destSheet.Cell(DestinationCell));
-            }
+            MergeData(sourceSheet, destSheet);
 
             destWorkbook.Save();
             return Task.CompletedTask;
@@ -39,6 +28,142 @@ public class MergeDataAction : ActionBase
         catch (Exception ex)
         {
             return Task.FromException(ex);
+        }
+    }
+
+    private static IXLWorksheet GetSourceSheet(XLWorkbook sourceWorkbook, string? sourceSheetName)
+    {
+        if (string.IsNullOrEmpty(sourceSheetName))
+        {
+            if (sourceWorkbook.Worksheets.Count == 0)
+                throw new InvalidOperationException("No worksheets found in the source workbook.");
+            return sourceWorkbook.Worksheets.First();
+        }
+
+        var sheet = sourceWorkbook.Worksheet(sourceSheetName);
+        if (sheet == null)
+            throw new InvalidOperationException($"Source sheet '{sourceSheetName}' does not exist.");
+
+        return sheet;
+    }
+
+    private static IXLWorksheet GetDestinationSheet(XLWorkbook destWorkbook, string? destinationSheetName)
+    {
+        if (string.IsNullOrEmpty(destinationSheetName))
+        {
+            if (destWorkbook.Worksheets.Count == 0)
+                throw new InvalidOperationException("No worksheets found in the destination workbook.");
+            return destWorkbook.Worksheets.First();
+        }
+
+        var sheet = destWorkbook.Worksheet(destinationSheetName);
+        if (sheet == null)
+            throw new InvalidOperationException($"Destination sheet '{destinationSheetName}' does not exist.");
+
+        return sheet;
+    }
+
+    private void MergeData(IXLWorksheet sourceSheet, IXLWorksheet destSheet)
+    {
+        ValidateInputs();
+        var usedRange = GetSourceDataRange(sourceSheet);
+
+        if (usedRange == null)
+            return; // No data to merge
+
+        var dataRange = DetermineDataRange(sourceSheet, usedRange);
+        var destinationCell = GetDestinationCell(destSheet);
+
+        ValidateMergeOperation(dataRange, destinationCell, destSheet);
+        PerformDataMerge(dataRange, destinationCell);
+    }
+
+    private void ValidateInputs()
+    {
+        if (string.IsNullOrWhiteSpace(SourceFilePath))
+            throw new ArgumentException("Source file path cannot be null or empty.", nameof(SourceFilePath));
+
+        if (!System.IO.File.Exists(SourceFilePath))
+            throw new FileNotFoundException($"Source file '{SourceFilePath}' does not exist.", SourceFilePath);
+
+        if (string.IsNullOrWhiteSpace(DestinationCell))
+            throw new ArgumentException("Destination cell cannot be null or empty.", nameof(DestinationCell));
+    }
+
+    private static IXLRange? GetSourceDataRange(IXLWorksheet sourceSheet)
+    {
+        try
+        {
+            return sourceSheet.RangeUsed();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to determine used range in source sheet.", ex);
+        }
+    }
+
+    private IXLRange DetermineDataRange(IXLWorksheet sourceSheet, IXLRange usedRange)
+    {
+        var startRow = IncludeHeaders ? 1 : 2;
+        var endRow = usedRange.LastRow().RowNumber();
+        var endColumn = usedRange.LastColumn().ColumnNumber();
+
+        if (startRow > endRow)
+            throw new InvalidOperationException("No data rows available after excluding headers.");
+
+        try
+        {
+            return sourceSheet.Range(startRow, 1, endRow, endColumn);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to create data range from row {startRow} to row {endRow}.", ex);
+        }
+    }
+
+    private IXLCell GetDestinationCell(IXLWorksheet destSheet)
+    {
+        try
+        {
+            return destSheet.Cell(DestinationCell);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Invalid destination cell reference '{DestinationCell}'.", ex);
+        }
+    }
+
+    private static void ValidateMergeOperation(IXLRange dataRange, IXLCell destinationCell, IXLWorksheet destSheet)
+    {
+        int sourceRowCount = dataRange.RowCount();
+        int sourceColumnCount = dataRange.ColumnCount();
+        int destStartRow = destinationCell.Address.RowNumber;
+        int destStartColumn = destinationCell.Address.ColumnNumber;
+
+        // Check if the merge would exceed worksheet boundaries
+        int maxRow = XLHelper.MaxRowNumber;
+        int maxColumn = XLHelper.MaxColumnNumber;
+
+        if (destStartRow + sourceRowCount - 1 > maxRow)
+            throw new InvalidOperationException(
+                $"Cannot merge {sourceRowCount} rows starting at row {destStartRow}. " +
+                $"This would exceed the maximum row limit of {maxRow}.");
+
+        if (destStartColumn + sourceColumnCount - 1 > maxColumn)
+            throw new InvalidOperationException(
+                $"Cannot merge {sourceColumnCount} columns starting at column {destStartColumn}. " +
+                $"This would exceed the maximum column limit of {maxColumn}.");
+    }
+
+    private static void PerformDataMerge(IXLRange dataRange, IXLCell destinationCell)
+    {
+        try
+        {
+            dataRange.CopyTo(destinationCell);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to copy data from source to destination.", ex);
         }
     }
 }

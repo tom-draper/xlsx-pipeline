@@ -12,11 +12,10 @@ public class UnprotectSheetAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = string.IsNullOrEmpty(SheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(SheetName);
 
-            // Check if sheet is protected before attempting to unprotect
+            var worksheet =  GetWorksheet(workbook, SheetName);
+            ValidatePassword(Password);
+
             if (worksheet.Protection.IsProtected)
             {
                 worksheet.Unprotect(Password);
@@ -29,5 +28,21 @@ public class UnprotectSheetAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
+    {
+        var worksheet = string.IsNullOrEmpty(sheetName)
+                ? workbook.Worksheets.First()
+                : workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
+        return worksheet;
+    }
+
+    private static void ValidatePassword(string password)
+    {
+        if (string.IsNullOrEmpty(password))
+            throw new ArgumentException("Password cannot be null or empty.", nameof(password));
     }
 }

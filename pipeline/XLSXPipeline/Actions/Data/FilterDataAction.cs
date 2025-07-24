@@ -16,66 +16,135 @@ public class FilterDataAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = string.IsNullOrEmpty(SheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(SheetName);
-
-            var range = worksheet.Range(Range);
-            // Set AutoFilter on the specified range
-            var autoFilter = range.SetAutoFilter();
-
-            // Get the column to filter by its index
-            // Note: FilterColumnIndex is 1-based in ClosedXML
-            var filterColumn = autoFilter.Column(FilterColumnIndex);
-
-            switch (FilterOperator.ToLower())
-            {
-                case "equal":
-                    // ClosedXML's EqualTo method for string values is typically case-insensitive by default.
-                    filterColumn.EqualTo(FilterValue);
-                    break;
-                case "notequal":
-                    // ClosedXML's NotEqualTo method for string values is typically case-insensitive by default.
-                    filterColumn.NotEqualTo(FilterValue);
-                    break;
-                case "contains":
-                    // ClosedXML's Contains method for string values is typically case-insensitive by default.
-                    filterColumn.Contains(FilterValue);
-                    break;
-                case "startswith":
-                    // ClosedXML's BeginsWith method for string values is typically case-insensitive by default.
-                    filterColumn.BeginsWith(FilterValue);
-                    break;
-                case "endswith":
-                    // ClosedXML's EndsWith method for string values is typically case-insensitive by default.
-                    filterColumn.EndsWith(FilterValue);
-                    break;
-                case "greaterthan":
-                    if (double.TryParse(FilterValue, out double gtValue))
-                        filterColumn.GreaterThan(gtValue);
-                    else
-                        Console.WriteLine($"Warning: FilterValue '{FilterValue}' is not a valid number for GreaterThan comparison in column {FilterColumnIndex}.");
-                    break;
-                case "lessthan":
-                    if (double.TryParse(FilterValue, out double ltValue))
-                        filterColumn.LessThan(ltValue);
-                    else
-                        Console.WriteLine($"Warning: FilterValue '{FilterValue}' is not a valid number for LessThan comparison in column {FilterColumnIndex}.");
-                    break;
-                default:
-                    // For any unrecognized operator, default to Equal
-                    filterColumn.EqualTo(FilterValue);
-                    Console.WriteLine($"Warning: Unrecognized filter operator '{FilterOperator}'. Defaulting to 'Equal' for column {FilterColumnIndex}.");
-                    break;
-            }
-
+            var worksheet = GetWorksheet(workbook, SheetName);
+            ApplyFilter(worksheet);
             workbook.Save();
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error during Excel filtering in FilterDataAction: {ex.Message}");
             return Task.FromException(ex);
         }
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
+    {
+        if (string.IsNullOrEmpty(sheetName))
+        {
+            if (workbook.Worksheets.Count == 0)
+                throw new InvalidOperationException("No worksheets found in the workbook.");
+            return workbook.Worksheets.First();
+        }
+
+        var worksheet = workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Worksheet '{sheetName}' does not exist.");
+
+        return worksheet;
+    }
+
+    private void ApplyFilter(IXLWorksheet worksheet)
+    {
+        ValidateInputs();
+        var range = GetFilterRange(worksheet);
+        var autoFilter = SetupAutoFilter(range);
+        ApplyFilterCriteria(autoFilter);
+    }
+
+    private void ValidateInputs()
+    {
+        if (string.IsNullOrWhiteSpace(Range))
+            throw new ArgumentException("Range cannot be null or empty.", nameof(Range));
+
+        if (FilterColumnIndex < 1)
+            throw new ArgumentOutOfRangeException(nameof(FilterColumnIndex), "Filter column index must be greater than 0.");
+
+        if (string.IsNullOrEmpty(FilterValue))
+            throw new ArgumentException("Filter value cannot be null or empty.", nameof(FilterValue));
+
+        if (string.IsNullOrWhiteSpace(FilterOperator))
+            throw new ArgumentException("Filter operator cannot be null or empty.", nameof(FilterOperator));
+    }
+
+    private IXLRange GetFilterRange(IXLWorksheet worksheet)
+    {
+        try
+        {
+            return worksheet.Range(Range);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Invalid range '{Range}' specified.", ex);
+        }
+    }
+
+    private static IXLAutoFilter SetupAutoFilter(IXLRange range)
+    {
+        try
+        {
+            return range.SetAutoFilter();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to set auto filter on the specified range.", ex);
+        }
+    }
+
+    private void ApplyFilterCriteria(IXLAutoFilter autoFilter)
+    {
+        ValidateFilterColumn(autoFilter);
+        var filterColumn = autoFilter.Column(FilterColumnIndex);
+        ExecuteFilterOperation(filterColumn);
+    }
+
+    private void ValidateFilterColumn(IXLAutoFilter autoFilter)
+    {
+        // Check if the filter column index is within the range of available columns
+        var maxColumns = autoFilter.Range.ColumnCount();
+        if (FilterColumnIndex > maxColumns)
+            throw new ArgumentOutOfRangeException(nameof(FilterColumnIndex),
+                $"Filter column index {FilterColumnIndex} exceeds the number of columns in range ({maxColumns}).");
+    }
+
+    private void ExecuteFilterOperation(IXLFilterColumn filterColumn)
+    {
+        var operation = FilterOperator.ToLower().Trim();
+
+        switch (operation)
+        {
+            case "equal":
+                filterColumn.EqualTo(FilterValue);
+                break;
+            case "notequal":
+                filterColumn.NotEqualTo(FilterValue);
+                break;
+            case "contains":
+                filterColumn.Contains(FilterValue);
+                break;
+            case "startswith":
+                filterColumn.BeginsWith(FilterValue);
+                break;
+            case "endswith":
+                filterColumn.EndsWith(FilterValue);
+                break;
+            case "greaterthan":
+                ApplyNumericFilter(filterColumn, FilterValue, (col, val) => col.GreaterThan(val), "GreaterThan");
+                break;
+            case "lessthan":
+                ApplyNumericFilter(filterColumn, FilterValue, (col, val) => col.LessThan(val), "LessThan");
+                break;
+            default:
+                throw new ArgumentException($"Unrecognized filter operator '{FilterOperator}'. " +
+                    "Supported operators: Equal, NotEqual, Contains, StartsWith, EndsWith, GreaterThan, LessThan.",
+                    nameof(FilterOperator));
+        }
+    }
+
+    private void ApplyNumericFilter(IXLFilterColumn filterColumn, string value, Action<IXLFilterColumn, double> filterAction, string operatorName)
+    {
+        if (!double.TryParse(value, out double numericValue))
+            throw new ArgumentException($"FilterValue '{value}' is not a valid number for {operatorName} comparison.", nameof(FilterValue));
+
+        filterAction(filterColumn, numericValue);
     }
 }

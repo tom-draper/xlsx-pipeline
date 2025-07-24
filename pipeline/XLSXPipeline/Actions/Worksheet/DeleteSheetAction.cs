@@ -11,10 +11,8 @@ public class DeleteSheetAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = workbook.Worksheet(SheetName);
 
-            if (worksheet == null)
-                throw new InvalidOperationException($"Sheet '{SheetName}' does not exist.");
+            var worksheet = GetWorksheet(workbook, SheetName);
 
             worksheet.Delete();
             workbook.Save();
@@ -25,5 +23,13 @@ public class DeleteSheetAction : ActionBase
         {
             return Task.FromException(ex);
         }
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName)
+    {
+        var worksheet = workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
+        return worksheet;
     }
 }
