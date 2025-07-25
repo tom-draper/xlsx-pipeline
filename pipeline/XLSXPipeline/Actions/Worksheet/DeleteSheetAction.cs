@@ -13,6 +13,7 @@ public class DeleteSheetAction : ActionBase
             using var workbook = new XLWorkbook(filePath);
 
             var worksheet = GetWorksheet(workbook, SheetName);
+            ValidateNewSheetName(workbook, SheetName);
 
             worksheet.Delete();
             workbook.Save();
@@ -31,5 +32,11 @@ public class DeleteSheetAction : ActionBase
         if (worksheet == null)
             throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
         return worksheet;
+    }
+
+    private static void ValidateNewSheetName(XLWorkbook workbook, string newSheetName)
+    {
+        if (workbook.Worksheets.Any(ws => ws.Name == newSheetName))
+            throw new InvalidOperationException($"Sheet '{newSheetName}' already exists in the target workbook.");
     }
 }

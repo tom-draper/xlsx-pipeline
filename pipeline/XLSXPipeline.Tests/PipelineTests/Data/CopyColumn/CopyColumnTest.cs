@@ -1,4 +1,4 @@
-namespace XLSXPipeline.Tests.PipelineTests.CopyColumn;
+namespace XLSXPipeline.Tests.PipelineTests.Data.CopyColumn;
 
 [Collection("FileAccess")]
 public class CopyColumnTest : CopyColumnTestBase

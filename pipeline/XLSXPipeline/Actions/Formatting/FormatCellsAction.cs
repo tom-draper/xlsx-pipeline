@@ -16,42 +16,64 @@ public class FormatCellsAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
-            var worksheet = string.IsNullOrEmpty(SheetName)
+        using var workbook = new XLWorkbook(filePath);
+
+        var worksheet = GetWorksheet(workbook, SheetName);
+        var range = worksheet.Range(Range);
+
+        ApplyFormatting(range);
+
+        workbook.Save();
+
+        return Task.CompletedTask;
+    }
+
+    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
+    {
+        var worksheet = string.IsNullOrEmpty(sheetName)
                 ? workbook.Worksheets.First()
-                : workbook.Worksheet(SheetName);
+                : workbook.Worksheet(sheetName);
+        if (worksheet == null)
+            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
+        return worksheet;
+    }
 
-            var range = worksheet.Range(Range);
+    private void ApplyFormatting(IXLRange range)
+    {
+        ApplyNumberFormat(range);
+        ApplyFontFormatting(range);
+        ApplyColorFormatting(range);
+    }
 
-            if (!string.IsNullOrEmpty(NumberFormat))
-                range.Style.NumberFormat.Format = NumberFormat;
+    private void ApplyNumberFormat(IXLRange range)
+    {
+        if (!string.IsNullOrEmpty(NumberFormat))
+            range.Style.NumberFormat.Format = NumberFormat;
+    }
 
-            if (!string.IsNullOrEmpty(FontName))
-                range.Style.Font.FontName = FontName;
+    private void ApplyFontFormatting(IXLRange range)
+    {
+        var font = range.Style.Font;
 
-            if (FontSize > 0)
-                range.Style.Font.FontSize = FontSize;
+        if (!string.IsNullOrEmpty(FontName))
+            font.FontName = FontName;
 
-            if (Bold)
-                range.Style.Font.Bold = true;
+        if (FontSize > 0)
+            font.FontSize = FontSize;
 
-            if (Italic)
-                range.Style.Font.Italic = true;
+        if (Bold)
+            font.Bold = true;
 
-            if (!string.IsNullOrEmpty(BackgroundColor))
-                range.Style.Fill.BackgroundColor = XLColor.FromName(BackgroundColor);
+        if (Italic)
+            font.Italic = true;
 
-            if (!string.IsNullOrEmpty(FontColor))
-                range.Style.Font.FontColor = XLColor.FromName(FontColor);
+        if (!string.IsNullOrEmpty(FontColor))
+            font.FontColor = XLColor.FromName(FontColor);
+    }
 
-            workbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+    private void ApplyColorFormatting(IXLRange range)
+    {
+        if (!string.IsNullOrEmpty(BackgroundColor))
+            range.Style.Fill.BackgroundColor = XLColor.FromName(BackgroundColor);
     }
 }

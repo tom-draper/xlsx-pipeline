@@ -1,4 +1,4 @@
-namespace XLSXPipeline.Tests.PipelineTests.CopyFile;
+namespace XLSXPipeline.Tests.PipelineTests.File.CopyFile;
 
 [Collection("FileAccess")]
 public class CopyFileTest : CopyFileTestBase

@@ -1,10 +1,9 @@
-﻿
-using XLSXPipeline.Actions.File;
+﻿using XLSXPipeline.Actions.File;
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.RenameFile;
+namespace XLSXPipeline.Tests.PipelineTests.File.RenameFile;
 
-public abstract class RenameFileTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<RenameFileAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "RenameFile"), defaultPipelineName)
+public abstract class RenameFileTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<RenameFileAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "File", "RenameFile"), defaultPipelineName)
 {
     protected string GetNewName(string? pipelineName = null)
     {
@@ -68,7 +67,7 @@ public abstract class RenameFileTestBase(string? defaultPipelineName = null) : S
         var inputPath = GetInputPath(pipelineName);
         var outputPath = GetOutputPath(pipelineName);
 
-        if (!File.Exists(outputPath))
+        if (!System.IO.File.Exists(outputPath))
             throw new FileNotFoundException($"Renamed file should exist for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);
@@ -78,7 +77,7 @@ public abstract class RenameFileTestBase(string? defaultPipelineName = null) : S
         // Verify the original file no longer exists (unless it's the same path)
         if (!string.Equals(inputPath, outputPath, StringComparison.OrdinalIgnoreCase))
         {
-            if (File.Exists(inputPath))
+            if (System.IO.File.Exists(inputPath))
                 throw new InvalidOperationException($"Original file should no longer exist after rename for pipeline '{pipelineName}'.");
         }
     }

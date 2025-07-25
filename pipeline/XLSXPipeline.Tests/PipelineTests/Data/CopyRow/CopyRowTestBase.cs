@@ -2,9 +2,9 @@
 using XLSXPipeline.Actions.Data;
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.CopyRow;
+namespace XLSXPipeline.Tests.PipelineTests.Data.CopyRow;
 
-public abstract class CopyRowTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<CopyRowAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "CopyRow"), defaultPipelineName)
+public abstract class CopyRowTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<CopyRowAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "Data", "CopyRow"), defaultPipelineName)
 {
     protected override async Task ExecutePipelineTestAsync(string? pipelineName = null)
     {

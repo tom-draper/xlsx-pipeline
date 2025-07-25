@@ -1,4 +1,4 @@
-namespace XLSXPipeline.Tests.PipelineTests.MoveFile;
+namespace XLSXPipeline.Tests.PipelineTests.File.MoveFile;
 
 [Collection("FileAccess")]
 public class MoveFileTest : MoveFileTestBase

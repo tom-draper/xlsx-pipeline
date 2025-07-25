@@ -1,4 +1,5 @@
 ﻿namespace XLSXPipeline.Actions.File;
+
 public class CopyFileAction : ActionBase
 {
     public required string DestinationPath { get; set; }
@@ -27,106 +28,127 @@ public class CopyFileAction : ActionBase
     {
         try
         {
-            // Validate inputs
-            if (string.IsNullOrWhiteSpace(DestinationPath))
-                throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
+            ValidateInputs(filePath);
 
-            if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("Source file path cannot be null or empty");
+            var destinationFilePath = DetermineDestinationFilePath(filePath);
+            EnsureDestinationDirectory(destinationFilePath);
+            destinationFilePath = HandleExistingFile(destinationFilePath);
 
-            // Validate source file exists
-            if (!System.IO.File.Exists(filePath))
-                throw new FileNotFoundException($"Source file not found: {filePath}");
-
-            string destinationFilePath = DetermineDestinationFilePath(filePath, DestinationPath);
-
-            // Ensure destination directory exists
-            var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
-            if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
-            {
-                if (CreateDirectories)
-                    Directory.CreateDirectory(destinationDirectory);
-                else
-                    throw new DirectoryNotFoundException($"Destination directory does not exist: {destinationDirectory}");
-            }
-
-            // Check if destination file already exists and handle accordingly
-            if (System.IO.File.Exists(destinationFilePath) && !OverwriteIfExists)
-            {
-                if (AutoRenameIfExists)
-                    destinationFilePath = GetAvailableFileName(destinationFilePath);
-                else
-                    throw new InvalidOperationException($"Destination file already exists and OverwriteIfExists is false: {destinationFilePath}");
-            }
-
-            // Perform the copy operation
             System.IO.File.Copy(filePath, destinationFilePath, OverwriteIfExists);
 
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            return Task.FromException(new InvalidOperationException(
-                $"Failed to copy file from '{FilePath ?? filePath}' to '{DestinationPath}': {ex.Message}", ex));
+            throw new InvalidOperationException(
+                $"Failed to copy file from '{filePath}' to '{DestinationPath}': {ex.Message}", ex);
         }
     }
 
-    private string DetermineDestinationFilePath(string sourceFilePath, string destinationPath)
+    private void ValidateInputs(string filePath)
     {
-        // Check if destination is clearly a directory (ends with directory separator)
-        if (destinationPath.EndsWith(Path.DirectorySeparatorChar) ||
-            destinationPath.EndsWith(Path.AltDirectorySeparatorChar))
-        {
-            var fileName = Path.GetFileName(sourceFilePath);
-            return Path.Combine(destinationPath, fileName);
-        }
+        if (string.IsNullOrWhiteSpace(DestinationPath))
+            throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
 
-        // Check if destination has an extension
-        if (Path.HasExtension(destinationPath))
-        {
-            // Treat as a full file path
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Source file path cannot be null or empty");
+
+        if (!System.IO.File.Exists(filePath))
+            throw new FileNotFoundException($"Source file not found: {filePath}");
+    }
+
+    private string DetermineDestinationFilePath(string sourceFilePath)
+    {
+        if (IsDestinationDirectory())
+            return CombineWithSourceFileName(sourceFilePath);
+
+        if (HasFileExtension())
+            return DestinationPath;
+
+        if (IsExistingDirectory())
+            return CombineWithSourceFileName(sourceFilePath);
+
+        if (IsFileInExistingDirectory(sourceFilePath))
+            return AppendExtensionIfNeeded(sourceFilePath, DestinationPath);
+
+        return DetermineByPathStructure(sourceFilePath);
+    }
+
+    private bool IsDestinationDirectory()
+    {
+        return DestinationPath.EndsWith(Path.DirectorySeparatorChar) ||
+               DestinationPath.EndsWith(Path.AltDirectorySeparatorChar);
+    }
+
+    private bool HasFileExtension()
+    {
+        return Path.HasExtension(DestinationPath);
+    }
+
+    private bool IsExistingDirectory()
+    {
+        return Directory.Exists(DestinationPath);
+    }
+
+    private bool IsFileInExistingDirectory(string sourceFilePath)
+    {
+        var parentDir = Path.GetDirectoryName(DestinationPath);
+        return !string.IsNullOrEmpty(parentDir) && Directory.Exists(parentDir);
+    }
+
+    private string CombineWithSourceFileName(string sourceFilePath)
+    {
+        var fileName = Path.GetFileName(sourceFilePath);
+        return Path.Combine(DestinationPath, fileName);
+    }
+
+    private string AppendExtensionIfNeeded(string sourceFilePath, string destinationPath)
+    {
+        if (!AppendSourceExtension)
             return destinationPath;
-        }
 
-        // Check if destination appears to be an existing directory
-        if (Directory.Exists(destinationPath))
-        {
-            var fileName = Path.GetFileName(sourceFilePath);
-            return Path.Combine(destinationPath, fileName);
-        }
+        var sourceExtension = Path.GetExtension(sourceFilePath);
+        return destinationPath + sourceExtension;
+    }
 
-        // Check if the parent directory exists, suggesting this is meant to be a file
-        var parentDir = Path.GetDirectoryName(destinationPath);
-        if (!string.IsNullOrEmpty(parentDir) && Directory.Exists(parentDir))
-        {
-            // Destination path appears to be a file without extension
-            if (AppendSourceExtension)
-            {
-                var sourceExtension = Path.GetExtension(sourceFilePath);
-                return destinationPath + sourceExtension;
-            }
-            return destinationPath;
-        }
+    private string DetermineByPathStructure(string sourceFilePath)
+    {
+        if (LooksLikeFilePath())
+            return AppendExtensionIfNeeded(sourceFilePath, DestinationPath);
 
-        // Default behavior - check if path looks like a file path structure
-        if (Path.IsPathRooted(destinationPath) &&
-            (destinationPath.Contains(Path.DirectorySeparatorChar) ||
-             destinationPath.Contains(Path.AltDirectorySeparatorChar)))
-        {
-            // Looks like a file path - append extension if needed
-            if (AppendSourceExtension)
-            {
-                var sourceExtension = Path.GetExtension(sourceFilePath);
-                return destinationPath + sourceExtension;
-            }
-            return destinationPath;
-        }
+        return CombineWithSourceFileName(sourceFilePath);
+    }
+
+    private bool LooksLikeFilePath()
+    {
+        return Path.IsPathRooted(DestinationPath) &&
+               (DestinationPath.Contains(Path.DirectorySeparatorChar) ||
+                DestinationPath.Contains(Path.AltDirectorySeparatorChar));
+    }
+
+    private void EnsureDestinationDirectory(string destinationFilePath)
+    {
+        var destinationDirectory = Path.GetDirectoryName(destinationFilePath);
+
+        if (string.IsNullOrEmpty(destinationDirectory) || Directory.Exists(destinationDirectory))
+            return;
+
+        if (CreateDirectories)
+            Directory.CreateDirectory(destinationDirectory);
         else
-        {
-            // Treat as directory and combine with source filename
-            var fileName = Path.GetFileName(sourceFilePath);
-            return Path.Combine(destinationPath, fileName);
-        }
+            throw new DirectoryNotFoundException($"Destination directory does not exist: {destinationDirectory}");
+    }
+
+    private string HandleExistingFile(string destinationFilePath)
+    {
+        if (!System.IO.File.Exists(destinationFilePath) || OverwriteIfExists)
+            return destinationFilePath;
+
+        if (AutoRenameIfExists)
+            return GetAvailableFileName(destinationFilePath);
+
+        throw new InvalidOperationException(
+            $"Destination file already exists and OverwriteIfExists is false: {destinationFilePath}");
     }
 
     private static string GetAvailableFileName(string destinationFilePath)
@@ -135,8 +157,8 @@ public class CopyFileAction : ActionBase
         var originalFileName = Path.GetFileNameWithoutExtension(destinationFilePath);
         var extension = Path.GetExtension(destinationFilePath);
 
-        string baseCopyName = $"{originalFileName} - Copy";
-        string newFilePath = Path.Combine(directory, $"{baseCopyName}{extension}");
+        var baseCopyName = $"{originalFileName} - Copy";
+        var newFilePath = Path.Combine(directory, $"{baseCopyName}{extension}");
         int copyIndex = 2;
 
         while (System.IO.File.Exists(newFilePath))

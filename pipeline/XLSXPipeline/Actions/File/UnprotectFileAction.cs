@@ -10,26 +10,39 @@ public class UnprotectFileAction : ActionBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("Source file path cannot be null or empty");
-
-            // Validate source file exists
-            if (!System.IO.File.Exists(filePath))
-                throw new FileNotFoundException($"Source file not found: {filePath}");
-
-            using var workbook = new XLWorkbook(filePath);
-
-            if (!workbook.IsProtected)
-                return Task.CompletedTask;
-
-            workbook.Unprotect(Password);
-            workbook.Save();
+            ValidateInputs(filePath);
+            UnprotectWorkbook(filePath);
 
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            return Task.FromException(ex);
+            throw new InvalidOperationException($"Failed to unprotect file: {ex.Message}", ex);
         }
+    }
+
+    private static void ValidateInputs(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Source file path cannot be null or empty");
+
+        if (!System.IO.File.Exists(filePath))
+            throw new FileNotFoundException($"Source file not found: {filePath}");
+    }
+
+    private void UnprotectWorkbook(string filePath)
+    {
+        using var workbook = new XLWorkbook(filePath);
+
+        if (!workbook.IsProtected)
+            return;
+
+        RemoveProtection(workbook);
+        workbook.Save();
+    }
+
+    private void RemoveProtection(XLWorkbook workbook)
+    {
+        workbook.Unprotect(Password);
     }
 }

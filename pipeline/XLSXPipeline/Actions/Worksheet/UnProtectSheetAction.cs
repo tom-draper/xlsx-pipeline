@@ -14,6 +14,7 @@ public class UnprotectSheetAction : ActionBase
             using var workbook = new XLWorkbook(filePath);
 
             var worksheet =  GetWorksheet(workbook, SheetName);
+
             ValidatePassword(Password);
 
             if (worksheet.Protection.IsProtected)

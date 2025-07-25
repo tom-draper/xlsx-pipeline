@@ -1,19 +1,20 @@
 ﻿using XLSXPipeline.Actions.File;
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.ConvertToCSV;
+namespace XLSXPipeline.Tests.PipelineTests.File.ExportToCSV;
 
-public abstract class ConvertToCSVTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<ConvertToCSVAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "ConvertToCSV"), defaultPipelineName)
+public abstract class ExportToCSVTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<ExportToCSVAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "File", "ExportToCSV"), defaultPipelineName)
 {
     protected string GetOutputPath(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
         var action = GetFirstAction(pipelineName);
 
-        var outputPath = action.OutputPath ?? throw new InvalidOperationException($"No output path found in ConvertToCSVAction for pipeline '{pipelineName}'");
-
-        if (!outputPath.EndsWith(".csv"))
-            outputPath += ".csv";
+        var inputPath = GetInputPath(pipelineName);
+        var outputPath = ExportToCSVAction.DetermineOutputPath(
+            inputPath,
+            action.OutputPath,
+            action.FileName);
 
         return outputPath;
     }
@@ -46,7 +47,7 @@ public abstract class ConvertToCSVTestBase(string? defaultPipelineName = null) :
         pipelineName ??= DefaultPipelineName;
         var outputPath = GetOutputPath(pipelineName);
 
-        if (!File.Exists(outputPath))
+        if (!System.IO.File.Exists(outputPath))
             throw new FileNotFoundException($"Output file should have been created for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);

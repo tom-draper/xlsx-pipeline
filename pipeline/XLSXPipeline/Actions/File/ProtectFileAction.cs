@@ -10,26 +10,43 @@ public class ProtectFileAction : ActionBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("Source file path cannot be null or empty");
-
-            // Validate source file exists
-            if (!System.IO.File.Exists(filePath))
-                throw new FileNotFoundException($"Source file not found: {filePath}");
-
-            using var workbook = new XLWorkbook(filePath);
-
-            if (workbook.IsProtected)
-                throw new InvalidOperationException("Workbook is already protected.");
-
-            workbook.Protect(Password);
-            workbook.Save();
+            ValidateInputs(filePath);
+            ProtectWorkbook(filePath);
 
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            return Task.FromException(ex);
+            throw new InvalidOperationException($"Failed to protect file: {ex.Message}", ex);
         }
+    }
+
+    private void ValidateInputs(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Source file path cannot be null or empty");
+
+        if (!System.IO.File.Exists(filePath))
+            throw new FileNotFoundException($"Source file not found: {filePath}");
+    }
+
+    private void ProtectWorkbook(string filePath)
+    {
+        using var workbook = new XLWorkbook(filePath);
+
+        ValidateWorkbookNotProtected(workbook);
+        ApplyProtection(workbook);
+        workbook.Save();
+    }
+
+    private static void ValidateWorkbookNotProtected(XLWorkbook workbook)
+    {
+        if (workbook.IsProtected)
+            throw new InvalidOperationException("Workbook is already protected.");
+    }
+
+    private void ApplyProtection(XLWorkbook workbook)
+    {
+        workbook.Protect(Password);
     }
 }

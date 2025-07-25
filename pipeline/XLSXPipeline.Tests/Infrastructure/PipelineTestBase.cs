@@ -107,7 +107,14 @@ public abstract class PipelineTestBase : IDisposable
 
     protected bool TryGetPipeline(string pipelineName, out Pipeline pipeline)
     {
-        return Pipelines.TryGetValue(pipelineName, out pipeline);
+        if (Pipelines.TryGetValue(pipelineName, out var foundPipeline))
+        {
+            pipeline = foundPipeline!;
+            return true;
+        }
+
+        pipeline = null!;
+        return false;
     }
 
     protected string GetInputPath(string pipelineName)

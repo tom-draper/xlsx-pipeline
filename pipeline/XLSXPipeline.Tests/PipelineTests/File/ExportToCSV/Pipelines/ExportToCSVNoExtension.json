@@ -1,12 +1,12 @@
 {
-  "pipelineName": "Convert To CSV No Extension",
+  "pipelineName": "Export To CSV No Extension",
   "trigger": {
     "type": "Once",
     "path": ".\\Input\\Input.xlsx"
   },
   "actions": [
     {
-      "type": "ConvertToCSV",
+      "type": "ExportToCSV",
       "outputPath":  ".\\Output\\Output"
     }
   ]

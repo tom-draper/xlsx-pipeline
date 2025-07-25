@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Export To PDF No Extension",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ExportToPDF",
+      "outputPath":  ".\\Output\\Output"
+    }
+  ]
+}

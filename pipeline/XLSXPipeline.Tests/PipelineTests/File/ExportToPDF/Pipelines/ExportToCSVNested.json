@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Export To PDF Nested",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ExportToPDF",
+      "outputPath":  ".\\Output\\Nested\\Output.pdf"
+    }
+  ]
+}

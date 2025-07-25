@@ -8,31 +8,43 @@ public class OpenFileAction : ActionBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("Source file path cannot be null or empty");
-
-            // Validate source file exists
-            if (!System.IO.File.Exists(filePath))
-                throw new FileNotFoundException($"Source file not found: {filePath}");
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = filePath,
-                    UseShellExecute = true // Launch with default app
-                }
-            };
-
-            if (!process.Start())
-                throw new InvalidOperationException($"Failed to start process for file: {filePath}");
+            ValidateInputs(filePath);
+            LaunchFile(filePath);
 
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            return Task.FromException(new InvalidOperationException(
-                $"Failed to open file: {ex.Message}", ex));
+            throw new InvalidOperationException($"Failed to open file: {ex.Message}", ex);
         }
+    }
+
+    private static void ValidateInputs(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Source file path cannot be null or empty");
+
+        if (!System.IO.File.Exists(filePath))
+            throw new FileNotFoundException($"Source file not found: {filePath}");
+    }
+
+    private static void LaunchFile(string filePath)
+    {
+        var process = CreateProcess(filePath);
+
+        if (!process.Start())
+            throw new InvalidOperationException($"Failed to start process for file: {filePath}");
+    }
+
+    private static Process CreateProcess(string filePath)
+    {
+        return new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = filePath,
+                UseShellExecute = true
+            }
+        };
     }
 }

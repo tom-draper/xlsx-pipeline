@@ -1,12 +1,12 @@
-namespace XLSXPipeline.Tests.PipelineTests.ConvertToCSV;
+namespace XLSXPipeline.Tests.PipelineTests.File.ExportToPDF;
 
 [Collection("FileAccess")]
-public class ConvertToCSVTest : ConvertToCSVTestBase
+public class ExportToPDFTest : ExportToPDFTestBase
 {
     [Theory]
-    [InlineData("Convert To CSV")]
-    [InlineData("Convert To CSV No Extension")]
-    [InlineData("Convert To CSV Nested")]
+    [InlineData("Export To PDF")]
+    [InlineData("Export To PDF No Extension")]
+    [InlineData("Export To PDF Nested")]
     public async Task ConvertToCSV_SpecificPipeline_ShouldSucceed(string pipelineName)
     {
         try

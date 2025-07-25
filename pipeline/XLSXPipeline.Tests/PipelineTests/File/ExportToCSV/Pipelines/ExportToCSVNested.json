@@ -1,12 +1,12 @@
 {
-  "pipelineName": "Convert To CSV Nested",
+  "pipelineName": "Export To CSV Nested",
   "trigger": {
     "type": "Once",
     "path": ".\\Input\\Input.xlsx"
   },
   "actions": [
     {
-      "type": "ConvertToCSV",
+      "type": "ExportToCSV",
       "outputPath":  ".\\Output\\Nested\\Output.csv"
     }
   ]

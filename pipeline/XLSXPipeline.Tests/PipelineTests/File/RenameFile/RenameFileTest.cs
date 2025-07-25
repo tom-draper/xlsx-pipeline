@@ -1,4 +1,4 @@
-namespace XLSXPipeline.Tests.PipelineTests.RenameFile;
+namespace XLSXPipeline.Tests.PipelineTests.File.RenameFile;
 
 [Collection("FileAccess")]
 public class RenameFileTest : RenameFileTestBase

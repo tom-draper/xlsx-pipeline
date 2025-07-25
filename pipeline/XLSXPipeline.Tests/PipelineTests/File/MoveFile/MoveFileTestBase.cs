@@ -1,9 +1,9 @@
 ﻿using XLSXPipeline.Actions.File;
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.MoveFile;
+namespace XLSXPipeline.Tests.PipelineTests.File.MoveFile;
 
-public abstract class MoveFileTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<MoveFileAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "MoveFile"), defaultPipelineName)
+public abstract class MoveFileTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<MoveFileAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "File", "MoveFile"), defaultPipelineName)
 {
     protected string GetOutputPath(string? pipelineName = null)
     {
@@ -49,7 +49,7 @@ public abstract class MoveFileTestBase(string? defaultPipelineName = null) : Spe
         pipelineName ??= DefaultPipelineName;
         var outputPath = GetOutputPath(pipelineName);
 
-        if (!File.Exists(outputPath))
+        if (!System.IO.File.Exists(outputPath))
             throw new FileNotFoundException($"Renamed file should exist for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);

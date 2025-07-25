@@ -1,22 +1,20 @@
 ﻿using XLSXPipeline.Actions.File;
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.CopyFile;
+namespace XLSXPipeline.Tests.PipelineTests.File.ExportToPDF;
 
-public abstract class CopyFileTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<CopyFileAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "CopyFile"), defaultPipelineName)
+public abstract class ExportToPDFTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<ExportToPDFAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "File", "ExportToPDF"), defaultPipelineName)
 {
     protected string GetOutputPath(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
-        var pipeline = GetPipeline(pipelineName);
+        var action = GetFirstAction(pipelineName);
 
-        var outputPath = pipeline.Actions
-            .OfType<CopyFileAction>()
-            .FirstOrDefault(x => !string.IsNullOrEmpty(x.DestinationPath))?
-            .DestinationPath ?? throw new InvalidOperationException($"No CopyFileAction with destination path found in pipeline '{pipelineName}'");
-
-        if (!outputPath.EndsWith(".xlsx"))
-            outputPath += ".xlsx";
+        var inputPath = GetInputPath(pipelineName);
+        var outputPath = ExportToPDFAction.DetermineOutputPath(
+            inputPath,
+            action.OutputPath,
+            action.FileName);
 
         return outputPath;
     }
@@ -49,11 +47,11 @@ public abstract class CopyFileTestBase(string? defaultPipelineName = null) : Spe
         pipelineName ??= DefaultPipelineName;
         var outputPath = GetOutputPath(pipelineName);
 
-        if (!File.Exists(outputPath))
-            throw new FileNotFoundException($"Copied file should exist for pipeline '{pipelineName}'.");
+        if (!System.IO.File.Exists(outputPath))
+            throw new FileNotFoundException($"Output file should have been created for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);
         if (outputFileInfo.Length == 0)
-            throw new InvalidOperationException($"Copied file should not be empty for pipeline '{pipelineName}'.");
+            throw new InvalidOperationException($"Output file should not be empty for pipeline '{pipelineName}'.");
     }
 }

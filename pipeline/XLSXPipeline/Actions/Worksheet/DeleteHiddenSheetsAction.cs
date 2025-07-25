@@ -11,6 +11,7 @@ public class DeleteHiddenSheetsAction : ActionBase
             using var workbook = new XLWorkbook(filePath);
 
             var hiddenSheets = GetHiddenSheets(workbook);
+
             if (hiddenSheets.Count == 0)
                 return Task.CompletedTask; // No hidden sheets to delete
 
