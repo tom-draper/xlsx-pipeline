@@ -1,82 +1,57 @@
 ---
 // Server-side code
 const osLabels = {
-    windows: "Download for Windows",
-    mac: "Download for macOS", 
-    linux: "Download for Linux",
+  windows: "Download for Windows",
+  mac: "Download for macOS",
+  linux: "Download for Linux",
 };
 
-const getDownloadUrl = async () => {
-    try {
-        const response = await fetch(
-            "https://api.github.com/repos/tom-draper/xlsx-pipeline/releases/latest",
-        );
-        if (response.ok) {
-            const release = await response.json();
-            if (release.assets && release.assets.length > 0) {
-                const asset = release.assets.find((asset: any) =>
-                    asset.name.endsWith(".zip"),
-                );
-                if (asset) {
-                    return asset.browser_download_url;
-                }
-            }
-        }
-    } catch (error) {
-        console.error("Failed to fetch latest release:", error);
-    }
-    return null;
-};
+const version = "v0.1.0";
 
-const githubDownloadUrl = await getDownloadUrl();
+const downloadUrls = {
+  windows: `https://github.com/tom-draper/xlsx-pipeline/releases/download/${version}/xlsx-pipeline-${version}-win-x64.zip`,
+  mac: `https://github.com/tom-draper/xlsx-pipeline/releases/download/${version}/xlsx-pipeline-${version}-osx-x64.zip`,
+  linux: `https://github.com/tom-draper/xlsx-pipeline/releases/download/${version}/xlsx-pipeline-${version}-linux-x64.zip`,
+};
 ---
 
-<download-button
+<a id="download-link" href="#" class="inline-block">
+  <download-button
     data-os-labels={JSON.stringify(osLabels)}
-    data-github-url={githubDownloadUrl}
-    class="bg-[#107b43] shadow-md text-white p-4 rounded-sm px-6 text-xl cursor-pointer hover:bg-[#175935] transition-colors duration-200 inline-block"
->
-    Download
-</download-button>
+    data-download-urls={JSON.stringify(downloadUrls)}
+    class="bg-[#107b43] shadow-md text-white p-4 rounded-sm px-6 text-xl cursor-pointer hover:bg-[#175935] transition-colors duration-200"
+  >
+    Download for Windows
+  </download-button>
+</a>
 
 <script>
-    class DownloadButton extends HTMLElement {
-        connectedCallback() {
-            const osLabels = JSON.parse(this.dataset.osLabels ?? '{}');
-            const githubUrl = this.dataset.githubUrl;
-            
-            // Detect OS
-            const detectOS = () => {
-                const platform = navigator.userAgent.toLowerCase();
-                if (platform.includes("mac")) return "mac";
-                if (platform.includes("linux")) return "linux";
-                return "windows";
-            };
-            
-            const os = detectOS();
-            
-            // Update button text
-            this.textContent = osLabels[os];
-            
-            // Handle click
-            this.onclick = (e) => {
-                e.preventDefault();
+  class DownloadButton extends HTMLElement {
+    connectedCallback() {
+      const osLabels = JSON.parse(this.dataset.osLabels ?? "{}");
+      const downloadUrls = JSON.parse(this.dataset.downloadUrls ?? "{}");
 
-                if (!githubUrl) {
-                    console.error("Download URL is not available.");
-                    return;
-                }
-                
-                // Always use the GitHub URL
-                const tempLink = document.createElement('a');
-                tempLink.href = githubUrl;
-                tempLink.download = '';
-                document.body.appendChild(tempLink);
-                tempLink.click();
-                document.body.removeChild(tempLink);
-            };
-        }
+      const detectOS = () => {
+        const platform = navigator.userAgent.toLowerCase();
+        if (platform.includes("mac")) return "mac";
+        if (platform.includes("linux")) return "linux";
+        return "windows";
+      };
+
+      const os = detectOS();
+      this.textContent = osLabels[os] || "Download";
+
+      const downloadUrl = downloadUrls[os];
+      const anchor = this.closest("a");
+
+      if (anchor && downloadUrl) {
+        anchor.href = downloadUrl;
+        anchor.setAttribute("download", "");
+      } else {
+        console.error(`No download available for ${os}`);
+      }
     }
-    
-    customElements.define('download-button', DownloadButton);
+  }
+
+  customElements.define("download-button", DownloadButton);
 </script>
