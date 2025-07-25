@@ -1,17 +1,17 @@
 
-namespace XLSXPipeline.Tests.PipelineTests.Data.MoveColumn;
+namespace XLSXPipeline.Tests.PipelineTests.Data.MoveRow;
 
 [Collection("FileAccess")]
 public class MoveRowTest : MoveRowTestBase
 {
     [Theory]
-    [InlineData("Move Column")]
-    public async Task MoveColumn_SpecificPipeline_ShouldSucceed(string pipelineName)
+    [InlineData("Move Row")]
+    public async Task MoveRow_SpecificPipeline_ShouldSucceed(string pipelineName)
     {
         try
         {
             await ExecutePipelineTestAsync(pipelineName);
-            VerifyMoveColumn(pipelineName);
+            VerifyMoveRow(pipelineName);
         }
         finally
         {

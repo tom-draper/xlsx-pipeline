@@ -30,8 +30,8 @@ public class MoveColumnAction : ActionBase
     private void MoveColumn(IXLWorksheet worksheet)
     {
         ValidateInputs();
-        var sourceColumn = GetSourceColumn(worksheet);
-        var destinationColumn = GetDestinationColumn(worksheet);
+        var sourceColumn = GetColumn(worksheet, From);
+        var destinationColumn = GetColumn(worksheet, To);
 
         ValidateMoveOperation(sourceColumn, destinationColumn);
         PerformColumnMove(sourceColumn, destinationColumn);
@@ -49,27 +49,16 @@ public class MoveColumnAction : ActionBase
             throw new ArgumentException("Source and destination columns cannot be the same.", nameof(To));
     }
 
-    private IXLColumn GetSourceColumn(IXLWorksheet worksheet)
+    private static IXLColumn GetColumn(IXLWorksheet worksheet, string column)
     {
         try
         {
-            return worksheet.Column(From);
+            int sourceIndex = XLHelper.GetColumnNumberFromLetter(column);
+            return worksheet.Column(sourceIndex);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Source column '{From}' does not exist or is invalid.", ex);
-        }
-    }
-
-    private IXLColumn GetDestinationColumn(IXLWorksheet worksheet)
-    {
-        try
-        {
-            return worksheet.Column(To);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Destination column '{To}' does not exist or is invalid.", ex);
+            throw new InvalidOperationException($"Column '{column}' does not exist or is invalid.", ex);
         }
     }
 
@@ -82,18 +71,24 @@ public class MoveColumnAction : ActionBase
 
     private static void PerformColumnMove(IXLColumn sourceColumn, IXLColumn destinationColumn)
     {
-        try
-        {
-            // Copy the source column to the destination
-            sourceColumn.CopyTo(destinationColumn);
+        var ws = sourceColumn.Worksheet;
+        int sourceIndex = sourceColumn.ColumnNumber();
+        int destIndex = destinationColumn.ColumnNumber();
 
-            // Delete the source column
-            sourceColumn.Delete();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                $"Failed to move column from '{sourceColumn.ColumnLetter()}' to '{destinationColumn.ColumnLetter()}'.", ex);
-        }
+        // Insert a new column at the destination to make space
+        ws.Column(destIndex).InsertColumnsBefore(1);
+
+        // Adjust destination index if source is before destination
+        if (sourceIndex < destIndex)
+            destIndex--; // Because insert shifted the original destination right
+
+        // Copy contents & formatting
+        ws.Column(sourceIndex).CopyTo(ws.Column(destIndex));
+
+        // Delete the old source column
+        if (sourceIndex > destIndex)
+            ws.Column(sourceIndex + 1).Delete(); // it was shifted right
+        else
+            ws.Column(sourceIndex).Delete(); // safe if already adjusted
     }
 }

@@ -170,4 +170,25 @@ internal class Helpers
                (path.Contains(Path.DirectorySeparatorChar) ||
                 path.Contains(Path.AltDirectorySeparatorChar));
     }
+    public static int GetColumnNumberFromLetter(string columnLetter)
+    {
+        if (string.IsNullOrWhiteSpace(columnLetter))
+            throw new ArgumentException("Column letter cannot be null or whitespace.", nameof(columnLetter));
+
+        columnLetter = columnLetter.Trim().ToUpperInvariant();
+        int sum = 0;
+
+        for (int i = 0; i < columnLetter.Length; i++)
+        {
+            char c = columnLetter[i];
+
+            if (c < 'A' || c > 'Z')
+                throw new ArgumentException($"Invalid character '{c}' in column letter.", nameof(columnLetter));
+
+            sum *= 26;
+            sum += (c - 'A' + 1);
+        }
+
+        return sum;
+    }
  }

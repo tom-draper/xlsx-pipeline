@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Move Row",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MoveRow",
+      "from": 1,
+      "to": 2
+    }
+  ]
+}

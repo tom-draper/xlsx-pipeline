@@ -104,6 +104,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             // Create options without this converter to avoid infinite recursion
             var optionsForDeserialization = CreateOptionsWithoutThisConverter(options);
             var result = JsonSerializer.Deserialize<T>(json, optionsForDeserialization);
+
             return result ?? throw new JsonException($"Failed to deserialize action of type {typeof(T).Name}: result was null.");
         }
         catch (JsonException)

@@ -5,8 +5,8 @@ namespace XLSXPipeline.Actions.Data;
 public class MoveRowAction : ActionBase
 {
     public string? SheetName { get; set; }
-    public int FromRow { get; set; }
-    public int ToRow { get; set; }
+    public int From { get; set; }
+    public int To { get; set; }
     public int Count { get; set; } = 1;
 
     protected override Task ExecuteInternalAsync(string filePath)
@@ -19,7 +19,6 @@ public class MoveRowAction : ActionBase
             MoveRows(worksheet);
 
             workbook.Save();
-
             return Task.CompletedTask;
         }
         catch (Exception ex)
@@ -34,139 +33,120 @@ public class MoveRowAction : ActionBase
         ValidateRowRange(worksheet);
 
         var sourceRange = GetSourceRowRange(worksheet);
-        var tempData = CaptureRowData(worksheet, sourceRange);
-        var adjustedToRow = CalculateAdjustedTargetRow();
+        var rowSnapshots = CaptureRowSnapshots(sourceRange);
+
+        int adjustedTo = CalculateAdjustedTargetRow();
 
         DeleteSourceRows(worksheet);
-        InsertRowsAtTarget(worksheet, adjustedToRow);
-        RestoreRowData(worksheet, tempData, adjustedToRow);
+        InsertRowsAtTarget(worksheet, adjustedTo);
+        RestoreRowSnapshots(worksheet, rowSnapshots, adjustedTo);
     }
 
     private void ValidateInputs()
     {
-        if (FromRow < 1)
-            throw new ArgumentOutOfRangeException(nameof(FromRow), "From row must be greater than 0.");
-
-        if (ToRow < 1)
-            throw new ArgumentOutOfRangeException(nameof(ToRow), "To row must be greater than 0.");
-
+        if (From < 1)
+            throw new ArgumentOutOfRangeException(nameof(From), "From row must be greater than 0.");
+        if (To < 1)
+            throw new ArgumentOutOfRangeException(nameof(To), "To row must be greater than 0.");
         if (Count < 1)
             throw new ArgumentOutOfRangeException(nameof(Count), "Count must be greater than 0.");
-
-        if (FromRow == ToRow)
-            throw new ArgumentException("Source and destination rows cannot be the same.", nameof(ToRow));
+        if (From == To)
+            throw new ArgumentException("Source and destination rows cannot be the same.", nameof(To));
     }
 
     private void ValidateRowRange(IXLWorksheet worksheet)
     {
         int maxRow = XLHelper.MaxRowNumber;
 
-        // Validate source range
-        if (FromRow + Count - 1 > maxRow)
+        if (From + Count - 1 > maxRow)
             throw new ArgumentOutOfRangeException(nameof(Count),
-                $"Cannot move {Count} rows starting from row {FromRow}. " +
-                $"This would exceed the maximum row limit of {maxRow}.");
+                $"Cannot move {Count} rows starting from row {From}. This would exceed Excel's row limit ({maxRow}).");
 
-        // Validate destination range
-        int adjustedToRow = CalculateAdjustedTargetRow();
-        if (adjustedToRow + Count - 1 > maxRow)
-            throw new ArgumentOutOfRangeException(nameof(ToRow),
-                $"Cannot move {Count} rows to row {adjustedToRow}. " +
-                $"This would exceed the maximum row limit of {maxRow}.");
+        int adjustedTo = CalculateAdjustedTargetRow();
+        if (adjustedTo + Count - 1 > maxRow)
+            throw new ArgumentOutOfRangeException(nameof(To),
+                $"Cannot move rows to row {adjustedTo}. This would exceed Excel's row limit ({maxRow}).");
 
-        // Check for overlapping ranges
-        int sourceEnd = FromRow + Count - 1;
-        int destEnd = ToRow + Count - 1;
-
-        if ((FromRow <= ToRow && ToRow <= sourceEnd) || (ToRow <= FromRow && FromRow <= destEnd))
-            throw new ArgumentException("Source and destination row ranges cannot overlap.", nameof(ToRow));
+        int sourceEnd = From + Count - 1;
+        int destEnd = To + Count - 1;
+        if ((From <= To && To <= sourceEnd) || (To <= From && From <= destEnd))
+            throw new ArgumentException("Source and destination row ranges cannot overlap.", nameof(To));
     }
 
     private IXLRange GetSourceRowRange(IXLWorksheet worksheet)
     {
-        try
-        {
-            var lastColumn = worksheet.RangeUsed()?.LastColumn()?.ColumnNumber() ?? 1;
-            return worksheet.Range(FromRow, 1, FromRow + Count - 1, lastColumn);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to determine source row range starting at row {FromRow}.", ex);
-        }
-    }
-
-    private static XLCellValue[,] CaptureRowData(IXLWorksheet worksheet, IXLRange sourceRange)
-    {
-        try
-        {
-            int rowCount = sourceRange.RowCount();
-            int columnCount = sourceRange.ColumnCount();
-            var tempData = new XLCellValue[rowCount, columnCount];
-
-            for (int i = 0; i < rowCount; i++)
-            {
-                for (int j = 0; j < columnCount; j++)
-                {
-                    var cell = sourceRange.Cell(i + 1, j + 1);
-                    tempData[i, j] = cell.Value;
-                }
-            }
-
-            return tempData;
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException("Failed to capture row data for move operation.", ex);
-        }
+        int lastCol = worksheet.RangeUsed()?.LastColumn()?.ColumnNumber() ?? 1;
+        return worksheet.Range(From, 1, From + Count - 1, lastCol);
     }
 
     private int CalculateAdjustedTargetRow()
     {
-        // If moving rows to a position after the source, adjust for the deletion
-        return ToRow > FromRow ? ToRow - Count : ToRow;
+        // When moving down, we need to adjust the insertion point because source rows are deleted first
+        return To > From ? To - Count : To;
     }
 
     private void DeleteSourceRows(IXLWorksheet worksheet)
     {
-        try
-        {
-            var rowsToDelete = worksheet.Rows(FromRow, FromRow + Count - 1);
-            rowsToDelete.Delete();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to delete source rows {FromRow} to {FromRow + Count - 1}.", ex);
-        }
+        worksheet.Rows(From, From + Count - 1).Delete();
     }
 
     private void InsertRowsAtTarget(IXLWorksheet worksheet, int targetRow)
     {
-        try
-        {
-            worksheet.Row(targetRow).InsertRowsAbove(Count);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to insert {Count} rows at row {targetRow}.", ex);
-        }
+        worksheet.Row(targetRow).InsertRowsAbove(Count);
     }
 
-    private static void RestoreRowData(IXLWorksheet worksheet, XLCellValue[,] tempData, int targetRow)
-    {
-        try
-        {
-            int rowCount = tempData.GetLength(0);
-            int columnCount = tempData.GetLength(1);
+    private record CellSnapshot(XLCellValue Value, string? Formula, IXLStyle Style, bool IsMerged);
 
-            for (int i = 0; i < rowCount; i++)
+    private static CellSnapshot[,] CaptureRowSnapshots(IXLRange sourceRange)
+    {
+        int rowCount = sourceRange.RowCount();
+        int colCount = sourceRange.ColumnCount();
+        var snapshots = new CellSnapshot[rowCount, colCount];
+
+        for (int i = 0; i < rowCount; i++)
+        {
+            var row = sourceRange.Row(i + 1);
+            for (int j = 0; j < colCount; j++)
             {
-                for (int j = 0; j < columnCount; j++)
-                    worksheet.Cell(targetRow + i, j + 1).Value = tempData[i, j];
+                var cell = row.Cell(j + 1);
+                snapshots[i, j] = new CellSnapshot(
+                    cell.Value,
+                    cell.HasFormula ? cell.FormulaA1 : null,
+                    cell.Style,
+                    cell.IsMerged()
+                );
             }
         }
-        catch (Exception ex)
+
+        return snapshots;
+    }
+
+    private void RestoreRowSnapshots(IXLWorksheet worksheet, CellSnapshot[,] snapshots, int targetRow)
+    {
+        int rowCount = snapshots.GetLength(0);
+        int colCount = snapshots.GetLength(1);
+
+        for (int i = 0; i < rowCount; i++)
         {
-            throw new InvalidOperationException($"Failed to restore row data at target row {targetRow}.", ex);
+            var row = worksheet.Row(targetRow + i);
+            for (int j = 0; j < colCount; j++)
+            {
+                var cell = worksheet.Cell(targetRow + i, j + 1);
+                var snap = snapshots[i, j];
+
+                if (snap.Formula != null)
+                    cell.FormulaA1 = snap.Formula;
+                else
+                    cell.Value = snap.Value;
+
+                cell.Style = snap.Style;
+
+                // Optional: you could re-merge if needed
+                // Note: This simple logic does not restore merged ranges; use more advanced tracking if needed.
+            }
+
+            // Preserve row height
+            row.Height = worksheet.Row(From + i).Height;
         }
     }
 }

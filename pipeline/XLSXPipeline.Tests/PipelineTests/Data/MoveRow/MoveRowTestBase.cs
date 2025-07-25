@@ -2,9 +2,9 @@ using ClosedXML.Excel;
 using XLSXPipeline.Actions.Data;
 using XLSXPipeline.Tests.Infrastructure;
 
-namespace XLSXPipeline.Tests.PipelineTests.Data.MoveColumn;
+namespace XLSXPipeline.Tests.PipelineTests.Data.MoveRow;
 
-public abstract class MoveRowTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<MoveColumnAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "Data", "MoveColumn"), defaultPipelineName)
+public abstract class MoveRowTestBase(string? defaultPipelineName = null) : SpecializedPipelineTestBase<MoveRowAction>(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "PipelineTests", "Data", "MoveRow"), defaultPipelineName)
 {
     protected override async Task ExecutePipelineTestAsync(string? pipelineName = null)
     {
@@ -27,13 +27,13 @@ public abstract class MoveRowTestBase(string? defaultPipelineName = null) : Spec
         }
     }
 
-    protected void VerifyMoveColumn(string? pipelineName = null)
+    protected void VerifyMoveRow(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;
         var inputPath = GetInputPath(pipelineName);
 
         using var workbook = new XLWorkbook(inputPath);
         var worksheet = workbook.Worksheets.First();
-        ExcelTestHelpers.VerifyColumnMoved(worksheet, 1, 2);
+        ExcelTestHelpers.VerifyRowMoved(worksheet, 1, 2);
     }
 }

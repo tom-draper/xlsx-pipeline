@@ -1,5 +1,4 @@
-﻿// 1. Create a new file: JsonSerializationContext.cs
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using XLSXPipeline.Models;
 using XLSXPipeline.Actions;
 using XLSXPipeline.Actions.Data;
