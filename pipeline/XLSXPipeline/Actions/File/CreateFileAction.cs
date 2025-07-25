@@ -1,11 +1,16 @@
 ﻿namespace XLSXPipeline.Actions.File;
 
-public class CopyFileAction : ActionBase
+public class CreateFileAction : ActionBase
 {
     public required string DestinationPath { get; set; }
 
     /// <summary>
-    /// Whether to overwrite the destination file if it already exists
+    /// Content to write to the file. If null or empty, creates an empty file.
+    /// </summary>
+    public string? Content { get; set; }
+
+    /// <summary>
+    /// Whether to overwrite the file if it already exists
     /// </summary>
     public bool OverwriteIfExists { get; set; } = true;
 
@@ -20,41 +25,37 @@ public class CopyFileAction : ActionBase
     public bool CreateDirectories { get; set; } = true;
 
     /// <summary>
-    /// Whether to automatically append the source file extension if destination doesn't have one
+    /// Text encoding to use when writing content. Defaults to UTF-8.
     /// </summary>
-    public bool AppendSourceExtension { get; set; } = true;
+    public System.Text.Encoding Encoding { get; set; } = System.Text.Encoding.UTF8;
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
         try
         {
-            ValidateInputs(filePath);
+            ValidateInputs();
+            Helpers.EnsureDirectory(DestinationPath, CreateDirectories);
+            var destinationFilePath = HandleExistingFile(DestinationPath);
 
-            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath, AppendSourceExtension);
-            Helpers.EnsureDirectory(destinationFilePath, CreateDirectories);
-            destinationFilePath = HandleExistingFile(destinationFilePath);
-
-            System.IO.File.Copy(filePath, destinationFilePath, OverwriteIfExists);
+            if (string.IsNullOrEmpty(Content))
+                // Create empty file
+                System.IO.File.Create(destinationFilePath).Dispose();
+            else
+                System.IO.File.WriteAllText(destinationFilePath, Content, Encoding);
 
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"Failed to copy file from '{filePath}' to '{DestinationPath}': {ex.Message}", ex);
+                $"Failed to create file at '{DestinationPath}': {ex.Message}", ex);
         }
     }
 
-    private void ValidateInputs(string filePath)
+    private void ValidateInputs()
     {
         if (string.IsNullOrWhiteSpace(DestinationPath))
             throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
-
-        if (string.IsNullOrWhiteSpace(filePath))
-            throw new ArgumentException("Source file path cannot be null or empty");
-
-        if (!System.IO.File.Exists(filePath))
-            throw new FileNotFoundException($"Source file not found: {filePath}");
     }
 
     private string HandleExistingFile(string destinationFilePath)
@@ -74,11 +75,10 @@ public class CopyFileAction : ActionBase
         var directory = Path.GetDirectoryName(destinationFilePath)!;
         var originalFileName = Path.GetFileNameWithoutExtension(destinationFilePath);
         var extension = Path.GetExtension(destinationFilePath);
-
         var baseCopyName = $"{originalFileName} - Copy";
         var newFilePath = Path.Combine(directory, $"{baseCopyName}{extension}");
-        int copyIndex = 2;
 
+        int copyIndex = 2;
         while (System.IO.File.Exists(newFilePath))
         {
             newFilePath = Path.Combine(directory, $"{baseCopyName} ({copyIndex}){extension}");

@@ -29,8 +29,10 @@ public class ReplaceSheetAction : ActionBase
     {
         using var workbook = new XLWorkbook(filePath);
 
-        var sourceWorksheet = GetWorksheet(workbook, SourceSheetName, "Source");
-        var targetWorksheet = GetWorksheet(workbook, TargetSheetName, "Target");
+        Validation.ValidateSheetExists(workbook, SourceSheetName);
+        Validation.ValidateSheetExists(workbook, TargetSheetName);
+        var sourceWorksheet = Helpers.GetWorksheet(workbook, SourceSheetName);
+        var targetWorksheet = Helpers.GetWorksheet(workbook, TargetSheetName);
 
         int targetPosition = targetWorksheet.Position;
         targetWorksheet.Delete();
@@ -45,8 +47,10 @@ public class ReplaceSheetAction : ActionBase
         using var targetWorkbook = new XLWorkbook(filePath);
         using var sourceWorkbook = new XLWorkbook(SourceFilePath);
 
-        var sourceWorksheet = GetWorksheet(sourceWorkbook, SourceSheetName, "Source", SourceFilePath);
-        var targetWorksheet = GetWorksheet(targetWorkbook, TargetSheetName, "Target");
+        Validation.ValidateSheetExists(sourceWorkbook, SourceSheetName);
+        Validation.ValidateSheetExists(targetWorkbook, TargetSheetName);
+        var sourceWorksheet = Helpers.GetWorksheet(sourceWorkbook, SourceSheetName);
+        var targetWorksheet = Helpers.GetWorksheet(targetWorkbook, TargetSheetName);
 
         int targetPosition = targetWorksheet.Position;
         targetWorksheet.Delete();
@@ -54,17 +58,6 @@ public class ReplaceSheetAction : ActionBase
         var copiedWorksheet = CopyAndRenameWorksheet(sourceWorksheet, targetWorkbook, TargetSheetName, targetPosition);
 
         targetWorkbook.Save();
-    }
-
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName, string sheetType, string? filePath = null)
-    {
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-        {
-            string location = filePath != null ? $" in '{filePath}'" : "";
-            throw new InvalidOperationException($"{sheetType} sheet '{sheetName}' does not exist{location}.");
-        }
-        return worksheet;
     }
 
     private static IXLWorksheet CopyAndRenameWorksheet(IXLWorksheet sourceWorksheet, XLWorkbook targetWorkbook, string newName, int position)

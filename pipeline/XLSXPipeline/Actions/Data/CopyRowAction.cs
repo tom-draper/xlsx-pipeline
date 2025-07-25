@@ -95,9 +95,7 @@ public class CopyRowAction : ActionBase
     private void InsertRowsAtDestination(IXLWorksheet destSheet, int destinationRow)
     {
         if (Count > 0)
-        {
             destSheet.Row(destinationRow).InsertRowsAbove(Count);
-        }
     }
 
     private void CopyRowRange(IXLWorksheet sourceSheet, IXLWorksheet destSheet, int sourceRow, int destinationRow)

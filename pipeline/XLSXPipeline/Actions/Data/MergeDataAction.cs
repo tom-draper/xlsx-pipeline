@@ -17,8 +17,8 @@ public class MergeDataAction : ActionBase
             using var destWorkbook = new XLWorkbook(filePath);
             using var sourceWorkbook = new XLWorkbook(SourceFilePath);
 
-            var sourceSheet = GetSourceSheet(sourceWorkbook, SourceSheetName);
-            var destSheet = GetDestinationSheet(destWorkbook, DestinationSheetName);
+            var sourceSheet = Helpers.GetWorksheetOrFirst(sourceWorkbook, SourceSheetName);
+            var destSheet = Helpers.GetWorksheetOrFirst(destWorkbook, DestinationSheetName);
 
             MergeData(sourceSheet, destSheet);
 
@@ -29,38 +29,6 @@ public class MergeDataAction : ActionBase
         {
             return Task.FromException(ex);
         }
-    }
-
-    private static IXLWorksheet GetSourceSheet(XLWorkbook sourceWorkbook, string? sourceSheetName)
-    {
-        if (string.IsNullOrEmpty(sourceSheetName))
-        {
-            if (sourceWorkbook.Worksheets.Count == 0)
-                throw new InvalidOperationException("No worksheets found in the source workbook.");
-            return sourceWorkbook.Worksheets.First();
-        }
-
-        var sheet = sourceWorkbook.Worksheet(sourceSheetName);
-        if (sheet == null)
-            throw new InvalidOperationException($"Source sheet '{sourceSheetName}' does not exist.");
-
-        return sheet;
-    }
-
-    private static IXLWorksheet GetDestinationSheet(XLWorkbook destWorkbook, string? destinationSheetName)
-    {
-        if (string.IsNullOrEmpty(destinationSheetName))
-        {
-            if (destWorkbook.Worksheets.Count == 0)
-                throw new InvalidOperationException("No worksheets found in the destination workbook.");
-            return destWorkbook.Worksheets.First();
-        }
-
-        var sheet = destWorkbook.Worksheet(destinationSheetName);
-        if (sheet == null)
-            throw new InvalidOperationException($"Destination sheet '{destinationSheetName}' does not exist.");
-
-        return sheet;
     }
 
     private void MergeData(IXLWorksheet sourceSheet, IXLWorksheet destSheet)

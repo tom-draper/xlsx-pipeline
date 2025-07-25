@@ -12,6 +12,8 @@
 		<PackageVersion>0.1.0</PackageVersion>
 		<Title>XLSX Pipeline</Title>
 		<Platforms>AnyCPU;ARM64</Platforms>
+		<PublishTrimmed>True</PublishTrimmed>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,7 +21,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-	  <Deterministic>False</Deterministic>
+		<Deterministic>False</Deterministic>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -27,7 +29,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-	  <Deterministic>False</Deterministic>
+		<Deterministic>False</Deterministic>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -35,6 +37,12 @@
 		<DebugSymbols>False</DebugSymbols>
 		<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>XLSXPipeline.Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Remove="Rules\**" />
@@ -53,9 +61,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Update="Examples\**">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Content>
+		<Content Update="Pipelines\**;Examples\**" CopyToPublishDirectory="Never"  />
+		<Content Update="Examples\**" CopyToOutputDirectory="Never"  />
 	</ItemGroup>
 
 	<ItemGroup>

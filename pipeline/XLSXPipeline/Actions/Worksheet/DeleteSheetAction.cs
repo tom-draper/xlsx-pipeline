@@ -12,8 +12,8 @@ public class DeleteSheetAction : ActionBase
         {
             using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = GetWorksheet(workbook, SheetName);
-            ValidateNewSheetName(workbook, SheetName);
+            Validation.ValidateSheetExists(workbook, SheetName);
+            var worksheet = Helpers.GetWorksheet(workbook, SheetName);
 
             worksheet.Delete();
             workbook.Save();
@@ -24,19 +24,5 @@ public class DeleteSheetAction : ActionBase
         {
             return Task.FromException(ex);
         }
-    }
-
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName)
-    {
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
-        return worksheet;
-    }
-
-    private static void ValidateNewSheetName(XLWorkbook workbook, string newSheetName)
-    {
-        if (workbook.Worksheets.Any(ws => ws.Name == newSheetName))
-            throw new InvalidOperationException($"Sheet '{newSheetName}' already exists in the target workbook.");
     }
 }

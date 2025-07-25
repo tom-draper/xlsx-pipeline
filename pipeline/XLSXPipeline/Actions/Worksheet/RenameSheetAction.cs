@@ -13,8 +13,9 @@ public class RenameSheetAction : ActionBase
         {
             using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = GetWorksheet(workbook, SheetName);
-            ValidateNewSheetName(workbook, NewSheetName);
+            Validation.ValidateSheetExists(workbook, SheetName);
+            var worksheet = Helpers.GetWorksheet(workbook, SheetName);
+            Validation.ValidateSheetNotExists(workbook, NewSheetName);
 
             worksheet.Name = NewSheetName;
             workbook.Save();
@@ -25,19 +26,5 @@ public class RenameSheetAction : ActionBase
         {
             return Task.FromException(ex);
         }
-    }
-
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName)
-    {
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Source sheet '{sheetName}' does not exist.");
-        return worksheet;
-    }
-
-    private static void ValidateNewSheetName(XLWorkbook workbook, string newSheetName)
-    {
-        if (workbook.Worksheets.Any(ws => ws.Name == newSheetName))
-            throw new InvalidOperationException($"Sheet '{newSheetName}' already exists in the target workbook.");
     }
 }

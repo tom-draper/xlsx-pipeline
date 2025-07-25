@@ -21,13 +21,15 @@ public class UnprotectFileAction : ActionBase
         }
     }
 
-    private static void ValidateInputs(string filePath)
+    private void ValidateInputs(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("Source file path cannot be null or empty");
 
         if (!System.IO.File.Exists(filePath))
             throw new FileNotFoundException($"Source file not found: {filePath}");
+
+        Validation.ValidatePassword(Password);
     }
 
     private void UnprotectWorkbook(string filePath)

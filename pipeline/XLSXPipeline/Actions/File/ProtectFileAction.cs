@@ -28,6 +28,8 @@ public class ProtectFileAction : ActionBase
 
         if (!System.IO.File.Exists(filePath))
             throw new FileNotFoundException($"Source file not found: {filePath}");
+
+        Validation.ValidatePassword(Password);
     }
 
     private void ProtectWorkbook(string filePath)

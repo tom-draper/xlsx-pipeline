@@ -1,12 +1,12 @@
 {
-  "pipelineName": "Copy Column",
+  "pipelineName": "Move Column",
   "trigger": {
     "type": "Once",
     "path": ".\\Input\\Input.xlsx"
   },
   "actions": [
     {
-      "type": "CopyColumn",
+      "type": "MoveColumn",
       "from": "A",
       "to": "B"
     }

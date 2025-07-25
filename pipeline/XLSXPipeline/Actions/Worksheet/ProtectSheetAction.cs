@@ -13,8 +13,8 @@ public class ProtectSheetAction : ActionBase
         {
             using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = GetWorksheet(workbook, SheetName);
-            ValidatePassword(Password);
+            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+            Validation.ValidatePassword(Password);
 
             var protection = worksheet.Protect(Password);
 
@@ -27,19 +27,4 @@ public class ProtectSheetAction : ActionBase
         }
     }
 
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
-    {
-        var worksheet = string.IsNullOrEmpty(sheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
-        return worksheet;
-    }
-
-    private static void ValidatePassword(string password)
-    {
-        if (string.IsNullOrEmpty(password))
-            throw new ArgumentException("Password cannot be null or empty.", nameof(password));
-    }
 }

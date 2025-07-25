@@ -49,10 +49,8 @@ public abstract class SpecializedPipelineTestBase<TAction> : PipelineTestBase
     {
         var pipelineName = GetPipelineNamesWithAction().FirstOrDefault();
         if (pipelineName == null)
-        {
             throw new InvalidOperationException($"No pipelines with {typeof(TAction).Name} actions found. Available pipelines: " +
                                               string.Join(", ", GetPipelineNames()));
-        }
         return pipelineName;
     }
 

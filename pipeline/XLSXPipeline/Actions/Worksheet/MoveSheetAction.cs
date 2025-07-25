@@ -29,8 +29,9 @@ public class MoveSheetAction : ActionBase
     {
         using var workbook = new XLWorkbook(filePath);
 
-        var worksheet = GetWorksheet(workbook, SheetName);
-        ValidateTargetIndex(workbook, TargetIndex);
+        Validation.ValidateSheetExists(workbook, SheetName);
+        var worksheet = Helpers.GetWorksheet(workbook, SheetName);
+        Validation.ValidateTargetIndex(workbook, TargetIndex);
 
         worksheet.Position = TargetIndex;
         workbook.Save();
@@ -39,11 +40,11 @@ public class MoveSheetAction : ActionBase
     private void MoveSheetToDifferentWorkbook(string filePath)
     {
         using var sourceWorkbook = new XLWorkbook(filePath);
-        using var targetWorkbook = LoadOrCreateTargetWorkbook(TargetFilePath!);
+        using var targetWorkbook = Helpers.GetOrCreateWorkbook(TargetFilePath!);
 
-        var sourceWorksheet = GetWorksheet(sourceWorkbook, SheetName);
-        ValidateTargetIndex(targetWorkbook, TargetIndex);
-        ValidateSheetName(targetWorkbook, SheetName);
+        var sourceWorksheet = Helpers.GetWorksheet(sourceWorkbook, SheetName);
+        Validation.ValidateTargetIndex(targetWorkbook, TargetIndex);
+        Validation.ValidateSheetExists(targetWorkbook, SheetName);
 
         // Copy the sheet to target workbook
         var copiedWorksheet = sourceWorksheet.CopyTo(targetWorkbook);
@@ -55,34 +56,5 @@ public class MoveSheetAction : ActionBase
         // Save both workbooks
         sourceWorkbook.Save();
         targetWorkbook.SaveAs(TargetFilePath!);
-    }
-
-    private static XLWorkbook LoadOrCreateTargetWorkbook(string targetFilePath)
-    {
-        return System.IO.File.Exists(targetFilePath)
-            ? new XLWorkbook(targetFilePath)
-            : new XLWorkbook();
-    }
-
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName)
-    {
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
-        return worksheet;
-    }
-
-    private static void ValidateTargetIndex(XLWorkbook workbook, int targetIndex)
-    {
-        int maxIndex = workbook.Worksheets.Count + 1; // +1 because we might be adding a sheet
-        if (targetIndex < 1 || targetIndex > maxIndex)
-            throw new ArgumentOutOfRangeException(nameof(targetIndex),
-                $"Target index must be between 1 and {maxIndex}.");
-    }
-
-    private static void ValidateSheetName(XLWorkbook workbook, string sheetName)
-    {
-        if (workbook.Worksheets.Any(ws => ws.Name == sheetName))
-            throw new InvalidOperationException($"Sheet '{sheetName}' already exists in the target workbook.");
     }
 }

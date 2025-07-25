@@ -11,8 +11,9 @@ public abstract class ExportToCSVTestBase(string? defaultPipelineName = null) : 
         var action = GetFirstAction(pipelineName);
 
         var inputPath = GetInputPath(pipelineName);
-        var outputPath = ExportToCSVAction.DetermineOutputPath(
+        var outputPath = Actions.Helpers.DetermineOutputPath(
             inputPath,
+            "csv",
             action.OutputPath,
             action.FileName);
 

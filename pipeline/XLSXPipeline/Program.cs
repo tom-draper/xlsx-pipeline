@@ -1,9 +1,31 @@
 using NLog;
+using NLog.Targets;
 using NLog.Extensions.Logging;
 using XLSXPipeline.Extensions;
 using XLSXPipeline.Services;
 
-var logger = LogManager.GetCurrentClassLogger();
+var logger = LogManager.Setup().LoadConfiguration(builder =>
+{
+    // Console target
+    var consoleTarget = new ConsoleTarget("console")
+    {
+        Layout = "${longdate} ${level:uppercase=true}: ${message} ${exception:format=toString}"
+    };
+    builder.Configuration.AddTarget(consoleTarget);
+
+    // File target
+    var fileTarget = new FileTarget("file")
+    {
+        FileName = "logs/application-${shortdate}.log",
+        Layout = "${longdate} ${level:uppercase=true}: ${message}${when:when=length('${exception:format=toString}')>0:inner=${newline}${exception:format=toString}}"
+    };
+    builder.Configuration.AddTarget(fileTarget);
+
+    // Catch-all rule for all other logs (your application logs)
+    builder.Configuration.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, consoleTarget, "*");
+    builder.Configuration.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, fileTarget, "*");
+
+}).GetCurrentClassLogger();
 
 try
 {

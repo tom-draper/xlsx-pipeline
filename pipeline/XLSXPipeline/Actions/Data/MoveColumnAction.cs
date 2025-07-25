@@ -13,31 +13,18 @@ public class MoveColumnAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = GetWorksheet(workbook, SheetName);
+
+            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
             MoveColumn(worksheet);
+
             workbook.Save();
+
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
             return Task.FromException(ex);
         }
-    }
-
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
-    {
-        if (string.IsNullOrEmpty(sheetName))
-        {
-            if (workbook.Worksheets.Count == 0)
-                throw new InvalidOperationException("No worksheets found in the workbook.");
-            return workbook.Worksheets.First();
-        }
-
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Worksheet '{sheetName}' does not exist.");
-
-        return worksheet;
     }
 
     private void MoveColumn(IXLWorksheet worksheet)
@@ -91,26 +78,6 @@ public class MoveColumnAction : ActionBase
         // Verify columns are from the same worksheet
         if (!ReferenceEquals(sourceColumn.Worksheet, destinationColumn.Worksheet))
             throw new InvalidOperationException("Source and destination columns must be from the same worksheet.");
-
-        // Check if source column has any data to move
-        var sourceUsedRange = sourceColumn.Worksheet.RangeUsed();
-        if (sourceUsedRange != null)
-        {
-            int sourceColumnNumber = sourceColumn.ColumnNumber();
-            int firstUsedColumn = sourceUsedRange.FirstColumn().ColumnNumber();
-            int lastUsedColumn = sourceUsedRange.LastColumn().ColumnNumber();
-
-            // Only validate if the source column is within the used range
-            if (sourceColumnNumber >= firstUsedColumn && sourceColumnNumber <= lastUsedColumn)
-            {
-                // Check if there's actually data in the source column
-                var sourceColumnRange = sourceColumn.Worksheet.Column(sourceColumnNumber).CellsUsed();
-                if (!sourceColumnRange.Any())
-                {
-                    // Source column is empty, but this is not an error - just a no-op
-                }
-            }
-        }
     }
 
     private static void PerformColumnMove(IXLColumn sourceColumn, IXLColumn destinationColumn)

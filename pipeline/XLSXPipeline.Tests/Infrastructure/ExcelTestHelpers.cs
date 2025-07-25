@@ -188,6 +188,33 @@ public static class ExcelTestHelpers
         }
     }
 
+    public static void VerifyColumnMoved(IXLWorksheet worksheet, int sourceColumnIndex, int destinationColumnIndex, int? startRow = null, int? endRow = null)
+    {
+        var usedRange = worksheet.RangeUsed();
+        if (usedRange == null)
+            return; // No data in worksheet, columns are considered identical
+
+        int firstRow = startRow ?? usedRange.FirstRow().RowNumber();
+        int lastRow = endRow ?? usedRange.LastRow().RowNumber();
+
+        for (int row = firstRow; row <= lastRow; row++)
+        {
+            var sourceCell = worksheet.Cell(row, sourceColumnIndex);
+            var destinationCell = worksheet.Cell(row, destinationColumnIndex);
+
+            Assert.Equal(sourceCell.GetString(), destinationCell.GetString());
+
+            // Also verify formulas if present
+            if (!string.IsNullOrEmpty(sourceCell.FormulaA1))
+                Assert.Equal(sourceCell.FormulaA1, destinationCell.FormulaA1);
+            else if (!string.IsNullOrEmpty(destinationCell.FormulaA1))
+                Assert.Fail($"Column {sourceColumnIndex} has no formula at row {row}, but column {destinationColumnIndex} has formula: {destinationCell.FormulaA1}");
+
+            // Verify that the source column is now empty
+            Assert.True(sourceCell.IsEmpty());
+        }
+    }
+
     private static void VerifyWorksheetsAreIdentical(IXLWorksheet inputSheet, IXLWorksheet outputSheet)
     {
         var inputUsedRange = inputSheet.RangeUsed();

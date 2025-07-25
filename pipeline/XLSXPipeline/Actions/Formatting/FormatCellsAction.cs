@@ -18,7 +18,7 @@ public class FormatCellsAction : ActionBase
     {
         using var workbook = new XLWorkbook(filePath);
 
-        var worksheet = GetWorksheet(workbook, SheetName);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
         var range = worksheet.Range(Range);
 
         ApplyFormatting(range);
@@ -26,16 +26,6 @@ public class FormatCellsAction : ActionBase
         workbook.Save();
 
         return Task.CompletedTask;
-    }
-
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
-    {
-        var worksheet = string.IsNullOrEmpty(sheetName)
-                ? workbook.Worksheets.First()
-                : workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Sheet '{sheetName}' does not exist.");
-        return worksheet;
     }
 
     private void ApplyFormatting(IXLRange range)

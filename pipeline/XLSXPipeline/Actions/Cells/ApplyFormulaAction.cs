@@ -13,9 +13,12 @@ public class ApplyFormulaAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = GetWorksheet(workbook, SheetName);
+
+            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
             ApplyFormula(worksheet);
+            
             workbook.Save();
+
             return Task.CompletedTask;
         }
         catch (Exception ex)
@@ -24,28 +27,12 @@ public class ApplyFormulaAction : ActionBase
         }
     }
 
-    private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
-    {
-        if (string.IsNullOrEmpty(sheetName))
-        {
-            if (workbook.Worksheets.Count == 0)
-                throw new InvalidOperationException("No worksheets found in the workbook.");
-            return workbook.Worksheets.First();
-        }
-
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Worksheet '{sheetName}' does not exist.");
-
-        return worksheet;
-    }
-
     private void ApplyFormula(IXLWorksheet worksheet)
     {
         ValidateInputs();
         
         var targetCell = GetTargetCell(worksheet);
-        ValidateCell(targetCell);
+        Validation.ValidateCell(targetCell);
         
         SetCellFormula(targetCell);
     }
@@ -108,12 +95,6 @@ public class ApplyFormulaAction : ActionBase
         {
             throw new InvalidOperationException($"Failed to locate cell at address '{CellAddress}'. Please ensure the cell address is valid.", ex);
         }
-    }
-
-    private static void ValidateCell(IXLCell cell)
-    {
-        if (cell == null)
-            throw new InvalidOperationException("Target cell could not be retrieved from the worksheet.");
     }
 
     private void SetCellFormula(IXLCell cell)

@@ -49,8 +49,6 @@ public class PipelineService(
         //StartPipelineConfigWatcher();
 
         await base.StartAsync(cancellationToken);
-
-        _logger.LogInformation("Application started. Press Ctrl+C to shut down.");
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)

@@ -25,7 +25,7 @@ public class MoveFileAction : ActionBase
         {
             ValidateInputs(filePath);
 
-            var destinationFilePath = DetermineDestinationFilePath(filePath);
+            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath, AppendSourceExtension);
             EnsureDestinationDirectory(destinationFilePath);
             HandleExistingFile(destinationFilePath);
 
@@ -50,75 +50,6 @@ public class MoveFileAction : ActionBase
 
         if (!System.IO.File.Exists(filePath))
             throw new FileNotFoundException($"Source file not found: {filePath}");
-    }
-
-    private string DetermineDestinationFilePath(string sourceFilePath)
-    {
-        if (IsDestinationDirectory())
-            return CombineWithSourceFileName(sourceFilePath);
-
-        if (HasFileExtension())
-            return DestinationPath;
-
-        if (IsExistingDirectory())
-            return CombineWithSourceFileName(sourceFilePath);
-
-        if (IsFileInExistingDirectory())
-            return AppendExtensionIfNeeded(sourceFilePath, DestinationPath);
-
-        return DetermineByPathStructure(sourceFilePath);
-    }
-
-    private bool IsDestinationDirectory()
-    {
-        return DestinationPath.EndsWith(Path.DirectorySeparatorChar) ||
-               DestinationPath.EndsWith(Path.AltDirectorySeparatorChar);
-    }
-
-    private bool HasFileExtension()
-    {
-        return Path.HasExtension(DestinationPath);
-    }
-
-    private bool IsExistingDirectory()
-    {
-        return Directory.Exists(DestinationPath);
-    }
-
-    private bool IsFileInExistingDirectory()
-    {
-        var parentDir = Path.GetDirectoryName(DestinationPath);
-        return !string.IsNullOrEmpty(parentDir) && Directory.Exists(parentDir);
-    }
-
-    private string CombineWithSourceFileName(string sourceFilePath)
-    {
-        var fileName = Path.GetFileName(sourceFilePath);
-        return Path.Combine(DestinationPath, fileName);
-    }
-
-    private string AppendExtensionIfNeeded(string sourceFilePath, string destinationPath)
-    {
-        if (!AppendSourceExtension)
-            return destinationPath;
-
-        var sourceExtension = Path.GetExtension(sourceFilePath);
-        return destinationPath + sourceExtension;
-    }
-
-    private string DetermineByPathStructure(string sourceFilePath)
-    {
-        if (LooksLikeFilePath())
-            return AppendExtensionIfNeeded(sourceFilePath, DestinationPath);
-
-        return CombineWithSourceFileName(sourceFilePath);
-    }
-
-    private bool LooksLikeFilePath()
-    {
-        return Path.IsPathRooted(DestinationPath) &&
-               (DestinationPath.Contains(Path.DirectorySeparatorChar) ||
-                DestinationPath.Contains(Path.AltDirectorySeparatorChar));
     }
 
     private void EnsureDestinationDirectory(string destinationFilePath)

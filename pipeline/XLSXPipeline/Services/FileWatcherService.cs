@@ -103,13 +103,9 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
             {
                 // Wait a bit to ensure file is fully written and not locked
                 if (attempt > 1)
-                {
                     await Task.Delay(retryDelayMs * attempt);
-                }
                 else
-                {
                     await Task.Delay(500); // Initial delay
-                }
 
                 // Check if file is accessible
                 if (IsFileReady(filePath))

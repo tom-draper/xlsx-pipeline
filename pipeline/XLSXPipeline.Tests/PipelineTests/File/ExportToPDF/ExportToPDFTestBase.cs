@@ -11,8 +11,9 @@ public abstract class ExportToPDFTestBase(string? defaultPipelineName = null) : 
         var action = GetFirstAction(pipelineName);
 
         var inputPath = GetInputPath(pipelineName);
-        var outputPath = ExportToPDFAction.DetermineOutputPath(
+        var outputPath = Actions.Helpers.DetermineOutputPath(
             inputPath,
+            "pdf",
             action.OutputPath,
             action.FileName);
 

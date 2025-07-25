@@ -92,14 +92,18 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             return;
         }
 
-        JsonSerializer.Serialize(writer, value, value.GetType(), options);
+        // Create options without this converter to avoid infinite recursion
+        var optionsForWriting = CreateOptionsWithoutThisConverter(options);
+        JsonSerializer.Serialize(writer, value, value.GetType(), optionsForWriting);
     }
 
     private static T DeserializeAction<T>(string json, JsonSerializerOptions options) where T : ActionBase
     {
         try
         {
-            var result = JsonSerializer.Deserialize<T>(json, options);
+            // Create options without this converter to avoid infinite recursion
+            var optionsForDeserialization = CreateOptionsWithoutThisConverter(options);
+            var result = JsonSerializer.Deserialize<T>(json, optionsForDeserialization);
             return result ?? throw new JsonException($"Failed to deserialize action of type {typeof(T).Name}: result was null.");
         }
         catch (JsonException)
@@ -110,5 +114,17 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
         {
             throw new JsonException($"Error deserializing action of type {typeof(T).Name}: {ex.Message}", ex);
         }
+    }
+
+    private static JsonSerializerOptions CreateOptionsWithoutThisConverter(JsonSerializerOptions originalOptions)
+    {
+        var newOptions = new JsonSerializerOptions(originalOptions);
+
+        // Remove this converter to avoid infinite recursion
+        var converterToRemove = newOptions.Converters.FirstOrDefault(c => c is ActionJsonConverter);
+        if (converterToRemove != null)
+            newOptions.Converters.Remove(converterToRemove);
+
+        return newOptions;
     }
 }

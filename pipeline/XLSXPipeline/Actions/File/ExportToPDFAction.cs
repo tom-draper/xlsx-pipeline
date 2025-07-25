@@ -35,8 +35,9 @@ public class ExportToPDFAction : ActionBase
             ValidateInputs(filePath);
 
             using var workbook = new XLWorkbook(filePath);
-            var worksheet = GetWorksheet(workbook);
-            var outputPath = DetermineOutputPath(filePath, OutputPath, FileName);
+
+            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+            var outputPath = Helpers.DetermineOutputPath(filePath, "pdf", OutputPath, FileName);
 
             await CreatePdfAsync(worksheet, outputPath);
 
@@ -59,63 +60,6 @@ public class ExportToPDFAction : ActionBase
 
         if (!System.IO.File.Exists(filePath))
             throw new FileNotFoundException($"Source file not found: {filePath}");
-    }
-
-    public static string DetermineOutputPath(string sourceFilePath, string? outputPath, string? filename)
-    {
-        string outputDirectory;
-        string outputFilename;
-
-        // Determine the output directory
-        if (!string.IsNullOrWhiteSpace(outputPath))
-        {
-            if (Path.HasExtension(outputPath))
-                // OutputPath includes a filename, extract directory and ignore the filename part
-                outputDirectory = Path.GetDirectoryName(outputPath) ?? string.Empty;
-            else
-                // OutputPath is just a directory
-                outputDirectory = outputPath;
-        }
-        else
-        {
-            // Default to same directory as source file
-            outputDirectory = Path.GetDirectoryName(sourceFilePath) ?? string.Empty;
-        }
-
-        // Determine the filename
-        if (!string.IsNullOrWhiteSpace(filename))
-        {
-            // Use the explicitly provided FileName
-            outputFilename = Path.HasExtension(filename) ? filename : filename + ".pdf";
-        }
-        else
-        {
-            // Default to source filename with .pdf extension
-            var sourceFileName = Path.GetFileNameWithoutExtension(sourceFilePath);
-            outputFilename = sourceFileName + ".pdf";
-        }
-
-        var fullOutputPath = Path.Combine(outputDirectory, outputFilename);
-        var resolvedPath = Path.GetFullPath(fullOutputPath);
-
-        // Ensure the output directory exists
-        var directory = Path.GetDirectoryName(resolvedPath);
-        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            Directory.CreateDirectory(directory);
-
-        return resolvedPath;
-    }
-
-    private IXLWorksheet GetWorksheet(XLWorkbook workbook)
-    {
-        if (string.IsNullOrEmpty(SheetName))
-            return workbook.Worksheets.First();
-
-        var worksheet = workbook.Worksheet(SheetName);
-        if (worksheet == null)
-            throw new InvalidOperationException($"Sheet '{SheetName}' does not exist.");
-
-        return worksheet;
     }
 
     private async Task CreatePdfAsync(IXLWorksheet worksheet, string outputPath)

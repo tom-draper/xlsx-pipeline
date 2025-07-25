@@ -18,6 +18,15 @@ public class PipelineLoader(
     private readonly IPipelineDisableService _completionService = completionService;
     private readonly string _pipelinesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Pipelines");
 
+    // Configure JsonSerializerOptions with the source generator context
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        TypeInfoResolver = PipelineJsonContext.Default,
+        PropertyNameCaseInsensitive = true,
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip
+    };
+
     public async Task<(List<ScheduledPipeline>, List<FileWatcherPipeline>)> LoadPipelineFilesAsync(CancellationToken stoppingToken)
     {
         var scheduledPipelines = new List<ScheduledPipeline>();
@@ -46,12 +55,11 @@ public class PipelineLoader(
                 try
                 {
                     var json = await File.ReadAllTextAsync(filePath, stoppingToken);
-                    var pipeline = JsonSerializer.Deserialize<Pipeline>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var pipeline = JsonSerializer.Deserialize<Pipeline>(json, JsonOptions);
 
                     if (pipeline != null)
                     {
                         var triggerType = pipeline.Trigger.Type?.ToLowerInvariant() ?? TriggerTypes.Once;
-
 
                         // Check if this is a "Once" pipeline that has already been completed
                         if (triggerType == TriggerTypes.Once)

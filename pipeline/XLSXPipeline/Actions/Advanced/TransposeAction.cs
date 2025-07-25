@@ -14,8 +14,11 @@ public class TransposeAction : ActionBase
         try
         {
             using var workbook = new XLWorkbook(filePath);
+
             TransposeData(workbook);
+
             workbook.Save();
+
             return Task.CompletedTask;
         }
         catch (Exception ex)
@@ -28,9 +31,9 @@ public class TransposeAction : ActionBase
     {
         ValidateInputs();
 
-        var sourceWorksheet = GetSourceWorksheet(workbook);
+        var sourceWorksheet = Helpers.GetWorksheetOrFirst(workbook, SourceSheetName);
         var sourceRange = GetSourceRange(sourceWorksheet);
-        var destinationWorksheet = GetOrCreateDestinationWorksheet(workbook);
+        var destinationWorksheet = Helpers.GetOrCreateWorksheet(workbook, DestinationSheetName);
         var destinationCell = GetDestinationCell(destinationWorksheet);
 
         ValidateSourceData(sourceRange);
@@ -72,22 +75,6 @@ public class TransposeAction : ActionBase
         }
     }
 
-    private IXLWorksheet GetSourceWorksheet(XLWorkbook workbook)
-    {
-        try
-        {
-            var worksheet = workbook.Worksheet(SourceSheetName);
-            if (worksheet == null)
-                throw new InvalidOperationException($"Source worksheet '{SourceSheetName}' does not exist.");
-
-            return worksheet;
-        }
-        catch (Exception ex) when (!(ex is InvalidOperationException))
-        {
-            throw new InvalidOperationException($"Failed to retrieve source worksheet '{SourceSheetName}'.", ex);
-        }
-    }
-
     private IXLRange GetSourceRange(IXLWorksheet sourceWorksheet)
     {
         try
@@ -101,23 +88,6 @@ public class TransposeAction : ActionBase
         catch (Exception ex)
         {
             throw new InvalidOperationException($"Invalid source range specification '{SourceRange}'. Please ensure the range is valid (e.g., 'A1:D10').", ex);
-        }
-    }
-
-    private IXLWorksheet GetOrCreateDestinationWorksheet(XLWorkbook workbook)
-    {
-        try
-        {
-            var worksheet = workbook.Worksheet(DestinationSheetName);
-            if (worksheet != null)
-                return worksheet;
-
-            // Create new worksheet if it doesn't exist
-            return workbook.Worksheets.Add(DestinationSheetName);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Failed to get or create destination worksheet '{DestinationSheetName}'.", ex);
         }
     }
 
