@@ -1,31 +1,72 @@
-﻿namespace XLSXPipeline.Actions.File;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+
+namespace XLSXPipeline.Actions.File;
 
 public class CreateFileAction : ActionBase
 {
-    [ReplacePlaceholders]
-    public required string DestinationPath { get; set; }
-    [ReplacePlaceholders]
-    public string? FileName { get; set; }
+    // Backing field for DestinationPath
+    private string? _destinationPath;
+
+    [JsonIgnore]
+    public string DestinationPath
+    {
+        get
+        {
+            if (_destinationPath == null)
+                throw new InvalidOperationException("DestinationPath has not been set.");
+            return Helpers.ReplaceDateTimePlaceholders(_destinationPath);
+        }
+        set => _destinationPath = value ?? throw new ArgumentNullException(nameof(DestinationPath));
+    }
+
+    [JsonPropertyName("destinationPath")]
+    public string? JsonDestinationPath
+    {
+        get => _destinationPath;
+        set => _destinationPath = value;
+    }
+
+    // Backing field for FileName
+    private string? _fileName;
+    [JsonIgnore]
+    public string? FileName
+    {
+        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
+        set => _fileName = value;
+    }
+
+    [JsonPropertyName("fileName")]
+    public string? JsonFileName
+    {
+        get => _fileName;
+        set => _fileName = value;
+    }
+
     /// <summary>
     /// Content to write to the file. If null or empty, creates an empty file.
     /// </summary>
     public string? Content { get; set; }
+
     /// <summary>
     /// Whether to overwrite the file if it already exists
     /// </summary>
     public bool OverwriteIfExists { get; set; } = true;
+
     /// <summary>
     /// Whether to automatically rename the file if it already exists (Windows-style - Copy, - Copy (2), etc.)
     /// </summary>
     public bool AutoRenameIfExists { get; set; } = false;
+
     /// <summary>
     /// Whether to create destination directories if they don't exist
     /// </summary>
     public bool CreateDirectories { get; set; } = true;
+
     /// <summary>
     /// Text encoding to use when writing content. Defaults to UTF-8.
     /// </summary>
-    public System.Text.Encoding Encoding { get; set; } = System.Text.Encoding.UTF8;
+    public Encoding Encoding { get; set; } = Encoding.UTF8;
 
     protected override Task ExecuteInternalAsync(string filePath)
     {

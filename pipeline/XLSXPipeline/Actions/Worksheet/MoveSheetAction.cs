@@ -1,14 +1,52 @@
 ﻿using ClosedXML.Excel;
+using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.Worksheet;
 
 public class MoveSheetAction : ActionBase
 {
-    [ReplacePlaceholders]
-    public required string SheetName { get; set; }
-    public int TargetIndex { get; set; } = 1; // 1-based index, defaults to first position
-    [ReplacePlaceholders]
-    public string? TargetFilePath { get; set; }
+    // Backing fields
+    private string? _sheetName;
+    private string? _targetFilePath;
+
+    /// <summary>
+    /// Name of the sheet to move. Automatically processes date/time placeholders.
+    /// </summary>
+    [JsonIgnore]
+    public string? SheetName
+    {
+        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
+        set => _sheetName = value;
+    }
+
+    [JsonPropertyName("sheetName")]
+    public string? JsonSheetName
+    {
+        get => _sheetName;
+        set => _sheetName = value;
+    }
+
+    /// <summary>
+    /// Optional file path override. Automatically processes date/time placeholders.
+    /// </summary>
+    [JsonIgnore]
+    public string? TargetFilePath
+    {
+        get => _targetFilePath != null ? Helpers.ReplaceDateTimePlaceholders(_targetFilePath) : null;
+        set => _targetFilePath = value;
+    }
+
+    [JsonPropertyName("targetFilePath")]
+    public string? JsonTargetFilePath
+    {
+        get => _targetFilePath;
+        set => _targetFilePath = value;
+    }
+
+    /// <summary>
+    /// 1-based index to move the sheet to. Defaults to 1 (first position).
+    /// </summary>
+    public int TargetIndex { get; set; } = 1;
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
@@ -48,14 +86,11 @@ public class MoveSheetAction : ActionBase
         Validation.ValidateTargetIndex(targetWorkbook, TargetIndex);
         Validation.ValidateSheetExists(targetWorkbook, SheetName);
 
-        // Copy the sheet to target workbook
         var copiedWorksheet = sourceWorksheet.CopyTo(targetWorkbook);
         copiedWorksheet.Position = TargetIndex;
 
-        // Remove from source workbook
         sourceWorksheet.Delete();
 
-        // Save both workbooks
         sourceWorkbook.Save();
         targetWorkbook.SaveAs(TargetFilePath!);
     }

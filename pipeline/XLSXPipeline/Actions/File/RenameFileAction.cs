@@ -1,9 +1,27 @@
-﻿namespace XLSXPipeline.Actions.File;
+﻿using System.Text.Json.Serialization;
+
+namespace XLSXPipeline.Actions.File;
 
 public class RenameFileAction : ActionBase
 {
-    [ReplacePlaceholders]
-    public required string NewName { get; set; }
+    private string? _newName;
+
+    /// <summary>
+    /// New file name or full destination path. Supports date/time placeholders.
+    /// </summary>
+    [JsonIgnore]
+    public string? NewName
+    {
+        get => _newName != null ? Helpers.ReplaceDateTimePlaceholders(_newName) : null;
+        set => _newName = value;
+    }
+
+    [JsonPropertyName("newName")]
+    public string? JsonNewName
+    {
+        get => _newName;
+        set => _newName = value;
+    }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
@@ -54,7 +72,7 @@ public class RenameFileAction : ActionBase
 
     private string BuildFullPathDestination(string filePath)
     {
-        var destinationPath = NewName;
+        var destinationPath = NewName!;
 
         if (string.IsNullOrEmpty(Path.GetExtension(destinationPath)))
         {
@@ -68,7 +86,7 @@ public class RenameFileAction : ActionBase
     private string BuildFilenameDestination(string filePath)
     {
         var sourceDirectory = GetSourceDirectory(filePath);
-        var newNameWithExtension = EnsureExtension(filePath, NewName);
+        var newNameWithExtension = EnsureExtension(filePath, NewName!);
 
         return Path.Combine(sourceDirectory, newNameWithExtension);
     }

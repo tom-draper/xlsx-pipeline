@@ -7,23 +7,64 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.File;
 
 public class ExportToPDFAction : ActionBase
 {
-    [ReplacePlaceholders]
-    public required string OutputPath { get; set; }
-    [ReplacePlaceholders]
-    public string? FileName { get; set; }
-    [ReplacePlaceholders]
-    public string? SheetName { get; set; }
+    private string? _outputPath;
+    private string? _fileName;
+    private string? _sheetName;
+
+    [JsonIgnore]
+    public string? OutputPath
+    {
+        get => _outputPath != null ? Helpers.ReplaceDateTimePlaceholders(_outputPath) : null;
+        set => _outputPath = value;
+    }
+
+    [JsonPropertyName("outputPath")]
+    public string? JsonOutputPath
+    {
+        get => _outputPath;
+        set => _outputPath = value;
+    }
+
+    [JsonIgnore]
+    public string? FileName
+    {
+        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
+        set => _fileName = value;
+    }
+
+    [JsonPropertyName("fileName")]
+    public string? JsonFileName
+    {
+        get => _fileName;
+        set => _fileName = value;
+    }
+
+    [JsonIgnore]
+    public string? SheetName
+    {
+        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
+        set => _sheetName = value;
+    }
+
+    [JsonPropertyName("sheetName")]
+    public string? JsonSheetName
+    {
+        get => _sheetName;
+        set => _sheetName = value;
+    }
+
     public PdfPaperSize PaperSize { get; set; } = PdfPaperSize.A4;
     public PageOrientation Orientation { get; set; } = PageOrientation.Portrait;
     public bool FitToPage { get; set; } = true;
-    public float MarginLeft { get; set; } = 36f; // Points (0.5 inch)
+    public float MarginLeft { get; set; } = 36f;
     public float MarginRight { get; set; } = 36f;
-    public float MarginTop { get; set; } = 72f; // Points (1 inch)
+    public float MarginTop { get; set; } = 72f;
     public float MarginBottom { get; set; } = 72f;
     public bool ShowGridlines { get; set; } = true;
     public string? Header { get; set; }
@@ -38,7 +79,6 @@ public class ExportToPDFAction : ActionBase
             ValidateInputs(filePath);
 
             using var workbook = new XLWorkbook(filePath);
-
             var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
             var outputPath = Helpers.DetermineOutputPath(filePath, "pdf", OutputPath, FileName);
 
@@ -97,7 +137,6 @@ public class ExportToPDFAction : ActionBase
         if (usedRange == null) return;
 
         int cols = usedRange.ColumnCount();
-
         var table = new Table(cols);
 
         if (FitToPage)
@@ -120,10 +159,7 @@ public class ExportToPDFAction : ActionBase
 
     private void ConfigureTableBorders(Table table)
     {
-        if (ShowGridlines)
-            table.SetBorder(new SolidBorder(ColorConstants.BLACK, 1));
-        else
-            table.SetBorder(Border.NO_BORDER);
+        table.SetBorder(ShowGridlines ? new SolidBorder(ColorConstants.BLACK, 1) : Border.NO_BORDER);
     }
 
     private void PopulateTable(Table table, IXLWorksheet worksheet, IXLRange usedRange)
@@ -157,14 +193,12 @@ public class ExportToPDFAction : ActionBase
 
     private void ApplyCellFormatting(Cell pdfCell, IXLCell xlCell)
     {
-        var paragraph = (Paragraph?)pdfCell.GetChildren().FirstOrDefault();
+        var paragraph = pdfCell.GetChildren().OfType<Paragraph>().FirstOrDefault();
         if (paragraph == null) return;
 
-        // Font size
         float fontSize = (float)(xlCell.Style.Font.FontSize > 0 ? xlCell.Style.Font.FontSize : BaseFontSize);
         paragraph.SetFontSize(fontSize);
 
-        // Font style
         PdfFont font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
         if (xlCell.Style.Font.Bold && xlCell.Style.Font.Italic)
             font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLDOBLIQUE);
@@ -175,40 +209,31 @@ public class ExportToPDFAction : ActionBase
 
         paragraph.SetFont(font);
 
-        // Font color
         if (xlCell.Style.Font.FontColor.ColorType == XLColorType.Color)
         {
             var color = xlCell.Style.Font.FontColor.Color;
             paragraph.SetFontColor(new DeviceRgb(color.R, color.G, color.B));
         }
 
-        // Background color
         if (xlCell.Style.Fill.BackgroundColor.ColorType == XLColorType.Color)
         {
             var bgColor = xlCell.Style.Fill.BackgroundColor.Color;
             pdfCell.SetBackgroundColor(new DeviceRgb(bgColor.R, bgColor.G, bgColor.B));
         }
 
-        // Text alignment
-        var alignment = xlCell.Style.Alignment.Horizontal switch
+        paragraph.SetTextAlignment(xlCell.Style.Alignment.Horizontal switch
         {
             XLAlignmentHorizontalValues.Center => TextAlignment.CENTER,
             XLAlignmentHorizontalValues.Right => TextAlignment.RIGHT,
-            XLAlignmentHorizontalValues.Left => TextAlignment.LEFT,
             _ => TextAlignment.LEFT
-        };
-        paragraph.SetTextAlignment(alignment);
+        });
 
-        // Padding
         pdfCell.SetPadding(3);
     }
 
     private void ConfigureCellBorders(Cell cell)
     {
-        if (ShowGridlines)
-            cell.SetBorder(new SolidBorder(ColorConstants.GRAY, 0.5f));
-        else
-            cell.SetBorder(Border.NO_BORDER);
+        cell.SetBorder(ShowGridlines ? new SolidBorder(ColorConstants.GRAY, 0.5f) : Border.NO_BORDER);
     }
 
     private iText.Kernel.Geom.PageSize GetPageSize()
@@ -229,8 +254,7 @@ public class ExportToPDFAction : ActionBase
 
     private static string GetCellValueAsString(IXLCell cell)
     {
-        if (cell.IsEmpty())
-            return "";
+        if (cell.IsEmpty()) return "";
 
         return cell.DataType switch
         {

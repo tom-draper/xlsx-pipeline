@@ -1,15 +1,83 @@
 ﻿using ClosedXML.Excel;
+using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.Data;
 
 public class MergeDataAction : ActionBase
 {
-    [ReplacePlaceholders]
-    public required string SourceFilePath { get; set; }
-    [ReplacePlaceholders]
-    public string? SourceSheetName { get; set; }
-    [ReplacePlaceholders]
-    public string? DestinationSheetName { get; set; }
+    // Backing field for SourceFilePath
+    private string? _sourceFilePath;
+
+    /// <summary>
+    /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
+    /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
+    /// </summary>
+    [JsonIgnore] // Don't serialize this computed property
+    public string? SourceFilePath
+    {
+        get => _sourceFilePath != null ? Helpers.ReplaceDateTimePlaceholders(_sourceFilePath) : null;
+        set => _sourceFilePath = value;
+    }
+
+    /// <summary>
+    /// JSON property that maps to the backing field for serialization/deserialization
+    /// </summary>
+    [JsonPropertyName("sourceFilePath")]
+    public string? JsonSourceFilePath
+    {
+        get => _sourceFilePath;
+        set => _sourceFilePath = value;
+    }
+
+    // Backing field for SourceSheetName
+    private string? _sourceSheetName;
+
+    /// <summary>
+    /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
+    /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
+    /// </summary>
+    [JsonIgnore] // Don't serialize this computed property
+    public string? SourceSheetName
+    {
+        get => _sourceSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sourceSheetName) : null;
+        set => _sourceSheetName = value;
+    }
+
+    /// <summary>
+    /// JSON property that maps to the backing field for serialization/deserialization
+    /// </summary>
+    [JsonPropertyName("sourceSheetName")]
+    public string? JsonSourceSheetName
+    {
+        get => _sourceSheetName;
+        set => _sourceSheetName = value;
+    }
+
+
+    // Backing field for DestinationSheetName
+    private string? _destinationSheetName;
+
+    /// <summary>
+    /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
+    /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
+    /// </summary>
+    [JsonIgnore] // Don't serialize this computed property
+    public string? DestinationSheetName
+    {
+        get => _destinationSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sourceSheetName) : null;
+        set => _destinationSheetName = value;
+    }
+
+    /// <summary>
+    /// JSON property that maps to the backing field for serialization/deserialization
+    /// </summary>
+    [JsonPropertyName("destinationSheetName")]
+    public string? JsonDestinationSheetName
+    {
+        get => _destinationSheetName;
+        set => _destinationSheetName = value;
+    }
+
     public string DestinationCell { get; set; } = "A1";
     public bool IncludeHeaders { get; set; } = true;
 
