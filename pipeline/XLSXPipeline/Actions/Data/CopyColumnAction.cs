@@ -4,11 +4,14 @@ namespace XLSXPipeline.Actions.Data;
 
 public class CopyColumnAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string From { get; set; }
     public required string To { get; set; }
     public int Count { get; set; } = 1;
+    [ReplacePlaceholders]
     public string? TargetSheetName { get; set; }
+    [ReplacePlaceholders]
     public string? TargetFilePath { get; set; }
     public bool InsertColumns { get; set; } = false; // If true, insert new columns; if false, overwrite existing
 

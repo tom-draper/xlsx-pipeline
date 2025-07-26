@@ -4,10 +4,12 @@ namespace XLSXPipeline.Actions.Data;
 
 public class CopyRowAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public int SourceRow { get; set; }
     public int DestinationRow { get; set; }
     public int Count { get; set; } = 1;
+    [ReplacePlaceholders]
     public string? DestinationSheetName { get; set; }
     public bool InsertRows { get; set; } = false; // If true, insert new rows; if false, overwrite existing
 

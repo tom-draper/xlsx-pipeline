@@ -4,8 +4,10 @@ namespace XLSXPipeline.Actions.Advanced;
 
 public class CreatePivotTableAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SourceSheetName { get; set; }
     public required string SourceRange { get; set; }
+    [ReplacePlaceholders]
     public required string DestinationSheetName { get; set; }
     public required string DestinationCell { get; set; }
     public List<string> RowFields { get; set; } = [];

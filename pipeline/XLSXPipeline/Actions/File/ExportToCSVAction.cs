@@ -5,8 +5,11 @@ namespace XLSXPipeline.Actions.File;
 
 public class ExportToCSVAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? OutputPath { get; set; }
+    [ReplacePlaceholders]
     public string? FileName { get; set; }
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public string Delimiter { get; set; } = ",";
     public string Encoding { get; set; } = "utf-8";

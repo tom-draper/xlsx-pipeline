@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Data;
 
 public class MoveColumnAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string From { get; set; }
     public required string To { get; set; }

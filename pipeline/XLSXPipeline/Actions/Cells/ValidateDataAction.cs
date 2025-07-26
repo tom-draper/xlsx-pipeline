@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Cells;
 
 public class ValidateDataAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string Range { get; set; }
     public string ValidationType { get; set; } = "List";

@@ -14,6 +14,7 @@ public abstract class ActionBase
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// </summary>
+    [ReplacePlaceholders]
     public string? FilePath { get; set; }
 
     /// <summary>
@@ -21,6 +22,8 @@ public abstract class ActionBase
     /// </summary>
     public async Task ExecuteAsync(string triggerFilePath)
     {
+        PlaceholderProcessor.ProcessPlaceholders(this);
+
         // Determine which file path to use - override takes precedence
         var effectiveFilePath = GetEffectiveFilePath(triggerFilePath);
 
@@ -33,7 +36,8 @@ public abstract class ActionBase
     /// </summary>
     protected virtual string GetEffectiveFilePath(string triggerFilePath)
     {
-        return !string.IsNullOrEmpty(FilePath) ? FilePath : triggerFilePath;
+        var effectiveFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : Helpers.ReplaceDateTimePlaceholders(triggerFilePath);
+        return effectiveFilePath;
     }
 
     /// <summary>

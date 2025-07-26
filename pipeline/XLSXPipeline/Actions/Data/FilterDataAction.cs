@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Data;
 
 public class FilterDataAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string Range { get; set; }
     public int FilterColumnIndex { get; set; }

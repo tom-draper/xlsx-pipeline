@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Data;
 
 public class DeleteColumnAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string ColumnName { get; set; }
     public int Count { get; set; } = 1;

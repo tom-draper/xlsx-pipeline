@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Data;
 
 public class SortDataAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string Range { get; set; }
     public required string SortColumn { get; set; }

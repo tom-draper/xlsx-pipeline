@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Formatting;
 
 public class FormatCellsAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string Range { get; set; }
     public string? NumberFormat { get; set; }

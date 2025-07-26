@@ -2,6 +2,7 @@
 
 public class RenameFileAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string NewName { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)

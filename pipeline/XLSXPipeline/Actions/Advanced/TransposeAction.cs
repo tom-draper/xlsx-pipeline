@@ -4,8 +4,10 @@ namespace XLSXPipeline.Actions.Advanced;
 
 public class TransposeAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string SourceSheetName { get; set; }
     public required string SourceRange { get; set; }
+    [ReplacePlaceholders]
     public required string DestinationSheetName { get; set; }
     public required string DestinationCell { get; set; }
 

@@ -2,28 +2,26 @@
 
 public class CreateFileAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string DestinationPath { get; set; }
-
+    [ReplacePlaceholders]
+    public string? FileName { get; set; }
     /// <summary>
     /// Content to write to the file. If null or empty, creates an empty file.
     /// </summary>
     public string? Content { get; set; }
-
     /// <summary>
     /// Whether to overwrite the file if it already exists
     /// </summary>
     public bool OverwriteIfExists { get; set; } = true;
-
     /// <summary>
     /// Whether to automatically rename the file if it already exists (Windows-style - Copy, - Copy (2), etc.)
     /// </summary>
     public bool AutoRenameIfExists { get; set; } = false;
-
     /// <summary>
     /// Whether to create destination directories if they don't exist
     /// </summary>
     public bool CreateDirectories { get; set; } = true;
-
     /// <summary>
     /// Text encoding to use when writing content. Defaults to UTF-8.
     /// </summary>
@@ -34,8 +32,13 @@ public class CreateFileAction : ActionBase
         try
         {
             ValidateInputs();
-            Helpers.EnsureDirectory(DestinationPath, CreateDirectories);
-            var destinationFilePath = HandleExistingFile(DestinationPath);
+
+            var destinationFilePath = Helpers.DetermineDestinationFilePath(
+                filePath, DestinationPath, false, FileName);
+
+            Helpers.EnsureDirectory(destinationFilePath, CreateDirectories);
+
+            destinationFilePath = HandleExistingFile(destinationFilePath);
 
             if (string.IsNullOrEmpty(Content))
                 // Create empty file
@@ -56,11 +59,17 @@ public class CreateFileAction : ActionBase
     {
         if (string.IsNullOrWhiteSpace(DestinationPath))
             throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
+
+        if (OverwriteIfExists && AutoRenameIfExists)
+            throw new ArgumentException("OverwriteIfExists and AutoRenameIfExists cannot both be true");
     }
 
     private string HandleExistingFile(string destinationFilePath)
     {
-        if (!System.IO.File.Exists(destinationFilePath) || OverwriteIfExists)
+        if (!System.IO.File.Exists(destinationFilePath))
+            return destinationFilePath;
+
+        if (OverwriteIfExists)
             return destinationFilePath;
 
         if (AutoRenameIfExists)
@@ -75,6 +84,7 @@ public class CreateFileAction : ActionBase
         var directory = Path.GetDirectoryName(destinationFilePath)!;
         var originalFileName = Path.GetFileNameWithoutExtension(destinationFilePath);
         var extension = Path.GetExtension(destinationFilePath);
+
         var baseCopyName = $"{originalFileName} - Copy";
         var newFilePath = Path.Combine(directory, $"{baseCopyName}{extension}");
 

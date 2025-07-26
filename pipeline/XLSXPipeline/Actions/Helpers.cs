@@ -90,9 +90,25 @@ internal class Helpers
         return resolvedPath;
     }
 
+    public static string ReplaceDateTimePlaceholders(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        var now = DateTime.Now;
+
+        return input
+            .Replace("{year}", now.Year.ToString("D4"))
+            .Replace("{month}", now.Month.ToString("D2"))
+            .Replace("{day}", now.Day.ToString("D2"))
+            .Replace("{hour}", now.Hour.ToString("D2"))
+            .Replace("{minute}", now.Minute.ToString("D2"))
+            .Replace("{second}", now.Second.ToString("D2"));
+    }
+
     public static void EnsureDirectory(string filepath, bool createDirectories)
     {
-        var directory = Path.GetDirectoryName(filepath);
+        var directory = Path.GetDirectoryName(ReplaceDateTimePlaceholders(filepath));
         if (string.IsNullOrEmpty(directory) || Directory.Exists(directory))
             return;
 
@@ -102,8 +118,34 @@ internal class Helpers
             throw new DirectoryNotFoundException($"Directory does not exist: {directory}");
     }
 
-    public static string DetermineDestinationFilePath(string sourcePath, string destinationPath, bool appendSourceExtension)
+    public static string DetermineDestinationFilePath(string sourcePath, string destinationPath, bool appendSourceExtension, string? filename = null)
     {
+        // If filename is provided, use it to override any filename in the destination path
+        if (!string.IsNullOrWhiteSpace(filename))
+        {
+            string directory;
+
+            // Determine the directory from destinationPath
+            if (IsDestinationDirectory(destinationPath) || IsExistingDirectory(destinationPath))
+            {
+                directory = destinationPath;
+            }
+            else if (HasFileExtension(destinationPath) || IsFileInExistingDirectory(destinationPath))
+            {
+                directory = Path.GetDirectoryName(destinationPath) ?? string.Empty;
+            }
+            else
+            {
+                // Treat as directory if it doesn't look like a file path
+                directory = LooksLikeFilePath(destinationPath) ? Path.GetDirectoryName(destinationPath) ?? string.Empty : destinationPath;
+            }
+
+            // Use the provided filename, appending source extension if needed
+            string finalFilename = AppendExtensionIfNeeded(sourcePath, filename, appendSourceExtension);
+            return Path.Combine(directory, finalFilename);
+        }
+
+        // Original logic when no filename is provided
         if (IsDestinationDirectory(destinationPath))
             return CombineWithSourceFileName(sourcePath, destinationPath);
 

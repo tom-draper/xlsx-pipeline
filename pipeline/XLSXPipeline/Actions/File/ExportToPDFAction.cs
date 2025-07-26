@@ -12,8 +12,11 @@ namespace XLSXPipeline.Actions.File;
 
 public class ExportToPDFAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string OutputPath { get; set; }
+    [ReplacePlaceholders]
     public string? FileName { get; set; }
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public PdfPaperSize PaperSize { get; set; } = PdfPaperSize.A4;
     public PageOrientation Orientation { get; set; } = PageOrientation.Portrait;

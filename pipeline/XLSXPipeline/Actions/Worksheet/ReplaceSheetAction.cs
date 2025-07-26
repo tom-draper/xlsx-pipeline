@@ -4,8 +4,11 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class ReplaceSheetAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string TargetSheetName { get; set; }
+    [ReplacePlaceholders]
     public string? SourceFilePath { get; set; }
+    [ReplacePlaceholders]
     public required string SourceSheetName { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)

@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Cells;
 
 public class SetCellValueAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string CellAddress { get; set; }
     public required string Value { get; set; }

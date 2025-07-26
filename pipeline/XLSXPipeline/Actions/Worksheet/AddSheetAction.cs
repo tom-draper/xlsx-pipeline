@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class AddSheetAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string SheetName { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)

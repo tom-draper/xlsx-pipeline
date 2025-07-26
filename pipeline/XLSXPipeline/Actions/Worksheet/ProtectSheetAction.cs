@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class ProtectSheetAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public required string Password { get; set; }
 

@@ -2,7 +2,10 @@
 
 public class CopyFileAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string DestinationPath { get; set; }
+    [ReplacePlaceholders]
+    public string? FileName { get; set; }
 
     /// <summary>
     /// Whether to overwrite the destination file if it already exists
@@ -30,7 +33,7 @@ public class CopyFileAction : ActionBase
         {
             ValidateInputs(filePath);
 
-            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath, AppendSourceExtension);
+            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath, AppendSourceExtension, FileName);
             Helpers.EnsureDirectory(destinationFilePath, CreateDirectories);
             destinationFilePath = HandleExistingFile(destinationFilePath);
 

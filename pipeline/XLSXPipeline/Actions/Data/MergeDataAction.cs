@@ -4,8 +4,11 @@ namespace XLSXPipeline.Actions.Data;
 
 public class MergeDataAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string SourceFilePath { get; set; }
+    [ReplacePlaceholders]
     public string? SourceSheetName { get; set; }
+    [ReplacePlaceholders]
     public string? DestinationSheetName { get; set; }
     public string DestinationCell { get; set; } = "A1";
     public bool IncludeHeaders { get; set; } = true;

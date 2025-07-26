@@ -4,8 +4,10 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class MoveSheetAction : ActionBase
 {
+    [ReplacePlaceholders]
     public required string SheetName { get; set; }
     public int TargetIndex { get; set; } = 1; // 1-based index, defaults to first position
+    [ReplacePlaceholders]
     public string? TargetFilePath { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)

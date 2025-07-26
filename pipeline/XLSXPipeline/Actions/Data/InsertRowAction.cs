@@ -4,6 +4,7 @@ namespace XLSXPipeline.Actions.Data;
 
 public class InsertRowAction : ActionBase
 {
+    [ReplacePlaceholders]
     public string? SheetName { get; set; }
     public int RowNumber { get; set; }
     public int Count { get; set; } = 1;
