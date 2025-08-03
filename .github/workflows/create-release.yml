@@ -35,10 +35,7 @@ jobs:
           VERSION=${{ steps.vars.outputs.version }}
           RID="linux-x64"
           TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
-          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
-
-          if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
-          if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained true -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
 
           ZIP_FILE_PREFIX="xlsx-pipeline"
           ZIP_FILE_NAME="${ZIP_FILE_PREFIX}-${VERSION}-${RID}.zip"
@@ -53,7 +50,7 @@ jobs:
           VERSION=${{ steps.vars.outputs.version }}
           RID="linux-arm64"
           TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
-          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained true -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
 
           if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
           if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
@@ -71,7 +68,7 @@ jobs:
           VERSION=${{ steps.vars.outputs.version }}
           RID="win-x64"
           TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
-          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained true -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
 
           if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
           if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
@@ -89,7 +86,7 @@ jobs:
           VERSION=${{ steps.vars.outputs.version }}
           RID="win-arm64"
           TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
-          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained true -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
 
           if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
           if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
@@ -107,7 +104,7 @@ jobs:
           VERSION=${{ steps.vars.outputs.version }}
           RID="osx-x64"
           TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
-          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained true -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
 
           if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
           if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
@@ -125,7 +122,7 @@ jobs:
           VERSION=${{ steps.vars.outputs.version }}
           RID="osx-arm64"
           TEMP_PUBLISH_DIR="/tmp/publish_${RID}"
-          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained false -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
+          dotnet publish ${{ env.PROJECT_PATH }} -c Release -r ${RID} --self-contained true -p:PublishSingleFile=true -o "${TEMP_PUBLISH_DIR}"
 
           if [ -d "${TEMP_PUBLISH_DIR}/Examples" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Examples"; fi
           if [ -d "${TEMP_PUBLISH_DIR}/Pipelines" ]; then rm -rf "${TEMP_PUBLISH_DIR}/Pipelines/"*; fi
