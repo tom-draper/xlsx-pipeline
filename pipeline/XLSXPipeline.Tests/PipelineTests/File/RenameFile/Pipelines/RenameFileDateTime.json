@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Rename File with DateTime",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "RenameFile",
+      "newName":  "Output_{year}_{month}_{day}_{hour}_{minute}_{second}.xlsx"
+    }
+  ]
+}

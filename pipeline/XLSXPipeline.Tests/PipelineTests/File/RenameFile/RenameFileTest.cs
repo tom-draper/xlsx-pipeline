@@ -7,6 +7,10 @@ public class RenameFileTest : RenameFileTestBase
     [InlineData("Rename File")]
     [InlineData("Rename File No Extension")]
     [InlineData("Rename File Output Path")]
+    [InlineData("Rename File with Date")]
+    [InlineData("Rename File with DateTime")]
+    [InlineData("Rename File with DateTime Path")]
+    [InlineData("Rename File Twice")]
     public async Task RenameFile_SpecificPipeline_ShouldSucceed(string pipelineName)
     {
         try

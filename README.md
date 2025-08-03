@@ -57,9 +57,14 @@ Check out the docs to help build your own pipelines, or browse the [examples](/p
 
 ## Getting Started
 
-<a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0" target="_blank">.NET Runtime 8.0 is required.</a>
-
 No Excel or spreadsheet software required.
+
+Download the latest release from GitHub, or clone and build locally.
+
+```bash
+git clone https://github.com/tom-draper/xlsx-pipeline.git
+dotnet publish pipeline/XLSXPipeline -c Release --self-contained true -p:PublishSingleFile=true -o bin
+```
 
 ### Windows
 

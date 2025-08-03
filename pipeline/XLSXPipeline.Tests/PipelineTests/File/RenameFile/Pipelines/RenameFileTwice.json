@@ -1,0 +1,18 @@
+{
+  "pipelineName": "Rename File Twice",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "RenameFile",
+      "newName":  "Output1.xlsx"
+    },
+    {
+      "type": "RenameFile",
+      "filePath": "Output1.xlsx",
+      "newName":  "Output2.xlsx"
+    }
+  ]
+}

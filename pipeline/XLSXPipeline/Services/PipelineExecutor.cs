@@ -17,13 +17,19 @@ public class PipelineExecutor(ILogger<PipelineExecutor> logger) : IPipelineExecu
 
         if (pipeline.Actions != null)
         {
-            var currentFilePath = triggeredFilePath ?? pipeline.Trigger.Path;
+            var triggerFilePath = triggeredFilePath ?? Path.GetFullPath(NormalizePathSeparators(pipeline.Trigger.Path));
 
             foreach (var action in pipeline.Actions)
             {
                 _logger.LogInformation("[{Name}]: Executing action: {Action}", pipeline.PipelineName, action.Type);
-                await action.ExecuteAsync(currentFilePath);
+                await action.ExecuteAsync(triggerFilePath);
             }
         }
+    }
+
+    private static string NormalizePathSeparators(string path)
+    {
+        return path.Replace('\\', Path.DirectorySeparatorChar)
+                   .Replace('/', Path.DirectorySeparatorChar);
     }
 }

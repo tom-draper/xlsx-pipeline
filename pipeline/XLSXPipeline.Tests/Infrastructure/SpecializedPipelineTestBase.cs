@@ -38,6 +38,14 @@ public abstract class SpecializedPipelineTestBase<TAction> : PipelineTestBase
             ?? throw new InvalidOperationException($"No {typeof(TAction).Name} found in pipeline '{pipelineName}'");
     }
 
+    protected TAction GetLastAction(string? pipelineName = null)
+    {
+        pipelineName ??= DefaultPipelineName;
+        var pipeline = GetPipeline(pipelineName);
+        return pipeline.Actions.OfType<TAction>().LastOrDefault()
+            ?? throw new InvalidOperationException($"No {typeof(TAction).Name} found in pipeline '{pipelineName}'");
+    }
+
     protected IEnumerable<TAction> GetAllActions(string? pipelineName = null)
     {
         pipelineName ??= DefaultPipelineName;

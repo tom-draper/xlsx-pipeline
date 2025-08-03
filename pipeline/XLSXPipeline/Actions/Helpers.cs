@@ -212,6 +212,13 @@ internal class Helpers
                (path.Contains(Path.DirectorySeparatorChar) ||
                 path.Contains(Path.AltDirectorySeparatorChar));
     }
+
+    public static string NormalizePathSeparators(string path)
+    {
+        return path.Replace('\\', Path.DirectorySeparatorChar)
+                   .Replace('/', Path.DirectorySeparatorChar);
+    }
+
     public static int GetColumnNumberFromLetter(string columnLetter)
     {
         if (string.IsNullOrWhiteSpace(columnLetter))
@@ -233,4 +240,4 @@ internal class Helpers
 
         return sum;
     }
- }
+}

@@ -55,7 +55,11 @@ public abstract class ActionBase
     /// </summary>
     protected virtual string? GetEffectiveFilePath(string triggerFilePath)
     {
-        var effectiveFilePath = !string.IsNullOrEmpty(FilePath) ? FilePath : Helpers.ReplaceDateTimePlaceholders(triggerFilePath);
+        string effectiveFilePath;
+        if (!string.IsNullOrEmpty(FilePath))
+            effectiveFilePath = Path.GetFullPath(Helpers.NormalizePathSeparators(FilePath));
+        else
+            effectiveFilePath = Helpers.ReplaceDateTimePlaceholders(triggerFilePath);
         return effectiveFilePath;
     }
 
