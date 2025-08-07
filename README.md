@@ -103,6 +103,8 @@ Environment=DOTNET_ENVIRONMENT=Production
 WantedBy=multi-user.target
 ```
 
+Restart the service after making any changes to a pipeline files within `/Pipeline` to reload.
+
 ## Contributions
 
 Contributions, issues and feature requests are welcome.
