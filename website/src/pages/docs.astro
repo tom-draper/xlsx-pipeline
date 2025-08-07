@@ -6,6 +6,13 @@ import Layout from "../layouts/Layout.astro";
 <Layout>
   <main>
     <div class="pt-18">
+      <h2>General</h2>
+      <div>
+        <h3>General Information</h3>
+        <div>
+          Content
+        </div>
+      </div>
       <h2>Triggers</h2>
       <table>
         <thead>
@@ -34,10 +41,6 @@ import Layout from "../layouts/Layout.astro";
             <td>Example Action</td>
             <td>This is an example description.</td>
           </tr>
-          <tr>
-            <td>Example Action</td>
-            <td>This is an example description.</td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -58,6 +61,10 @@ import Layout from "../layouts/Layout.astro";
   }
   h2 {
     font-size: 5rem;
+  }
+  h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
   }
   table {
     width: 100%;

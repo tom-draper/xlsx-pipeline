@@ -1,11 +1,47 @@
 ﻿using ClosedXML.Excel;
+using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.Worksheet;
 
 public class RenameSheetAction : ActionBase
 {
-    public required string SheetName { get; set; }
-    public required string NewSheetName { get; set; }
+    // Backing fields
+    private string? _sheetName;
+    private string? _newSheetName;
+
+    /// <summary>
+    /// Sheet name to rename. Automatically processes date/time placeholders.
+    /// </summary>
+    [JsonIgnore]
+    public string? SheetName
+    {
+        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
+        set => _sheetName = value;
+    }
+
+    [JsonPropertyName("sheetName")]
+    public string? JsonSheetName
+    {
+        get => _sheetName;
+        set => _sheetName = value;
+    }
+
+    /// <summary>
+    /// New name for the sheet. Automatically processes date/time placeholders.
+    /// </summary>
+    [JsonIgnore]
+    public string? NewSheetName
+    {
+        get => _newSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_newSheetName) : null;
+        set => _newSheetName = value;
+    }
+
+    [JsonPropertyName("newSheetName")]
+    public string? JsonNewSheetName
+    {
+        get => _newSheetName;
+        set => _newSheetName = value;
+    }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {

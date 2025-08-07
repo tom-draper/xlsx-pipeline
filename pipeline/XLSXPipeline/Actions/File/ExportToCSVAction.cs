@@ -1,13 +1,57 @@
 ﻿using ClosedXML.Excel;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.File;
 
 public class ExportToCSVAction : ActionBase
 {
-    public string? OutputPath { get; set; }
-    public string? FileName { get; set; }
-    public string? SheetName { get; set; }
+    private string? _outputPath;
+    private string? _fileName;
+    private string? _sheetName;
+
+    [JsonIgnore]
+    public string? OutputPath
+    {
+        get => _outputPath != null ? Helpers.ReplaceDateTimePlaceholders(_outputPath) : null;
+        set => _outputPath = value;
+    }
+
+    [JsonPropertyName("outputPath")]
+    public string? JsonOutputPath
+    {
+        get => _outputPath;
+        set => _outputPath = value;
+    }
+
+    [JsonIgnore]
+    public string? FileName
+    {
+        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
+        set => _fileName = value;
+    }
+
+    [JsonPropertyName("fileName")]
+    public string? JsonFileName
+    {
+        get => _fileName;
+        set => _fileName = value;
+    }
+
+    [JsonIgnore]
+    public string? SheetName
+    {
+        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
+        set => _sheetName = value;
+    }
+
+    [JsonPropertyName("sheetName")]
+    public string? JsonSheetName
+    {
+        get => _sheetName;
+        set => _sheetName = value;
+    }
+
     public string Delimiter { get; set; } = ",";
     public string Encoding { get; set; } = "utf-8";
     public bool IncludeHeaders { get; set; } = true;

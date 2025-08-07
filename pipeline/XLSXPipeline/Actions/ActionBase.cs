@@ -11,10 +11,29 @@ public abstract class ActionBase
     /// </summary>
     public required string Type { get; set; }
 
+    // Backing field for FilePath
+    private string? _filePath;
+
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
+    /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    public string? FilePath { get; set; }
+    [JsonIgnore] // Don't serialize this computed property
+    public string? FilePath
+    {
+        get => _filePath != null ? Helpers.ReplaceDateTimePlaceholders(_filePath) : null;
+        set => _filePath = value;
+    }
+
+    /// <summary>
+    /// JSON property that maps to the backing field for serialization/deserialization
+    /// </summary>
+    [JsonPropertyName("filePath")]
+    public string? JsonFilePath
+    {
+        get => _filePath;
+        set => _filePath = value;
+    }
 
     /// <summary>
     /// Executes the action with the provided file path from the pipeline
@@ -24,6 +43,9 @@ public abstract class ActionBase
         // Determine which file path to use - override takes precedence
         var effectiveFilePath = GetEffectiveFilePath(triggerFilePath);
 
+        if (effectiveFilePath == null)
+            throw new ArgumentNullException(nameof(effectiveFilePath));
+
         // Call the concrete implementation
         await ExecuteInternalAsync(effectiveFilePath);
     }
@@ -31,9 +53,14 @@ public abstract class ActionBase
     /// <summary>
     /// Gets the effective file path, preferring the FilePath override if provided
     /// </summary>
-    protected virtual string GetEffectiveFilePath(string triggerFilePath)
+    protected virtual string? GetEffectiveFilePath(string triggerFilePath)
     {
-        return !string.IsNullOrEmpty(FilePath) ? FilePath : triggerFilePath;
+        string effectiveFilePath;
+        if (!string.IsNullOrEmpty(FilePath))
+            effectiveFilePath = Path.GetFullPath(Helpers.NormalizePathSeparators(FilePath));
+        else
+            effectiveFilePath = Helpers.ReplaceDateTimePlaceholders(triggerFilePath);
+        return effectiveFilePath;
     }
 
     /// <summary>

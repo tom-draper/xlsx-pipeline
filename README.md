@@ -57,9 +57,14 @@ Check out the docs to help build your own pipelines, or browse the [examples](/p
 
 ## Getting Started
 
-<a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0" target="_blank">.NET Runtime 8.0 is required.</a>
-
 No Excel or spreadsheet software required.
+
+Download the latest release from <a href="https://github.com/tom-draper/xlsx-pipeline/releases/latest">GitHub</a>, or clone the repo and build locally:
+
+```bash
+git clone https://github.com/tom-draper/xlsx-pipeline.git
+dotnet publish pipeline/XLSXPipeline -c Release --self-contained -p:PublishSingleFile=true
+```
 
 ### Windows
 
@@ -97,3 +102,14 @@ Environment=DOTNET_ENVIRONMENT=Production
 [Install]
 WantedBy=multi-user.target
 ```
+
+## Contributions
+
+Contributions, issues and feature requests are welcome.
+
+- Fork it (https://github.com/tom-draper/xlsx-pipeline)
+- Create your feature branch (`git checkout -b my-new-feature`)
+- Commit your changes (`git commit -am 'Add some feature'`)
+- Push to the branch (`git push origin my-new-feature`)
+- Create a new Pull Request
+

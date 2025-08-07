@@ -59,6 +59,7 @@ public abstract class PipelineTestBase : IDisposable
         var actions = pipeline.Actions.OfType<TAction>();
         foreach (var action in actions)
         {
+            UpdatePipelinePropertyForAction(action, "FilePath");
             UpdatePipelinePropertyForAction(action, "DestinationPath");
             UpdatePipelinePropertyForAction(action, "OutputPath");
             UpdatePipelinePropertyForAction(action, "NewName");
@@ -120,7 +121,8 @@ public abstract class PipelineTestBase : IDisposable
     protected string GetInputPath(string pipelineName)
     {
         var pipeline = GetPipeline(pipelineName);
-        return Path.GetFullPath(Path.Combine(BaseDir, pipeline.Trigger.Path));
+        var relativePath = NormalizePathSeparators(pipeline.Trigger.Path);
+        return Path.GetFullPath(Path.Combine(BaseDir, relativePath));
     }
 
     protected IEnumerable<string> GetPipelineNames() => Pipelines.Keys;

@@ -1,10 +1,34 @@
 ﻿using ClosedXML.Excel;
+using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.Data;
 
 public class MoveRowAction : ActionBase
 {
-    public string? SheetName { get; set; }
+    // Backing field for SheetName
+    private string? _sheetName;
+
+    /// <summary>
+    /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
+    /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
+    /// </summary>
+    [JsonIgnore] // Don't serialize this computed property
+    public string? SheetName
+    {
+        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
+        set => _sheetName = value;
+    }
+
+    /// <summary>
+    /// JSON property that maps to the backing field for serialization/deserialization
+    /// </summary>
+    [JsonPropertyName("sheetName")]
+    public string? JsonSheetName
+    {
+        get => _sheetName;
+        set => _sheetName = value;
+    }
+
     public int From { get; set; }
     public int To { get; set; }
     public int Count { get; set; } = 1;
@@ -33,13 +57,13 @@ public class MoveRowAction : ActionBase
         ValidateRowRange(worksheet);
 
         var sourceRange = GetSourceRowRange(worksheet);
-        var rowSnapshots = CaptureRowSnapshots(sourceRange);
+        var rowSnapshots = CaptureRowSnapshots(sourceRange, worksheet);
 
         int adjustedTo = CalculateAdjustedTargetRow();
 
         DeleteSourceRows(worksheet);
         InsertRowsAtTarget(worksheet, adjustedTo);
-        RestoreRowSnapshots(worksheet, rowSnapshots, adjustedTo);
+        RestoreRowSnapshots(worksheet, rowSnapshots, To);
     }
 
     private void ValidateInputs()
@@ -62,10 +86,9 @@ public class MoveRowAction : ActionBase
             throw new ArgumentOutOfRangeException(nameof(Count),
                 $"Cannot move {Count} rows starting from row {From}. This would exceed Excel's row limit ({maxRow}).");
 
-        int adjustedTo = CalculateAdjustedTargetRow();
-        if (adjustedTo + Count - 1 > maxRow)
+        if (To + Count - 1 > maxRow)
             throw new ArgumentOutOfRangeException(nameof(To),
-                $"Cannot move rows to row {adjustedTo}. This would exceed Excel's row limit ({maxRow}).");
+                $"Cannot move rows to row {To}. This would exceed Excel's row limit ({maxRow}).");
 
         int sourceEnd = From + Count - 1;
         int destEnd = To + Count - 1;
@@ -81,7 +104,6 @@ public class MoveRowAction : ActionBase
 
     private int CalculateAdjustedTargetRow()
     {
-        // When moving down, we need to adjust the insertion point because source rows are deleted first
         return To > From ? To - Count : To;
     }
 
@@ -97,56 +119,63 @@ public class MoveRowAction : ActionBase
 
     private record CellSnapshot(XLCellValue Value, string? Formula, IXLStyle Style, bool IsMerged);
 
-    private static CellSnapshot[,] CaptureRowSnapshots(IXLRange sourceRange)
+    private record RowSnapshot(CellSnapshot[] Cells, double Height);
+
+    private static RowSnapshot[] CaptureRowSnapshots(IXLRange sourceRange, IXLWorksheet worksheet)
     {
         int rowCount = sourceRange.RowCount();
         int colCount = sourceRange.ColumnCount();
-        var snapshots = new CellSnapshot[rowCount, colCount];
+        var snapshots = new RowSnapshot[rowCount];
 
         for (int i = 0; i < rowCount; i++)
         {
             var row = sourceRange.Row(i + 1);
+            var worksheetRow = worksheet.Row(sourceRange.FirstCell().Address.RowNumber + i);
+            var cells = new CellSnapshot[colCount];
+
             for (int j = 0; j < colCount; j++)
             {
                 var cell = row.Cell(j + 1);
-                snapshots[i, j] = new CellSnapshot(
+                cells[j] = new CellSnapshot(
                     cell.Value,
                     cell.HasFormula ? cell.FormulaA1 : null,
                     cell.Style,
                     cell.IsMerged()
                 );
             }
+
+            snapshots[i] = new RowSnapshot(cells, worksheetRow.Height);
         }
 
         return snapshots;
     }
 
-    private void RestoreRowSnapshots(IXLWorksheet worksheet, CellSnapshot[,] snapshots, int targetRow)
+    private static void RestoreRowSnapshots(IXLWorksheet worksheet, RowSnapshot[] snapshots, int targetRow)
     {
-        int rowCount = snapshots.GetLength(0);
-        int colCount = snapshots.GetLength(1);
-
-        for (int i = 0; i < rowCount; i++)
+        for (int i = 0; i < snapshots.Length; i++)
         {
+            var rowSnapshot = snapshots[i];
             var row = worksheet.Row(targetRow + i);
-            for (int j = 0; j < colCount; j++)
+
+            // Restore row height
+            row.Height = rowSnapshot.Height;
+
+            // Restore cells
+            for (int j = 0; j < rowSnapshot.Cells.Length; j++)
             {
                 var cell = worksheet.Cell(targetRow + i, j + 1);
-                var snap = snapshots[i, j];
+                var cellSnapshot = rowSnapshot.Cells[j];
 
-                if (snap.Formula != null)
-                    cell.FormulaA1 = snap.Formula;
+                if (cellSnapshot.Formula != null)
+                    cell.FormulaA1 = cellSnapshot.Formula;
                 else
-                    cell.Value = snap.Value;
+                    cell.Value = cellSnapshot.Value;
 
-                cell.Style = snap.Style;
+                cell.Style = cellSnapshot.Style;
 
                 // Optional: you could re-merge if needed
                 // Note: This simple logic does not restore merged ranges; use more advanced tracking if needed.
             }
-
-            // Preserve row height
-            row.Height = worksheet.Row(From + i).Height;
         }
     }
 }

@@ -1,0 +1,18 @@
+{
+  "pipelineName": "Move File Twice",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MoveFile",
+      "destinationPath":  ".\\Output\\Output1.xlsx"
+    },
+    {
+      "type": "MoveFile",
+      "filePath": ".\\Output\\Output1.xlsx",
+      "destinationPath":  ".\\Output\\Output2.xlsx"
+    }
+  ]
+}

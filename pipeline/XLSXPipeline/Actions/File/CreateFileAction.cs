@@ -1,8 +1,47 @@
-﻿namespace XLSXPipeline.Actions.File;
+﻿using System.Text;
+using System.Text.Json.Serialization;
+
+namespace XLSXPipeline.Actions.File;
 
 public class CreateFileAction : ActionBase
 {
-    public required string DestinationPath { get; set; }
+    // Backing field for DestinationPath
+    private string? _destinationPath;
+
+    [JsonIgnore]
+    public string DestinationPath
+    {
+        get
+        {
+            if (_destinationPath == null)
+                throw new InvalidOperationException("DestinationPath has not been set.");
+            return Helpers.ReplaceDateTimePlaceholders(_destinationPath);
+        }
+        set => _destinationPath = value ?? throw new ArgumentNullException(nameof(DestinationPath));
+    }
+
+    [JsonPropertyName("destinationPath")]
+    public string? JsonDestinationPath
+    {
+        get => _destinationPath;
+        set => _destinationPath = value;
+    }
+
+    // Backing field for FileName
+    private string? _fileName;
+    [JsonIgnore]
+    public string? FileName
+    {
+        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
+        set => _fileName = value;
+    }
+
+    [JsonPropertyName("fileName")]
+    public string? JsonFileName
+    {
+        get => _fileName;
+        set => _fileName = value;
+    }
 
     /// <summary>
     /// Content to write to the file. If null or empty, creates an empty file.
@@ -27,15 +66,20 @@ public class CreateFileAction : ActionBase
     /// <summary>
     /// Text encoding to use when writing content. Defaults to UTF-8.
     /// </summary>
-    public System.Text.Encoding Encoding { get; set; } = System.Text.Encoding.UTF8;
+    public Encoding Encoding { get; set; } = Encoding.UTF8;
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
         try
         {
             ValidateInputs();
-            Helpers.EnsureDirectory(DestinationPath, CreateDirectories);
-            var destinationFilePath = HandleExistingFile(DestinationPath);
+
+            var destinationFilePath = Helpers.DetermineDestinationFilePath(
+                filePath, DestinationPath, false, FileName);
+
+            Helpers.EnsureDirectory(destinationFilePath, CreateDirectories);
+
+            destinationFilePath = HandleExistingFile(destinationFilePath);
 
             if (string.IsNullOrEmpty(Content))
                 // Create empty file
@@ -56,11 +100,17 @@ public class CreateFileAction : ActionBase
     {
         if (string.IsNullOrWhiteSpace(DestinationPath))
             throw new ArgumentException("DestinationPath cannot be null or empty", nameof(DestinationPath));
+
+        if (OverwriteIfExists && AutoRenameIfExists)
+            throw new ArgumentException("OverwriteIfExists and AutoRenameIfExists cannot both be true");
     }
 
     private string HandleExistingFile(string destinationFilePath)
     {
-        if (!System.IO.File.Exists(destinationFilePath) || OverwriteIfExists)
+        if (!System.IO.File.Exists(destinationFilePath))
+            return destinationFilePath;
+
+        if (OverwriteIfExists)
             return destinationFilePath;
 
         if (AutoRenameIfExists)

@@ -12,7 +12,7 @@ public abstract class MoveFileTestBase(string? defaultPipelineName = null) : Spe
 
         var outputPath = pipeline.Actions
             .OfType<MoveFileAction>()
-            .FirstOrDefault(x => !string.IsNullOrEmpty(x.DestinationPath))?
+            .LastOrDefault(x => !string.IsNullOrEmpty(x.DestinationPath))?
             .DestinationPath ?? throw new InvalidOperationException($"No MoveFileAction with destination path found in pipeline '{pipelineName}'");
 
         if (!outputPath.EndsWith(".xlsx"))
@@ -50,10 +50,10 @@ public abstract class MoveFileTestBase(string? defaultPipelineName = null) : Spe
         var outputPath = GetOutputPath(pipelineName);
 
         if (!System.IO.File.Exists(outputPath))
-            throw new FileNotFoundException($"Renamed file should exist for pipeline '{pipelineName}'.");
+            throw new FileNotFoundException($"Moved file should exist for pipeline '{pipelineName}'.");
 
         var outputFileInfo = new FileInfo(outputPath);
         if (outputFileInfo.Length == 0)
-            throw new InvalidOperationException($"Renamed file should not be empty for pipeline '{pipelineName}'.");
+            throw new InvalidOperationException($"Moved file should not be empty for pipeline '{pipelineName}'.");
     }
 }

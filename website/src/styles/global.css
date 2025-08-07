@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
 @import "tailwindcss";
 
-h1, h2 {
+h1, h2, h3 {
   font-family: 'VT323';
   color: rgb(0, 49, 25);
 }

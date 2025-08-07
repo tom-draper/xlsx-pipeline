@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Move File with DateTime Path",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MoveFile",
+      "destinationPath":  ".\\Output_{year}_{month}_{day}_{hour}_{minute}_{second}\\Output_{year}_{month}_{day}_{hour}_{minute}_{second}.xlsx"
+    }
+  ]
+}
