@@ -1,17 +1,61 @@
 ---
 import "../styles/global.css";
 import Layout from "../layouts/Layout.astro";
+
+const filestructure = `XLSXPipeline.exe
+Pipelines/
+├── CleanReport.json
+├── TransferSalesData.json
+├── ApplyAnalytics.json
+└── UpdateLeads.json`;
+
+const example = `{
+    "pipelineName": "Generate Monthly Sales Summary",
+    "trigger": {
+        "type": "OnChange",
+        "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+    },
+    "actions": [
+        {
+            "type": "DuplicateSheet",
+            "sourceName": "Template",
+            "newName": "Summary"
+        },
+        {
+            "type": "FillFormula",
+            "sheet": "Summary",
+            "range": "B2:B100",
+            "formula": "=SUM(Sales!B2:D2)"
+        },
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\Sales\\Summaries\\",
+            "fileName": "Summary_{month}_{year}.xlsx"
+        }
+    ]
+}`;
 ---
 
 <Layout>
   <main>
     <div class="pt-18">
-      <h2>General</h2>
+      <h2>Pipelines</h2>
+      <p>
+        Pipelines are custom automated workflows that operate on local Excel or
+        spreadsheet files on your machine. They are designed to automate
+        repetitive tasks, such as data cleaning, transformation, transfer and
+        reporting. Each pipeline consists of a trigger and a series of actions
+        that insert, modify or delete cells, worksheets or entire workbooks.
+      </p>
+      <p>
+        Pipelines are defined in a JSON format. The pipelines are stored in a
+        dedicated folder, named "Pipelines", within the same directory as the
+        XLSXPipeline executable.
+      </p>
+      <code lang="txt"><pre>{filestructure}</pre></code>
       <div>
-        <h3>General Information</h3>
-        <div>
-          Content
-        </div>
+        <h3>Example</h3>
+        <code lang="json"><pre>{example}</pre></code>
       </div>
       <h2>Triggers</h2>
       <table>
@@ -23,8 +67,116 @@ import Layout from "../layouts/Layout.astro";
         </thead>
         <tbody>
           <tr>
-            <td>Example Trigger</td>
-            <td>This is an example description.</td>
+            <td><b>Once</b></td>
+            <td>
+              <p>Triggers once, as soon as the XLSXPipeline service starts.</p>
+
+              <p>
+                Takes an optional file path that will be used as the file path
+                for any relevant actions that do not provide a file path.
+              </p>
+
+              <code lang="json"
+                ><pre>{`"trigger": {
+  "type": "Once",
+  "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>Cron Expressions</b></td>
+            <td>
+              <p>
+                Triggers on a scheduled basis determined by a cron expression.
+              </p>
+
+              <p>
+                Takes an optional file path that will be used as the file path
+                for any relevant actions that do not provide a file path.
+              </p>
+
+              <code lang="json"
+                ><pre>{`"trigger": {
+  "type": "30 9,17 * * *",
+  "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>Natural Language</b></td>
+            <td>
+              <p>
+                Triggers on a scheduled basis determined by a simple natural
+                language option.
+              </p>
+
+              <p>
+                Examples: 'Every 5 minutes', 'Every 2 hours', 'Every day',
+                'Every week', 'At 6:15pm'.
+              </p>
+
+              <p>
+                To be used as a simpler alternative to cron expressions,
+                although cron expressions are preferred.
+              </p>
+
+              <p>
+                Takes an optional file path that will be used as the file path
+                for any relevant actions that do not provide a file path.
+              </p>
+
+              <code lang="json"
+                ><pre>{`"trigger": {
+  "type": "Every day",
+  "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>OnChange</b></td>
+            <td>
+              <p>
+                Triggers when a file is updated or if contents of the directory
+                are changed.
+              </p>
+
+              <p>
+                Requires a path to a file or directory that will be watched for
+                any changes.
+              </p>
+
+              <code lang="json"
+                ><pre>{`"trigger": {
+  "type": "OnChange",
+  "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>OnNewFile</b></td>
+            <td>
+              <p>Triggers when a new file is created in the directory.</p>
+
+              <p>
+                Requires a path to a directory that will be watched for any new
+                files.
+              </p>
+
+              <code lang="json"
+                ><pre>{`"trigger": {
+  "type": "OnNewFile",
+  "path": "C:\\Sales\\Monthly\\"
+}`}</pre></code
+              >
+            </td>
           </tr>
         </tbody>
       </table>
@@ -65,6 +217,7 @@ import Layout from "../layouts/Layout.astro";
   h3 {
     font-size: 1.8rem;
     font-weight: 600;
+    padding: 1rem 0;
   }
   table {
     width: 100%;
@@ -82,5 +235,8 @@ import Layout from "../layouts/Layout.astro";
   }
   tr {
     background: white;
+  }
+  p {
+    padding-bottom: 1em;
   }
 </style>
