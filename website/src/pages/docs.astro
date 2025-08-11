@@ -77,7 +77,7 @@ const example = `{
               </p>
 
               <code lang="json"
-                ><pre>{`"trigger": {
+                ><pre>{`{
   "type": "Once",
   "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
 }`}</pre></code
@@ -98,7 +98,7 @@ const example = `{
               </p>
 
               <code lang="json"
-                ><pre>{`"trigger": {
+                ><pre>{`{
   "type": "30 9,17 * * *",
   "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
 }`}</pre></code
@@ -130,7 +130,7 @@ const example = `{
               </p>
 
               <code lang="json"
-                ><pre>{`"trigger": {
+                ><pre>{`{
   "type": "Every day",
   "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
 }`}</pre></code
@@ -152,7 +152,7 @@ const example = `{
               </p>
 
               <code lang="json"
-                ><pre>{`"trigger": {
+                ><pre>{`{
   "type": "OnChange",
   "path": "C:\\Sales\\Monthly\\SalesData.xlsx"
 }`}</pre></code
@@ -171,7 +171,7 @@ const example = `{
               </p>
 
               <code lang="json"
-                ><pre>{`"trigger": {
+                ><pre>{`{
   "type": "OnNewFile",
   "path": "C:\\Sales\\Monthly\\"
 }`}</pre></code
@@ -190,8 +190,259 @@ const example = `{
         </thead>
         <tbody>
           <tr>
-            <td>Example Action</td>
-            <td>This is an example description.</td>
+            <td><b>CreateFile</b></td>
+            <td>
+              <p>Creates a new .xlsx file.</p>
+
+              <p>
+                Requires a destination path to a directory or complete file path
+                to specify a save location for the new file.
+              </p>
+
+              <p>
+                An optional file name can be specified if one has not been
+                included in the destination path.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "CreateFile",
+  "destinationPath": "C:\\Sales\\Monthly\\,
+  "fileName": "SalesData.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>DeleteFile</b></td>
+            <td>
+              <p>Deletes a file.</p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "DeleteFile",
+  "filePath": "C:\\Temp\\ToDelete.xlsx",
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>CopyFile</b></td>
+            <td>
+              <p>Makes a copy of a file.</p>
+
+              <p>
+                Requires a destination path to a directory or complete file path
+                that the copy will be saved to. If a directory path is provided,
+                the file will be saved with the same name as the original file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "CopyFile",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "destinationPath": ".\\Output\\Output.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>MoveFile</b></td>
+            <td>
+              <p>Moves a file to a new location.</p>
+
+              <p>
+                Requires a destination path to a directory or complete file path
+                that the copy will be moved to. If a directory path is provided,
+                the file will be saved with the same name as the original file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "MoveFile",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "destinationPath": ".\\Output\\Output.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>Rename</b></td>
+            <td>
+              <p>Renames a file.</p>
+
+              <p>
+                Requires a new name for the file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "RenameFile",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "newName": "SalesData_2023.xlsx"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+
+
+          <tr>
+            <td><b>ProtectFile</b></td>
+            <td>
+              <p>Password protects a file.</p>
+
+              <p>
+                Requires a password to be used to protect the file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "ProtectFile",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "password": "mysecretpassword"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>UnnprotectFile</b></td>
+            <td>
+              <p>Removes password protection from file.</p>
+
+              <p>
+                Requires a password to be used to unprotect a file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "UnprotectFile",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "password": "mysecretpassword"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>ExportToCSV</b></td>
+            <td>
+              <p>Exports a file to CSV.</p>
+
+              <p>
+                Requires a destination path to a directory or complete file path
+                that the copy will be saved to. If a directory path is provided,
+                the file will be saved with the same name as the original file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "ExportToCSV",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "destinationPath": ".\\Output\\Output.csv"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>ExportToPDF</b></td>
+            <td>
+              <p>Exports a file to PDF.</p>
+
+              <p>
+                Requires a destination path to a directory or complete file path
+                that the copy will be saved to. If a directory path is provided,
+                the file will be saved with the same name as the original file.
+              </p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "ExportToPDF",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+  "destinationPath": ".\\Output\\Output.pdf"
+}`}</pre></code
+              >
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>OpenFile</b></td>
+            <td>
+              <p>Opens a file using the default system application for .xlsx files.</p>
+
+              <p>
+                An optional file path can be provided to specify the file to
+                copy. If not provided, the file path from the trigger will be
+                used.
+              </p>
+
+              <code lang="json"
+                ><pre>{`{
+  "type": "OpenFile",
+  "filePath": "C:\\Sales\\Monthly\\SalesData.xlsx",
+}`}</pre></code
+              >
+            </td>
           </tr>
         </tbody>
       </table>
