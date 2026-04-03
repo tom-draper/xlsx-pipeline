@@ -5,65 +5,26 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class ReplaceSheetAction : ActionBase
 {
-    // Backing fields
-    private string? _targetSheetName;
-    private string? _sourceFilePath;
-    private string? _sourceSheetName;
-
     /// <summary>
     /// Sheet name in the target workbook to be replaced.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore]
-    public string? TargetSheetName
-    {
-        get => _targetSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_targetSheetName) : null;
-        set => _targetSheetName = value;
-    }
+    [JsonPropertyName("targetSheetName")]
+    public PlaceholderString? TargetSheetName { get; set; }
 
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore]
-    public string? SourceFilePath
-    {
-        get => _sourceFilePath != null ? Helpers.ReplaceDateTimePlaceholders(_sourceFilePath) : null;
-        set => _sourceFilePath = value;
-    }
+    [JsonPropertyName("sourceFilePath")]
+    public PlaceholderString? SourceFilePath { get; set; }
 
     /// <summary>
     /// Sheet name in the source workbook to copy from.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore]
-    public string? SourceSheetName
-    {
-        get => _sourceSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sourceSheetName) : null;
-        set => _sourceSheetName = value;
-    }
-
-    // JSON properties for serialization/deserialization
-    [JsonPropertyName("targetSheetName")]
-    public string? JsonTargetSheetName
-    {
-        get => _targetSheetName;
-        set => _targetSheetName = value;
-    }
-
-    [JsonPropertyName("sourceFilePath")]
-    public string? JsonSourceFilePath
-    {
-        get => _sourceFilePath;
-        set => _sourceFilePath = value;
-    }
-
     [JsonPropertyName("sourceSheetName")]
-    public string? JsonSheetName
-    {
-        get => _sourceSheetName;
-        set => _sourceSheetName = value;
-    }
+    public PlaceholderString? SourceSheetName { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {

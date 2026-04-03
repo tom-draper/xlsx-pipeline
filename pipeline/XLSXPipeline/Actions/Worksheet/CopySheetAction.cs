@@ -5,62 +5,23 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class CopySheetAction : ActionBase
 {
-    // Backing fields
-    private string? _sourceSheetName;
-    private string? _newSheetName;
-    private string? _targetFilePath;
-
     /// <summary>
     /// Name of the sheet to copy.
     /// </summary>
-    [JsonIgnore]
-    public string? SourceSheetName
-    {
-        get => _sourceSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sourceSheetName) : null;
-        set => _sourceSheetName = value;
-    }
+    [JsonPropertyName("sourceSheetName")]
+    public PlaceholderString? SourceSheetName { get; set; }
 
     /// <summary>
     /// New name for the copied sheet.
     /// </summary>
-    [JsonIgnore]
-    public string? NewSheetName
-    {
-        get => _newSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_newSheetName) : null;
-        set => _newSheetName = value;
-    }
+    [JsonPropertyName("newSheetName")]
+    public PlaceholderString? NewSheetName { get; set; }
 
     /// <summary>
     /// Optional path to a different workbook where the sheet should be copied.
     /// </summary>
-    [JsonIgnore]
-    public string? TargetFilePath
-    {
-        get => _targetFilePath != null ? Helpers.ReplaceDateTimePlaceholders(_targetFilePath) : null;
-        set => _targetFilePath = value;
-    }
-
-    // JSON mapping properties
-    [JsonPropertyName("sourceSheetName")]
-    public string? JsonSourceSheetName
-    {
-        get => _sourceSheetName;
-        set => _sourceSheetName = value;
-    }
-
-    [JsonPropertyName("newSheetName")]
-    public string? JsonNewSheetName
-    {
-        get => _newSheetName;
-        set => _newSheetName = value;
-    }
-
     [JsonPropertyName("targetFilePath")]
-    public string? JsonTargetFilePath
-    {
-        get => _targetFilePath;
-        set => _targetFilePath = value;
-    }
+    public PlaceholderString? TargetFilePath { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {

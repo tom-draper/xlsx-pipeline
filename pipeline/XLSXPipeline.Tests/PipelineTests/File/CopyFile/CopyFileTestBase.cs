@@ -10,10 +10,10 @@ public abstract class CopyFileTestBase(string? defaultPipelineName = null) : Spe
         pipelineName ??= DefaultPipelineName;
         var pipeline = GetPipeline(pipelineName);
 
-        var outputPath = pipeline.Actions
+        var outputPath = (string?)(pipeline.Actions
             .OfType<CopyFileAction>()
             .FirstOrDefault(x => !string.IsNullOrEmpty(x.DestinationPath))?
-            .DestinationPath ?? throw new InvalidOperationException($"No CopyFileAction with destination path found in pipeline '{pipelineName}'");
+            .DestinationPath) ?? throw new InvalidOperationException($"No CopyFileAction with destination path found in pipeline '{pipelineName}'");
 
         if (!outputPath.EndsWith(".xlsx"))
             outputPath += ".xlsx";

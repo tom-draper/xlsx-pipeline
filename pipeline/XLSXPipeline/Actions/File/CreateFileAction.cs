@@ -5,43 +5,11 @@ namespace XLSXPipeline.Actions.File;
 
 public class CreateFileAction : ActionBase
 {
-    // Backing field for DestinationPath
-    private string? _destinationPath;
-
-    [JsonIgnore]
-    public string DestinationPath
-    {
-        get
-        {
-            if (_destinationPath == null)
-                throw new InvalidOperationException("DestinationPath has not been set.");
-            return Helpers.ReplaceDateTimePlaceholders(_destinationPath);
-        }
-        set => _destinationPath = value ?? throw new ArgumentNullException(nameof(DestinationPath));
-    }
-
     [JsonPropertyName("destinationPath")]
-    public string? JsonDestinationPath
-    {
-        get => _destinationPath;
-        set => _destinationPath = value;
-    }
-
-    // Backing field for FileName
-    private string? _fileName;
-    [JsonIgnore]
-    public string? FileName
-    {
-        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
-        set => _fileName = value;
-    }
+    public PlaceholderString? DestinationPath { get; set; }
 
     [JsonPropertyName("fileName")]
-    public string? JsonFileName
-    {
-        get => _fileName;
-        set => _fileName = value;
-    }
+    public PlaceholderString? FileName { get; set; }
 
     /// <summary>
     /// Content to write to the file. If null or empty, creates an empty file.

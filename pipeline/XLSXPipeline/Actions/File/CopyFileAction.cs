@@ -4,35 +4,11 @@ namespace XLSXPipeline.Actions.File;
 
 public class CopyFileAction : ActionBase
 {
-    // Backing field for DestinationPath
-    private string? _destinationPath;
-    [JsonIgnore]
-    public string? DestinationPath
-    {
-        get => _destinationPath != null ? Helpers.ReplaceDateTimePlaceholders(_destinationPath) : null;
-        set => _destinationPath = value;
-    }
     [JsonPropertyName("destinationPath")]
-    public string? JsonDestinationPath
-    {
-        get => _destinationPath;
-        set => _destinationPath = value;
-    }
+    public PlaceholderString? DestinationPath { get; set; }
 
-    // Backing field for FileName
-    private string? _fileName;
-    [JsonIgnore]
-    public string? FileName
-    {
-        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
-        set => _fileName = value;
-    }
     [JsonPropertyName("fileName")]
-    public string? JsonFileName
-    {
-        get => _fileName;
-        set => _fileName = value;
-    }
+    public PlaceholderString? FileName { get; set; }
 
     /// <summary>
     /// Whether to overwrite the destination file if it already exists

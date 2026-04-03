@@ -4,24 +4,11 @@ namespace XLSXPipeline.Actions.File;
 
 public class RenameFileAction : ActionBase
 {
-    private string? _newName;
-
     /// <summary>
     /// New file name or full destination path. Supports date/time placeholders.
     /// </summary>
-    [JsonIgnore]
-    public string? NewName
-    {
-        get => _newName != null ? Helpers.ReplaceDateTimePlaceholders(_newName) : null;
-        set => _newName = value;
-    }
-
     [JsonPropertyName("newName")]
-    public string? JsonNewName
-    {
-        get => _newName;
-        set => _newName = value;
-    }
+    public PlaceholderString? NewName { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
@@ -65,14 +52,16 @@ public class RenameFileAction : ActionBase
 
     private bool IsFullPath()
     {
-        return Path.IsPathRooted(NewName) ||
-               NewName.Contains(Path.DirectorySeparatorChar) ||
-               NewName.Contains(Path.AltDirectorySeparatorChar);
+        string? name = NewName;
+        return name != null && (
+            Path.IsPathRooted(name) ||
+            name.Contains(Path.DirectorySeparatorChar) ||
+            name.Contains(Path.AltDirectorySeparatorChar));
     }
 
     private string BuildFullPathDestination(string filePath)
     {
-        var destinationPath = NewName!;
+        var destinationPath = (string?)NewName ?? string.Empty;
 
         if (string.IsNullOrEmpty(Path.GetExtension(destinationPath)))
         {
@@ -86,7 +75,7 @@ public class RenameFileAction : ActionBase
     private string BuildFilenameDestination(string filePath)
     {
         var sourceDirectory = GetSourceDirectory(filePath);
-        var newNameWithExtension = EnsureExtension(filePath, NewName!);
+        var newNameWithExtension = EnsureExtension(filePath, (string?)NewName ?? string.Empty);
 
         return Path.Combine(sourceDirectory, newNameWithExtension);
     }

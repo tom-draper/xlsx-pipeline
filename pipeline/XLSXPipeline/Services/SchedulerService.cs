@@ -82,7 +82,7 @@ public class SchedulerService(
         }
     }
 
-    public async Task ReloadScheduledPipelinesAsync(List<ScheduledPipeline> pipelines)
+    public Task ReloadScheduledPipelinesAsync(List<ScheduledPipeline> pipelines)
     {
         _logger.LogInformation("Reloading scheduled pipelines. New count: {Count}", pipelines.Count);
 
@@ -114,7 +114,7 @@ public class SchedulerService(
         }
 
         _logger.LogInformation("Pipeline reload completed successfully.");
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     private static bool PipelineContentUnchanged(ScheduledPipeline existing, ScheduledPipeline updated)

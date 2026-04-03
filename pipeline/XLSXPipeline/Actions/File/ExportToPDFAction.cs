@@ -13,51 +13,14 @@ namespace XLSXPipeline.Actions.File;
 
 public class ExportToPDFAction : ActionBase
 {
-    private string? _outputPath;
-    private string? _fileName;
-    private string? _sheetName;
-
-    [JsonIgnore]
-    public string? OutputPath
-    {
-        get => _outputPath != null ? Helpers.ReplaceDateTimePlaceholders(_outputPath) : null;
-        set => _outputPath = value;
-    }
-
     [JsonPropertyName("outputPath")]
-    public string? JsonOutputPath
-    {
-        get => _outputPath;
-        set => _outputPath = value;
-    }
-
-    [JsonIgnore]
-    public string? FileName
-    {
-        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
-        set => _fileName = value;
-    }
+    public PlaceholderString? OutputPath { get; set; }
 
     [JsonPropertyName("fileName")]
-    public string? JsonFileName
-    {
-        get => _fileName;
-        set => _fileName = value;
-    }
-
-    [JsonIgnore]
-    public string? SheetName
-    {
-        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
-        set => _sheetName = value;
-    }
+    public PlaceholderString? FileName { get; set; }
 
     [JsonPropertyName("sheetName")]
-    public string? JsonSheetName
-    {
-        get => _sheetName;
-        set => _sheetName = value;
-    }
+    public PlaceholderString? SheetName { get; set; }
 
     public PdfPaperSize PaperSize { get; set; } = PdfPaperSize.A4;
     public PageOrientation Orientation { get; set; } = PageOrientation.Portrait;

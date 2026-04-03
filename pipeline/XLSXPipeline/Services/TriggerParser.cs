@@ -129,10 +129,11 @@ public partial class TriggerParser : ITriggerParser
             "minute" => TimeSpan.FromMinutes(value),
             "hour" => TimeSpan.FromHours(value),
             "day" => TimeSpan.FromDays(value),
-            _ => default
+            _ => TimeSpan.Zero
         };
 
-        return interval != default;
+        // Zero interval would cause an infinite execution loop; unknown units produce Zero via the default case
+        return interval > TimeSpan.Zero;
     }
 
     public bool TryParseNaturalLanguage(string naturalLanguage, out string cronExpression)
@@ -208,8 +209,8 @@ public partial class TriggerParser : ITriggerParser
 
             var now = DateTime.Now;
 
-            // Simple cron parser - find next valid time within the next 7 days
-            for (int dayOffset = 0; dayOffset < 7; dayOffset++)
+            // Search up to 366 days ahead to cover all monthly and yearly schedules
+            for (int dayOffset = 0; dayOffset < 366; dayOffset++)
             {
                 var checkDate = now.Date.AddDays(dayOffset);
 

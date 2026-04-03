@@ -5,43 +5,17 @@ namespace XLSXPipeline.Actions.Worksheet;
 
 public class MoveSheetAction : ActionBase
 {
-    // Backing fields
-    private string? _sheetName;
-    private string? _targetFilePath;
-
     /// <summary>
     /// Name of the sheet to move. Automatically processes date/time placeholders.
     /// </summary>
-    [JsonIgnore]
-    public string? SheetName
-    {
-        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
-        set => _sheetName = value;
-    }
-
     [JsonPropertyName("sheetName")]
-    public string? JsonSheetName
-    {
-        get => _sheetName;
-        set => _sheetName = value;
-    }
+    public PlaceholderString? SheetName { get; set; }
 
     /// <summary>
     /// Optional file path override. Automatically processes date/time placeholders.
     /// </summary>
-    [JsonIgnore]
-    public string? TargetFilePath
-    {
-        get => _targetFilePath != null ? Helpers.ReplaceDateTimePlaceholders(_targetFilePath) : null;
-        set => _targetFilePath = value;
-    }
-
     [JsonPropertyName("targetFilePath")]
-    public string? JsonTargetFilePath
-    {
-        get => _targetFilePath;
-        set => _targetFilePath = value;
-    }
+    public PlaceholderString? TargetFilePath { get; set; }
 
     /// <summary>
     /// 1-based index to move the sheet to. Defaults to 1 (first position).

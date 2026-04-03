@@ -5,78 +5,27 @@ namespace XLSXPipeline.Actions.Data;
 
 public class CopyColumnAction : ActionBase
 {
-    // Backing field for SheetName
-    private string? _sheetName;
-
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore] // Don't serialize this computed property
-    public string? SheetName
-    {
-        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
-        set => _sheetName = value;
-    }
-
-    /// <summary>
-    /// JSON property that maps to the backing field for serialization/deserialization
-    /// </summary>
     [JsonPropertyName("sheetName")]
-    public string? JsonSheetName
-    {
-        get => _sheetName;
-        set => _sheetName = value;
-    }
+    public PlaceholderString? SheetName { get; set; }
     public required string From { get; set; }
     public required string To { get; set; }
     public int Count { get; set; } = 1;
-    // Backing field for TargetSheetName
-    private string? _targetSheetName;
-
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
-    /// </summary>
-    [JsonIgnore] // Don't serialize this computed property
-    public string? TargetSheetName
-    {
-        get => _targetSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_targetSheetName) : null;
-        set => _targetSheetName = value;
-    }
-
-    /// <summary>
-    /// JSON property that maps to the backing field for serialization/deserialization
     /// </summary>
     [JsonPropertyName("targetSheetName")]
-    public string? JsonTargetSheetName
-    {
-        get => _targetSheetName;
-        set => _targetSheetName = value;
-    }
-    // Backing field for TargetFilePath
-    private string? _targetFilePath;
-
+    public PlaceholderString? TargetSheetName { get; set; }
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore] // Don't serialize this computed property
-    public string? TargetFilePath
-    {
-        get => _targetFilePath != null ? Helpers.ReplaceDateTimePlaceholders(_targetFilePath) : null;
-        set => _targetFilePath = value;
-    }
-
-    /// <summary>
-    /// JSON property that maps to the backing field for serialization/deserialization
-    /// </summary>
     [JsonPropertyName("targetFilePath")]
-    public string? JsonTargetFilePath
-    {
-        get => _targetFilePath;
-        set => _targetFilePath = value;
-    }
+    public PlaceholderString? TargetFilePath { get; set; }
     public bool InsertColumns { get; set; } = false; // If true, insert new columns; if false, overwrite existing
 
     protected override Task ExecuteInternalAsync(string filePath)

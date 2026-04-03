@@ -4,42 +4,17 @@ namespace XLSXPipeline.Actions.File;
 
 public class MoveFileAction : ActionBase
 {
-    private string? _destinationPath;
-    private string? _fileName;
-
     /// <summary>
     /// Path to move the file to. Supports date/time placeholders.
     /// </summary>
-    [JsonIgnore]
-    public string? DestinationPath
-    {
-        get => _destinationPath != null ? Helpers.ReplaceDateTimePlaceholders(_destinationPath) : null;
-        set => _destinationPath = value;
-    }
+    [JsonPropertyName("destinationPath")]
+    public PlaceholderString? DestinationPath { get; set; }
 
     /// <summary>
     /// Optional new file name at destination. Supports date/time placeholders.
     /// </summary>
-    [JsonIgnore]
-    public string? FileName
-    {
-        get => _fileName != null ? Helpers.ReplaceDateTimePlaceholders(_fileName) : null;
-        set => _fileName = value;
-    }
-
-    [JsonPropertyName("destinationPath")]
-    public string? JsonDestinationPath
-    {
-        get => _destinationPath;
-        set => _destinationPath = value;
-    }
-
     [JsonPropertyName("fileName")]
-    public string? JsonFileName
-    {
-        get => _fileName;
-        set => _fileName = value;
-    }
+    public PlaceholderString? FileName { get; set; }
 
     /// <summary>
     /// Whether to overwrite the destination file if it already exists

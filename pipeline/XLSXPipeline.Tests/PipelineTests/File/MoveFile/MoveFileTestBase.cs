@@ -10,10 +10,10 @@ public abstract class MoveFileTestBase(string? defaultPipelineName = null) : Spe
         pipelineName ??= DefaultPipelineName;
         var pipeline = GetPipeline(pipelineName);
 
-        var outputPath = pipeline.Actions
+        var outputPath = (string?)(pipeline.Actions
             .OfType<MoveFileAction>()
             .LastOrDefault(x => !string.IsNullOrEmpty(x.DestinationPath))?
-            .DestinationPath ?? throw new InvalidOperationException($"No MoveFileAction with destination path found in pipeline '{pipelineName}'");
+            .DestinationPath) ?? throw new InvalidOperationException($"No MoveFileAction with destination path found in pipeline '{pipelineName}'");
 
         if (!outputPath.EndsWith(".xlsx"))
             outputPath += ".xlsx";

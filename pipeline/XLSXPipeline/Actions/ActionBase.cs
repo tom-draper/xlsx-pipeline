@@ -11,29 +11,12 @@ public abstract class ActionBase
     /// </summary>
     public required string Type { get; set; }
 
-    // Backing field for FilePath
-    private string? _filePath;
-
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore] // Don't serialize this computed property
-    public string? FilePath
-    {
-        get => _filePath != null ? Helpers.ReplaceDateTimePlaceholders(_filePath) : null;
-        set => _filePath = value;
-    }
-
-    /// <summary>
-    /// JSON property that maps to the backing field for serialization/deserialization
-    /// </summary>
     [JsonPropertyName("filePath")]
-    public string? JsonFilePath
-    {
-        get => _filePath;
-        set => _filePath = value;
-    }
+    public PlaceholderString? FilePath { get; set; }
 
     /// <summary>
     /// Executes the action with the provided file path from the pipeline

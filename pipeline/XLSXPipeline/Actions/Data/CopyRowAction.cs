@@ -5,55 +5,21 @@ namespace XLSXPipeline.Actions.Data;
 
 public class CopyRowAction : ActionBase
 {
-    // Backing field for SheetName
-    private string? _sheetName;
-
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore] // Don't serialize this computed property
-    public string? SheetName
-    {
-        get => _sheetName != null ? Helpers.ReplaceDateTimePlaceholders(_sheetName) : null;
-        set => _sheetName = value;
-    }
-
-    /// <summary>
-    /// JSON property that maps to the backing field for serialization/deserialization
-    /// </summary>
     [JsonPropertyName("sheetName")]
-    public string? JsonSheetName
-    {
-        get => _sheetName;
-        set => _sheetName = value;
-    }
+    public PlaceholderString? SheetName { get; set; }
     public int SourceRow { get; set; }
     public int DestinationRow { get; set; }
     public int Count { get; set; } = 1;
-    // Backing field for DestinationSheetName
-    private string? _destinationSheetName;
-
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
-    [JsonIgnore] // Don't serialize this computed property
-    public string? DestinationSheetName
-    {
-        get => _destinationSheetName != null ? Helpers.ReplaceDateTimePlaceholders(_destinationSheetName) : null;
-        set => _destinationSheetName = value;
-    }
-
-    /// <summary>
-    /// JSON property that maps to the backing field for serialization/deserialization
-    /// </summary>
     [JsonPropertyName("destinationSheetName")]
-    public string? JsonDestinationSheetName
-    {
-        get => _destinationSheetName;
-        set => _destinationSheetName = value;
-    }
+    public PlaceholderString? DestinationSheetName { get; set; }
     public bool InsertRows { get; set; } = false; // If true, insert new rows; if false, overwrite existing
 
     protected override Task ExecuteInternalAsync(string filePath)
