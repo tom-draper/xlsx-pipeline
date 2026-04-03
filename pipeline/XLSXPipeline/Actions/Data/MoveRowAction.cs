@@ -35,20 +35,13 @@ public class MoveRowAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            MoveRows(worksheet);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        MoveRows(worksheet);
 
-            workbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        workbook.Save();
+        return Task.CompletedTask;
     }
 
     private void MoveRows(IXLWorksheet worksheet)

@@ -67,19 +67,12 @@ public class ReplaceSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            if (SourceFilePath == null)
-                ReplaceSheetWithinSameWorkbook(filePath);
-            else
-                ReplaceSheetFromDifferentWorkbook(filePath);
+        if (SourceFilePath == null)
+            ReplaceSheetWithinSameWorkbook(filePath);
+        else
+            ReplaceSheetFromDifferentWorkbook(filePath);
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void ReplaceSheetWithinSameWorkbook(string filePath)

@@ -35,18 +35,11 @@ public class ValidateDataAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
-            var worksheet = GetWorksheet(workbook, SheetName);
-            ApplyDataValidation(worksheet);
-            workbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        using var workbook = new XLWorkbook(filePath);
+        var worksheet = GetWorksheet(workbook, SheetName);
+        ApplyDataValidation(worksheet);
+        workbook.Save();
+        return Task.CompletedTask;
     }
 
     private static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)

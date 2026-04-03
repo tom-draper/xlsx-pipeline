@@ -58,22 +58,15 @@ public class CopyRowAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var sourceSheet = GetSourceSheet(workbook, SheetName);
-            var destSheet = GetOrCreateDestinationSheet(workbook, DestinationSheetName, sourceSheet);
+        var sourceSheet = GetSourceSheet(workbook, SheetName);
+        var destSheet = GetOrCreateDestinationSheet(workbook, DestinationSheetName, sourceSheet);
 
-            CopyRows(sourceSheet, destSheet);
+        CopyRows(sourceSheet, destSheet);
 
-            workbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        workbook.Save();
+        return Task.CompletedTask;
     }
 
     private static IXLWorksheet GetSourceSheet(XLWorkbook workbook, string? sheetName)

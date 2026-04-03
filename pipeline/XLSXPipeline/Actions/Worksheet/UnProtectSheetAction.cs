@@ -33,24 +33,17 @@ public class UnprotectSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
+        using var workbook = new XLWorkbook(filePath);
+
+        var worksheet =  Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        Validation.ValidatePassword(Password);
+
+        if (worksheet.Protection.IsProtected)
         {
-            using var workbook = new XLWorkbook(filePath);
-
-            var worksheet =  Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            Validation.ValidatePassword(Password);
-
-            if (worksheet.Protection.IsProtected)
-            {
-                worksheet.Unprotect(Password);
-                workbook.Save();
-            }
-
-            return Task.CompletedTask;
+            worksheet.Unprotect(Password);
+            workbook.Save();
         }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+
+        return Task.CompletedTask;
     }
 }

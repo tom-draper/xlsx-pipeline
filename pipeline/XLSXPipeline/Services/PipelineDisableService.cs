@@ -15,7 +15,11 @@ public class PipelineDisableService(ILogger<PipelineDisableService> logger) : IP
 
     public async Task<bool> IsPipelineDisabledAsync(string pipelineFilePath)
     {
-        await _fileSemaphore.WaitAsync();
+        if (!await _fileSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
+        {
+            _logger.LogWarning("Timed out waiting for file lock when checking disabled status: {FilePath}", pipelineFilePath);
+            return false;
+        }
         try
         {
             if (!File.Exists(pipelineFilePath))
@@ -42,7 +46,11 @@ public class PipelineDisableService(ILogger<PipelineDisableService> logger) : IP
 
     public async Task MarkPipelineAsDisabled(string pipelineFilePath)
     {
-        await _fileSemaphore.WaitAsync();
+        if (!await _fileSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
+        {
+            _logger.LogWarning("Timed out waiting for file lock when marking pipeline as disabled: {FilePath}", pipelineFilePath);
+            return;
+        }
         try
         {
             if (!File.Exists(pipelineFilePath))

@@ -13,6 +13,8 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
     private readonly ILogger<FileWatcherService> _logger = logger;
     private readonly IPipelineExecutor _pipelineExecutor = pipelineExecutor;
     private readonly List<FileSystemWatcher> _fileWatchers = [];
+    private readonly Dictionary<string, CancellationTokenSource> _pendingExecutions = [];
+    private readonly object _pendingLock = new();
 
     public void StartFileWatchers(List<FileWatcherPipeline> fileWatcherPipelines)
     {
@@ -65,23 +67,8 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
                     IncludeSubdirectories = false
                 };
 
-                watcher.Created += (sender, e) =>
-                {
-                    _ = Task.Run(async () =>
-                    {
-                        _logger.LogInformation("File created: {FilePath}, triggering pipeline", e.FullPath);
-                        await ExecutePipelineWithRetry(fileWatcherPipeline.Pipeline, e.FullPath);
-                    });
-                };
-
-                watcher.Changed += (sender, e) =>
-                {
-                    _ = Task.Run(async () =>
-                    {
-                        _logger.LogInformation("File changed: {FilePath}, triggering pipeline", e.FullPath);
-                        await ExecutePipelineWithRetry(fileWatcherPipeline.Pipeline, e.FullPath);
-                    });
-                };
+                watcher.Created += (sender, e) => ScheduleDebouncedExecution(fileWatcherPipeline.Pipeline, e.FullPath);
+                watcher.Changed += (sender, e) => ScheduleDebouncedExecution(fileWatcherPipeline.Pipeline, e.FullPath);
 
                 _fileWatchers.Add(watcher);
             }
@@ -90,6 +77,36 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
                 _logger.LogError(ex, "Error starting file watcher for: {WatchPath}", fileWatcherPipeline.WatchPath);
             }
         }
+    }
+
+    private void ScheduleDebouncedExecution(Pipeline pipeline, string filePath)
+    {
+        CancellationTokenSource cts;
+        lock (_pendingLock)
+        {
+            if (_pendingExecutions.TryGetValue(filePath, out var existing))
+                existing.Cancel();
+            cts = new CancellationTokenSource();
+            _pendingExecutions[filePath] = cts;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                // Debounce window: discard all but the last event within 500 ms
+                await Task.Delay(500, cts.Token);
+                lock (_pendingLock)
+                    _pendingExecutions.Remove(filePath);
+
+                _logger.LogInformation("File event triggered pipeline: {FilePath}", filePath);
+                await ExecutePipelineWithRetry(pipeline, filePath);
+            }
+            catch (OperationCanceledException)
+            {
+                // A newer event arrived — this execution was superseded
+            }
+        });
     }
 
     private async Task ExecutePipelineWithRetry(Pipeline pipeline, string filePath)
@@ -150,6 +167,13 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
 
     public void StopFileWatchers()
     {
+        lock (_pendingLock)
+        {
+            foreach (var cts in _pendingExecutions.Values)
+                cts.Cancel();
+            _pendingExecutions.Clear();
+        }
+
         foreach (var watcher in _fileWatchers)
         {
             try

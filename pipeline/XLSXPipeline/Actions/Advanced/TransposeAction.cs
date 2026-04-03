@@ -56,20 +56,13 @@ public class TransposeAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            TransposeData(workbook);
+        TransposeData(workbook);
 
-            workbook.Save();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void TransposeData(XLWorkbook workbook)

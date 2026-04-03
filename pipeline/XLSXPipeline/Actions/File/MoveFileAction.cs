@@ -56,6 +56,12 @@ public class MoveFileAction : ActionBase
     /// </summary>
     public bool AppendSourceExtension { get; set; } = true;
 
+    /// <summary>
+    /// Optional backup directory. If specified, the destination file will be copied here before being overwritten.
+    /// Only applies when OverwriteIfExists is true and a file already exists at the destination.
+    /// </summary>
+    public string? BackupDirectory { get; set; }
+
     protected override Task ExecuteInternalAsync(string filePath)
     {
         try
@@ -111,6 +117,29 @@ public class MoveFileAction : ActionBase
             throw new InvalidOperationException(
                 $"Destination file already exists and OverwriteIfExists is false: {destinationFilePath}");
 
+        if (!string.IsNullOrWhiteSpace(BackupDirectory))
+            CreateBackup(destinationFilePath);
+
         System.IO.File.Delete(destinationFilePath);
+    }
+
+    private void CreateBackup(string filePath)
+    {
+        if (!Directory.Exists(BackupDirectory))
+            Directory.CreateDirectory(BackupDirectory!);
+
+        var fileName = Path.GetFileName(filePath);
+        var backupPath = Path.Combine(BackupDirectory!, fileName);
+
+        int backupIndex = 1;
+        while (System.IO.File.Exists(backupPath))
+        {
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+            var extension = Path.GetExtension(fileName);
+            backupPath = Path.Combine(BackupDirectory!, $"{nameWithoutExtension}_backup_{backupIndex}{extension}");
+            backupIndex++;
+        }
+
+        System.IO.File.Copy(filePath, backupPath);
     }
 }

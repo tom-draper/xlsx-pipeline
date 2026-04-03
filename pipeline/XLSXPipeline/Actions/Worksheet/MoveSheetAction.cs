@@ -50,19 +50,12 @@ public class MoveSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            if (TargetFilePath == null || TargetFilePath == filePath)
-                MoveSheetWithinSameWorkbook(filePath);
-            else
-                MoveSheetToDifferentWorkbook(filePath);
+        if (TargetFilePath == null || TargetFilePath == filePath)
+            MoveSheetWithinSameWorkbook(filePath);
+        else
+            MoveSheetToDifferentWorkbook(filePath);
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void MoveSheetWithinSameWorkbook(string filePath)

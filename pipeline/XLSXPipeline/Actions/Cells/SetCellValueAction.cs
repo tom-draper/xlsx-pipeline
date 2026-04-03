@@ -33,21 +33,14 @@ public class SetCellValueAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            SetCellValue(worksheet);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        SetCellValue(worksheet);
 
-            workbook.Save();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void SetCellValue(IXLWorksheet worksheet)
@@ -126,26 +119,18 @@ public class SetCellValueAction : ActionBase
 
     private void ValidateValueWasSet(IXLCell cell)
     {
-        try
+        // For empty strings, the cell value might be empty or null
+        if (string.IsNullOrEmpty(Value))
         {
-            // For empty strings, the cell value might be empty or null
-            if (string.IsNullOrEmpty(Value))
-            {
-                if (!cell.IsEmpty() && !string.IsNullOrEmpty(cell.GetString()))
-                    throw new InvalidOperationException("Failed to clear cell value as expected.");
-            }
-            else
-            {
-                // Check that some value was set (ClosedXML converts types automatically)
-                var cellStringValue = cell.GetString();
-                if (string.IsNullOrEmpty(cellStringValue))
-                    throw new InvalidOperationException("Value was not applied successfully to the cell.");
-            }
+            if (!cell.IsEmpty() && !string.IsNullOrEmpty(cell.GetString()))
+                throw new InvalidOperationException("Failed to clear cell value as expected.");
         }
-        catch (Exception ex) when (!(ex is InvalidOperationException))
+        else
         {
-            // If validation fails for technical reasons, log but don't fail the operation
-            // The value setting might have succeeded even if validation had issues
+            // Check that some value was set (ClosedXML converts types automatically)
+            var cellStringValue = cell.GetString();
+            if (string.IsNullOrEmpty(cellStringValue))
+                throw new InvalidOperationException("Value was not applied successfully to the cell.");
         }
     }
 }

@@ -35,21 +35,14 @@ public class SortDataAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            SortRange(worksheet);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        SortRange(worksheet);
 
-            workbook.Save();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void SortRange(IXLWorksheet worksheet)

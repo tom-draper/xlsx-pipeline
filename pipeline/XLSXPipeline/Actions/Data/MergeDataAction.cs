@@ -83,23 +83,16 @@ public class MergeDataAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var destWorkbook = new XLWorkbook(filePath);
-            using var sourceWorkbook = new XLWorkbook(SourceFilePath);
+        using var destWorkbook = new XLWorkbook(filePath);
+        using var sourceWorkbook = new XLWorkbook(SourceFilePath);
 
-            var sourceSheet = Helpers.GetWorksheetOrFirst(sourceWorkbook, SourceSheetName);
-            var destSheet = Helpers.GetWorksheetOrFirst(destWorkbook, DestinationSheetName);
+        var sourceSheet = Helpers.GetWorksheetOrFirst(sourceWorkbook, SourceSheetName);
+        var destSheet = Helpers.GetWorksheetOrFirst(destWorkbook, DestinationSheetName);
 
-            MergeData(sourceSheet, destSheet);
+        MergeData(sourceSheet, destSheet);
 
-            destWorkbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        destWorkbook.Save();
+        return Task.CompletedTask;
     }
 
     private void MergeData(IXLWorksheet sourceSheet, IXLWorksheet destSheet)

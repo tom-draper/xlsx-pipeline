@@ -33,21 +33,14 @@ public class DeleteColumnAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            DeleteColumns(worksheet);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        DeleteColumns(worksheet);
 
-            workbook.Save();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void DeleteColumns(IXLWorksheet worksheet)

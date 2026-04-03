@@ -12,16 +12,16 @@ public class PipelineService(
     private readonly IPipelineLoader _pipelineLoader = pipelineLoader;
     private readonly ISchedulerService _schedulerService = schedulerService;
     private readonly IFileWatcherService _fileWatcherService = fileWatcherService;
-    private readonly string _pipelinesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Pipelines");
-
     private List<ScheduledPipeline> _scheduledPipelines = [];
-    private FileSystemWatcher? _pipelineConfigWatcher;
     private readonly SemaphoreSlim _reloadSemaphore = new(1, 1);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (_scheduledPipelines.Count == 0)
+        {
+            _logger.LogInformation("No scheduled pipelines configured. Scheduler will not start.");
             return;
+        }
 
         try
         {
@@ -45,18 +45,12 @@ public class PipelineService(
         // Load initial pipelines
         await LoadPipelinesAsync(cancellationToken);
 
-        // Start watching for pipeline configuration changes
-        //StartPipelineConfigWatcher();
-
         await base.StartAsync(cancellationToken);
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Stopping pipeline service...");
-
-        // Stop configuration watcher
-        _pipelineConfigWatcher?.Dispose();
 
         // Stop file watchers
         _fileWatcherService.StopFileWatchers();
@@ -76,29 +70,6 @@ public class PipelineService(
             _fileWatcherService.StartFileWatchers(fileWatcherPipelines);
             _logger.LogInformation("File watchers started for {Count} pipeline(s).", fileWatcherPipelines?.Count ?? 0);
         }
-    }
-
-    private void StartPipelineConfigWatcher()
-    {
-        if (!Directory.Exists(_pipelinesDirectory))
-        {
-            _logger.LogWarning("Pipelines directory not found, cannot watch for changes: {Directory}", _pipelinesDirectory);
-            return;
-        }
-
-        _pipelineConfigWatcher = new FileSystemWatcher(_pipelinesDirectory)
-        {
-            Filter = "*.json",
-            NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName,
-            EnableRaisingEvents = true
-        };
-
-        _pipelineConfigWatcher.Created += OnPipelineConfigChanged;
-        _pipelineConfigWatcher.Changed += OnPipelineConfigChanged;
-        _pipelineConfigWatcher.Deleted += OnPipelineConfigChanged;
-        _pipelineConfigWatcher.Renamed += OnPipelineConfigChanged;
-
-        _logger.LogInformation("Started watching pipeline configuration directory: {Directory}", _pipelinesDirectory);
     }
 
     private async void OnPipelineConfigChanged(object sender, FileSystemEventArgs e)
@@ -141,9 +112,8 @@ public class PipelineService(
 
     public override void Dispose()
     {
-        _pipelineConfigWatcher?.Dispose();
         _reloadSemaphore?.Dispose();
         base.Dispose();
-        GC.SuppressFinalize(this);    
+        GC.SuppressFinalize(this);
     }
 }

@@ -64,19 +64,12 @@ public class CopySheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            if (TargetFilePath == null || TargetFilePath == filePath)
-                CopySheetWithinSameWorkbook(filePath);
-            else
-                CopySheetToDifferentWorkbook(filePath);
+        if (TargetFilePath == null || TargetFilePath == filePath)
+            CopySheetWithinSameWorkbook(filePath);
+        else
+            CopySheetToDifferentWorkbook(filePath);
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void CopySheetWithinSameWorkbook(string filePath)

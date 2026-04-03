@@ -45,22 +45,15 @@ public class RenameSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            Validation.ValidateSheetExists(workbook, SheetName);
-            var worksheet = Helpers.GetWorksheet(workbook, SheetName);
-            Validation.ValidateSheetNotExists(workbook, NewSheetName);
+        Validation.ValidateSheetExists(workbook, SheetName);
+        var worksheet = Helpers.GetWorksheet(workbook, SheetName);
+        Validation.ValidateSheetNotExists(workbook, NewSheetName);
 
-            worksheet.Name = NewSheetName;
-            workbook.Save();
+        worksheet.Name = NewSheetName;
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 }

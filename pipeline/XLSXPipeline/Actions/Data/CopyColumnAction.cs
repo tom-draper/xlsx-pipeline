@@ -81,19 +81,12 @@ public class CopyColumnAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            if (TargetFilePath == null || TargetFilePath == filePath)
-                CopyColumnWithinSameWorkbook(filePath);
-            else
-                CopyColumnToDifferentWorkbook(filePath);
+        if (TargetFilePath == null || TargetFilePath == filePath)
+            CopyColumnWithinSameWorkbook(filePath);
+        else
+            CopyColumnToDifferentWorkbook(filePath);
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void CopyColumnWithinSameWorkbook(string filePath)

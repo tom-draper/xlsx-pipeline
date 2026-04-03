@@ -33,22 +33,15 @@ public class ProtectSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            Validation.ValidatePassword(Password);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        Validation.ValidatePassword(Password);
 
-            var protection = worksheet.Protect(Password);
+        var protection = worksheet.Protect(Password);
 
-            workbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        workbook.Save();
+        return Task.CompletedTask;
     }
 
 }

@@ -59,17 +59,10 @@ public class CreatePivotTableAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
-            CreatePivotTable(workbook);
-            workbook.Save();
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        using var workbook = new XLWorkbook(filePath);
+        CreatePivotTable(workbook);
+        workbook.Save();
+        return Task.CompletedTask;
     }
 
     private void CreatePivotTable(XLWorkbook workbook)

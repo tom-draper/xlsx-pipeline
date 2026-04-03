@@ -276,6 +276,10 @@ public partial class TriggerParser : ITriggerParser
 
         var dayNumber = (int)dayOfWeek; // 0 = Sunday, 1 = Monday, etc.
 
+        // Handle comma-separated lists like MON,WED,FRI
+        if (cronPart.Contains(','))
+            return cronPart.Split(',').Any(p => IsValidDayOfWeek(dayOfWeek, p.Trim()));
+
         // Handle ranges like MON-FRI
         if (cronPart.Contains('-'))
         {
@@ -317,6 +321,18 @@ public partial class TriggerParser : ITriggerParser
         if (cronPart == "*")
             return true;
 
+        // Handle comma-separated lists like 1,4,7,10
+        if (cronPart.Contains(','))
+            return cronPart.Split(',').Any(p => IsValidMonth(month, p.Trim()));
+
+        // Handle ranges like 3-6
+        if (cronPart.Contains('-'))
+        {
+            var range = cronPart.Split('-');
+            if (range.Length == 2 && int.TryParse(range[0], out int start) && int.TryParse(range[1], out int end))
+                return month >= start && month <= end;
+        }
+
         if (int.TryParse(cronPart, out int specificMonth))
             return month == specificMonth;
 
@@ -328,6 +344,18 @@ public partial class TriggerParser : ITriggerParser
         if (cronPart == "*")
             return true;
 
+        // Handle comma-separated lists like 1,15,28
+        if (cronPart.Contains(','))
+            return cronPart.Split(',').Any(p => IsValidDay(day, p.Trim()));
+
+        // Handle ranges like 1-15
+        if (cronPart.Contains('-'))
+        {
+            var range = cronPart.Split('-');
+            if (range.Length == 2 && int.TryParse(range[0], out int start) && int.TryParse(range[1], out int end))
+                return day >= start && day <= end;
+        }
+
         if (int.TryParse(cronPart, out int specificDay))
             return day == specificDay;
 
@@ -338,6 +366,17 @@ public partial class TriggerParser : ITriggerParser
     {
         if (cronPart == "*")
             return true;
+
+        // Handle step values like */6
+        if (cronPart.StartsWith("*/"))
+        {
+            if (int.TryParse(cronPart.AsSpan(2), out int step))
+                return hour % step == 0;
+        }
+
+        // Handle comma-separated lists like 9,12,17
+        if (cronPart.Contains(','))
+            return cronPart.Split(',').Any(p => IsValidHour(hour, p.Trim()));
 
         // Handle ranges like 9-17
         if (cronPart.Contains('-'))
@@ -365,6 +404,18 @@ public partial class TriggerParser : ITriggerParser
                 return minute % step == 0;
         }
 
+        // Handle comma-separated lists like 0,15,30,45
+        if (cronPart.Contains(','))
+            return cronPart.Split(',').Any(p => IsValidMinute(minute, p.Trim()));
+
+        // Handle ranges like 0-30
+        if (cronPart.Contains('-'))
+        {
+            var range = cronPart.Split('-');
+            if (range.Length == 2 && int.TryParse(range[0], out int start) && int.TryParse(range[1], out int end))
+                return minute >= start && minute <= end;
+        }
+
         if (int.TryParse(cronPart, out int specificMinute))
             return minute == specificMinute;
 
@@ -381,6 +432,18 @@ public partial class TriggerParser : ITriggerParser
         {
             if (int.TryParse(cronPart.AsSpan(2), out int step))
                 return second % step == 0;
+        }
+
+        // Handle comma-separated lists like 0,30
+        if (cronPart.Contains(','))
+            return cronPart.Split(',').Any(p => IsValidSecond(second, p.Trim()));
+
+        // Handle ranges like 0-30
+        if (cronPart.Contains('-'))
+        {
+            var range = cronPart.Split('-');
+            if (range.Length == 2 && int.TryParse(range[0], out int start) && int.TryParse(range[1], out int end))
+                return second >= start && second <= end;
         }
 
         if (int.TryParse(cronPart, out int specificSecond))

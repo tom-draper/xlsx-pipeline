@@ -31,21 +31,14 @@ public class DeleteSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            Validation.ValidateSheetExists(workbook, SheetName);
-            var worksheet = Helpers.GetWorksheet(workbook, SheetName);
+        Validation.ValidateSheetExists(workbook, SheetName);
+        var worksheet = Helpers.GetWorksheet(workbook, SheetName);
 
-            worksheet.Delete();
-            workbook.Save();
+        worksheet.Delete();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 }

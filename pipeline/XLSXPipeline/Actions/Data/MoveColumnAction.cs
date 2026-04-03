@@ -34,21 +34,14 @@ public class MoveColumnAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            MoveColumn(worksheet);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        MoveColumn(worksheet);
 
-            workbook.Save();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void MoveColumn(IXLWorksheet worksheet)

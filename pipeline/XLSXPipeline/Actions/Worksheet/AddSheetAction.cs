@@ -31,20 +31,13 @@ public class AddSheetAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            Validation.ValidateSheetNotExists(workbook, SheetName);
+        Validation.ValidateSheetNotExists(workbook, SheetName);
 
-            workbook.AddWorksheet(SheetName);
-            workbook.Save();
+        workbook.AddWorksheet(SheetName);
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 }

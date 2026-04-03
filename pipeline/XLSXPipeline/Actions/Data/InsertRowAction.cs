@@ -34,21 +34,14 @@ public class InsertRowAction : ActionBase
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
-        try
-        {
-            using var workbook = new XLWorkbook(filePath);
+        using var workbook = new XLWorkbook(filePath);
 
-            var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
-            InsertRows(worksheet);
+        var worksheet = Helpers.GetWorksheetOrFirst(workbook, SheetName);
+        InsertRows(worksheet);
 
-            workbook.Save();
+        workbook.Save();
 
-            return Task.CompletedTask;
-        }
-        catch (Exception ex)
-        {
-            return Task.FromException(ex);
-        }
+        return Task.CompletedTask;
     }
 
     private void InsertRows(IXLWorksheet worksheet)
@@ -68,17 +61,7 @@ public class InsertRowAction : ActionBase
             throw new ArgumentOutOfRangeException(nameof(Count), "Count must be greater than 0.");
     }
 
-    private IXLRow GetTargetRow(IXLWorksheet worksheet)
-    {
-        try
-        {
-            return worksheet.Row(RowNumber);
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Row {RowNumber} does not exist or is invalid.", ex);
-        }
-    }
+    private IXLRow GetTargetRow(IXLWorksheet worksheet) => worksheet.Row(RowNumber);
 
     private void ValidateRowInsertion(IXLRow targetRow)
     {
