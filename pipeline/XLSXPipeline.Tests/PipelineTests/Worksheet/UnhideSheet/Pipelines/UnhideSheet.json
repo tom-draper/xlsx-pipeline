@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Unhide Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "UnhideSheet",
+      "sheetName": "Sheet1"
+    }
+  ]
+}

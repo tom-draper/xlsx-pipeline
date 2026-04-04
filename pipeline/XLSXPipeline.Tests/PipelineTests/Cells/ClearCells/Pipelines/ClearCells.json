@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Clear Cells",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ClearCells",
+      "range": "A1:B2",
+      "clearType": 0
+    }
+  ]
+}

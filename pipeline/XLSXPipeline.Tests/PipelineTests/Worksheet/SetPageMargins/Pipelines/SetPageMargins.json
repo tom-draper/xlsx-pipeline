@@ -1,0 +1,16 @@
+{
+  "pipelineName": "Set Page Margins",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetPageMargins",
+      "left": 0.5,
+      "right": 0.5,
+      "top": 1.0,
+      "bottom": 1.0
+    }
+  ]
+}

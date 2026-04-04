@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Deduplicate Rows",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "DeduplicateRows",
+      "hasHeaders": true,
+      "keepFirst": true
+    }
+  ]
+}

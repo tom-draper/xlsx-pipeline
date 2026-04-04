@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Add Named Range",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "AddNamedRange",
+      "name": "TestRange",
+      "range": "A1:B3",
+      "scope": "Workbook"
+    }
+  ]
+}

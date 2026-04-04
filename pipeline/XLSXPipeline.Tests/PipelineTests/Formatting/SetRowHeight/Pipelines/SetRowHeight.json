@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Set Row Height",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetRowHeight",
+      "row": 1,
+      "height": 30.0
+    }
+  ]
+}

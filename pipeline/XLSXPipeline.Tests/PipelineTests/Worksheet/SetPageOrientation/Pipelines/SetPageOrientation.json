@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Set Page Orientation",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetPageOrientation",
+      "orientation": "Landscape"
+    }
+  ]
+}

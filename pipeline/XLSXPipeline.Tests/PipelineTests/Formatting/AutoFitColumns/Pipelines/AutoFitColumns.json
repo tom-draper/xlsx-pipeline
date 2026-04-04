@@ -1,0 +1,12 @@
+{
+  "pipelineName": "Auto Fit Columns",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "AutoFitColumns"
+    }
+  ]
+}

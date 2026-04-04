@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Set Zoom",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetZoom",
+      "zoomScale": 150
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Set Sheet Tab Color",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetSheetTabColor",
+      "color": "#FF0000"
+    }
+  ]
+}

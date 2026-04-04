@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Set Print Area",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetPrintArea",
+      "range": "A1:D10"
+    }
+  ]
+}

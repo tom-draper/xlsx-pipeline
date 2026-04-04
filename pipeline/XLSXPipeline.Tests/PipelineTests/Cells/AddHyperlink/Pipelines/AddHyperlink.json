@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Add Hyperlink",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "AddHyperlink",
+      "cell": "A1",
+      "url": "https://example.com"
+    }
+  ]
+}

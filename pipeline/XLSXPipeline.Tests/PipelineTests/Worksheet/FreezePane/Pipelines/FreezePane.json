@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Freeze Pane",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "FreezePane",
+      "rows": 1,
+      "columns": 1
+    }
+  ]
+}

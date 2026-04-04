@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Hide Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "HideSheet",
+      "sheetName": "Sheet1",
+      "veryHidden": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Merge Cells",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MergeCells",
+      "range": "A1:B2"
+    }
+  ]
+}

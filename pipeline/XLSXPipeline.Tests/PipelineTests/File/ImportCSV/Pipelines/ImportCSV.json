@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Import CSV",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ImportCSV",
+      "csvFilePath": ".\\Input\\Data.csv",
+      "sheetName": "Sheet1",
+      "startCell": "A1"
+    }
+  ]
+}

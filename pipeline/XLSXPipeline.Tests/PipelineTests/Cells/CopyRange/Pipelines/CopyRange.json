@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Copy Range",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CopyRange",
+      "sourceRange": "A1:A3",
+      "destinationCell": "C1"
+    }
+  ]
+}

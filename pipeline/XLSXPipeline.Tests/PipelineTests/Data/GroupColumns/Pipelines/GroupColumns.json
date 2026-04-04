@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Group Columns",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "GroupColumns",
+      "fromColumn": "B",
+      "toColumn": "C"
+    }
+  ]
+}

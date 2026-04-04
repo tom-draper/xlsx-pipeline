@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Ungroup Rows",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "UngroupRows",
+      "fromRow": 2,
+      "toRow": 4
+    }
+  ]
+}

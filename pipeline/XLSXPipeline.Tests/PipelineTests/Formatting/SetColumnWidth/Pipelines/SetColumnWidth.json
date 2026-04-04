@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Set Column Width",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetColumnWidth",
+      "column": "A",
+      "width": 25.0
+    }
+  ]
+}

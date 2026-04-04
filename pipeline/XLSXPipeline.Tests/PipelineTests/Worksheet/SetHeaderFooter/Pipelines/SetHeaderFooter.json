@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Set Header Footer",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetHeaderFooter",
+      "centerHeader": "My Report"
+    }
+  ]
+}

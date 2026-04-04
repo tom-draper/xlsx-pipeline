@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Unmerge Cells",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "UnmergeCells",
+      "range": "A1:B2"
+    }
+  ]
+}

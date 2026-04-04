@@ -33,6 +33,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
         {
             // File actions
             "CopyFile" => DeserializeAction<CopyFileAction>(rawText, options),
+            "DeleteFile" => DeserializeAction<DeleteFileAction>(rawText, options),
             "ExportToCSV" => DeserializeAction<ExportToCSVAction>(rawText, options),
             "ExportToPDF" => DeserializeAction<ExportToPDFAction>(rawText, options),
             "ImportCSV" => DeserializeAction<ImportCSVAction>(rawText, options),
@@ -40,9 +41,11 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "OpenFile" => DeserializeAction<OpenFileAction>(rawText, options),
             "ProtectFile" => DeserializeAction<ProtectFileAction>(rawText, options),
             "RenameFile" => DeserializeAction<RenameFileAction>(rawText, options),
+            "SplitSheetsToFiles" => DeserializeAction<SplitSheetsToFilesAction>(rawText, options),
             "UnprotectFile" => DeserializeAction<UnprotectFileAction>(rawText, options),
 
             // Worksheet actions
+            "AddNamedRange" => DeserializeAction<AddNamedRangeAction>(rawText, options),
             "AddSheet" => DeserializeAction<AddSheetAction>(rawText, options),
             "CopySheet" => DeserializeAction<CopySheetAction>(rawText, options),
             "DeleteHiddenSheets" => DeserializeAction<DeleteHiddenSheetsAction>(rawText, options),
@@ -53,7 +56,12 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "ProtectSheet" => DeserializeAction<ProtectSheetAction>(rawText, options),
             "RenameSheet" => DeserializeAction<RenameSheetAction>(rawText, options),
             "ReplaceSheet" => DeserializeAction<ReplaceSheetAction>(rawText, options),
+            "SetHeaderFooter" => DeserializeAction<SetHeaderFooterAction>(rawText, options),
+            "SetPageMargins" => DeserializeAction<SetPageMarginsAction>(rawText, options),
+            "SetPageOrientation" => DeserializeAction<SetPageOrientationAction>(rawText, options),
+            "SetPrintArea" => DeserializeAction<SetPrintAreaAction>(rawText, options),
             "SetSheetTabColor" => DeserializeAction<SetSheetTabColorAction>(rawText, options),
+            "SetZoom" => DeserializeAction<SetZoomAction>(rawText, options),
             "UnhideSheet" => DeserializeAction<UnhideSheetAction>(rawText, options),
             "UnprotectSheet" => DeserializeAction<UnprotectSheetAction>(rawText, options),
 
@@ -64,12 +72,16 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "DeleteColumn" => DeserializeAction<DeleteColumnAction>(rawText, options),
             "DeleteRow" => DeserializeAction<DeleteRowAction>(rawText, options),
             "FilterData" => DeserializeAction<FilterDataAction>(rawText, options),
+            "GroupColumns" => DeserializeAction<GroupColumnsAction>(rawText, options),
+            "GroupRows" => DeserializeAction<GroupRowsAction>(rawText, options),
             "InsertColumn" => DeserializeAction<InsertColumnAction>(rawText, options),
             "InsertRow" => DeserializeAction<InsertRowAction>(rawText, options),
             "MergeData" => DeserializeAction<MergeDataAction>(rawText, options),
             "MoveColumn" => DeserializeAction<MoveColumnAction>(rawText, options),
             "MoveRow" => DeserializeAction<MoveRowAction>(rawText, options),
             "SortData" => DeserializeAction<SortDataAction>(rawText, options),
+            "UngroupColumns" => DeserializeAction<UngroupColumnsAction>(rawText, options),
+            "UngroupRows" => DeserializeAction<UngroupRowsAction>(rawText, options),
 
             // Time actions
             "Wait" => DeserializeAction<WaitAction>(rawText, options),
@@ -82,10 +94,14 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "SetRowHeight" => DeserializeAction<SetRowHeightAction>(rawText, options),
 
             // Cell actions
+            "AddHyperlink" => DeserializeAction<AddHyperlinkAction>(rawText, options),
             "ApplyFormula" => DeserializeAction<ApplyFormulaAction>(rawText, options),
             "ClearCells" => DeserializeAction<ClearCellsAction>(rawText, options),
+            "CopyRange" => DeserializeAction<CopyRangeAction>(rawText, options),
             "FindAndReplace" => DeserializeAction<FindAndReplaceAction>(rawText, options),
+            "MergeCells" => DeserializeAction<MergeCellsAction>(rawText, options),
             "SetCellValue" => DeserializeAction<SetCellValueAction>(rawText, options),
+            "UnmergeCells" => DeserializeAction<UnmergeCellsAction>(rawText, options),
             "ValidateData" => DeserializeAction<ValidateDataAction>(rawText, options),
 
             // Advanced actions

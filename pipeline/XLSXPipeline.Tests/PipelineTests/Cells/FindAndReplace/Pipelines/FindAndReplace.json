@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Find And Replace",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "FindAndReplace",
+      "find": "Test Data",
+      "replace": "Replaced",
+      "matchEntireCell": true
+    }
+  ]
+}

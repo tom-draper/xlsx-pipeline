@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Split Sheets To Files",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SplitSheetsToFiles",
+      "outputDirectory": ".\\Output"
+    }
+  ]
+}

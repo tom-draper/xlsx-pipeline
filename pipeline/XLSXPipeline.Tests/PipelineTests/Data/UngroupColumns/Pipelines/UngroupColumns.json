@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Ungroup Columns",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "UngroupColumns",
+      "fromColumn": "B",
+      "toColumn": "C"
+    }
+  ]
+}
