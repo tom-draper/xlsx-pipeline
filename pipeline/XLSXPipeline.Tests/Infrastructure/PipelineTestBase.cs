@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using XLSXPipeline.Actions;
 using XLSXPipeline.Extensions;
 using XLSXPipeline.Models;
 using XLSXPipeline.Services;
@@ -77,7 +78,14 @@ public abstract class PipelineTestBase : IDisposable
         var destinationProperty = typeof(TAction).GetProperty(propertyName);
         if (destinationProperty != null && destinationProperty.CanWrite)
         {
-            var currentDestination = destinationProperty.GetValue(action) as string;
+            var value = destinationProperty.GetValue(action);
+            var currentDestination = value switch
+            {
+                PlaceholderString ps => ps.Raw,
+                string s => s,
+                _ => null
+            };
+
             if (!string.IsNullOrWhiteSpace(currentDestination))
             {
                 // Normalize input path
@@ -88,7 +96,10 @@ public abstract class PipelineTestBase : IDisposable
                     ? Path.GetFullPath(sanitizedDestination)
                     : Path.GetFullPath(Path.Combine(BaseDir, sanitizedDestination));
 
-                destinationProperty.SetValue(action, fullPath);
+                if (destinationProperty.PropertyType == typeof(PlaceholderString))
+                    destinationProperty.SetValue(action, (PlaceholderString?)fullPath);
+                else
+                    destinationProperty.SetValue(action, fullPath);
             }
         }
     }

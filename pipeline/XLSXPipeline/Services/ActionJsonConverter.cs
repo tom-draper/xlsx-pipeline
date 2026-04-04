@@ -30,9 +30,10 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
         ActionBase action = actionType switch
         {
             // File actions
+            "CopyFile" => DeserializeAction<CopyFileAction>(rawText, options),
             "ExportToCSV" => DeserializeAction<ExportToCSVAction>(rawText, options),
             "ExportToPDF" => DeserializeAction<ExportToPDFAction>(rawText, options),
-            "CopyFile" => DeserializeAction<CopyFileAction>(rawText, options),
+            "ImportCSV" => DeserializeAction<ImportCSVAction>(rawText, options),
             "MoveFile" => DeserializeAction<MoveFileAction>(rawText, options),
             "OpenFile" => DeserializeAction<OpenFileAction>(rawText, options),
             "ProtectFile" => DeserializeAction<ProtectFileAction>(rawText, options),
@@ -44,15 +45,20 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "CopySheet" => DeserializeAction<CopySheetAction>(rawText, options),
             "DeleteHiddenSheets" => DeserializeAction<DeleteHiddenSheetsAction>(rawText, options),
             "DeleteSheet" => DeserializeAction<DeleteSheetAction>(rawText, options),
+            "FreezePane" => DeserializeAction<FreezePaneAction>(rawText, options),
+            "HideSheet" => DeserializeAction<HideSheetAction>(rawText, options),
             "MoveSheet" => DeserializeAction<MoveSheetAction>(rawText, options),
             "ProtectSheet" => DeserializeAction<ProtectSheetAction>(rawText, options),
             "RenameSheet" => DeserializeAction<RenameSheetAction>(rawText, options),
             "ReplaceSheet" => DeserializeAction<ReplaceSheetAction>(rawText, options),
+            "SetSheetTabColor" => DeserializeAction<SetSheetTabColorAction>(rawText, options),
+            "UnhideSheet" => DeserializeAction<UnhideSheetAction>(rawText, options),
             "UnprotectSheet" => DeserializeAction<UnprotectSheetAction>(rawText, options),
 
             // Data actions
             "CopyColumn" => DeserializeAction<CopyColumnAction>(rawText, options),
             "CopyRow" => DeserializeAction<CopyRowAction>(rawText, options),
+            "DeduplicateRows" => DeserializeAction<DeduplicateRowsAction>(rawText, options),
             "DeleteColumn" => DeserializeAction<DeleteColumnAction>(rawText, options),
             "DeleteRow" => DeserializeAction<DeleteRowAction>(rawText, options),
             "FilterData" => DeserializeAction<FilterDataAction>(rawText, options),
@@ -67,10 +73,16 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "Wait" => DeserializeAction<WaitAction>(rawText, options),
 
             // Formatting actions
+            "AutoFitColumns" => DeserializeAction<AutoFitColumnsAction>(rawText, options),
+            "ConditionalFormatting" => DeserializeAction<ConditionalFormattingAction>(rawText, options),
             "FormatCells" => DeserializeAction<FormatCellsAction>(rawText, options),
+            "SetColumnWidth" => DeserializeAction<SetColumnWidthAction>(rawText, options),
+            "SetRowHeight" => DeserializeAction<SetRowHeightAction>(rawText, options),
 
             // Cell actions
             "ApplyFormula" => DeserializeAction<ApplyFormulaAction>(rawText, options),
+            "ClearCells" => DeserializeAction<ClearCellsAction>(rawText, options),
+            "FindAndReplace" => DeserializeAction<FindAndReplaceAction>(rawText, options),
             "SetCellValue" => DeserializeAction<SetCellValueAction>(rawText, options),
             "ValidateData" => DeserializeAction<ValidateDataAction>(rawText, options),
 
