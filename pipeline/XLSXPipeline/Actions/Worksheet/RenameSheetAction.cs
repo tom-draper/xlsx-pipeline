@@ -25,7 +25,7 @@ public class RenameSheetAction : ActionBase
         var worksheet = Helpers.GetWorksheet(workbook, SheetName);
         Validation.ValidateSheetNotExists(workbook, NewSheetName);
 
-        worksheet.Name = NewSheetName;
+        worksheet.Name = NewSheetName!;
         workbook.Save();
 
         return Task.CompletedTask;

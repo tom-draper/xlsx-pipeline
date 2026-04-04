@@ -36,7 +36,7 @@ public class CopyFileAction : ActionBase
         {
             ValidateInputs(filePath);
 
-            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath, AppendSourceExtension, FileName);
+            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath!, AppendSourceExtension, FileName);
             Helpers.EnsureDirectory(destinationFilePath, CreateDirectories);
             destinationFilePath = HandleExistingFile(destinationFilePath);
 

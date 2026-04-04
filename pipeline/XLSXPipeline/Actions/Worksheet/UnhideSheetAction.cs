@@ -16,7 +16,7 @@ public class UnhideSheetAction : ActionBase
         using var workbook = new XLWorkbook(filePath);
 
         // workbook.Worksheets includes hidden and very-hidden sheets
-        string sheetName = SheetName;
+        string sheetName = SheetName.Resolved;
         var worksheet = workbook.Worksheets
             .FirstOrDefault(ws => ws.Name.Equals(sheetName, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Sheet '{sheetName}' does not exist in the workbook.");

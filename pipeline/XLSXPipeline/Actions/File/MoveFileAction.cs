@@ -43,7 +43,7 @@ public class MoveFileAction : ActionBase
         {
             ValidateInputs(filePath);
 
-            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath, AppendSourceExtension, FileName);
+            var destinationFilePath = Helpers.DetermineDestinationFilePath(filePath, DestinationPath!, AppendSourceExtension, FileName);
             EnsureDestinationDirectory(destinationFilePath);
             HandleExistingFile(destinationFilePath);
 

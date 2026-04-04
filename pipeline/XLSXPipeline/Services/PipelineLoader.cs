@@ -55,7 +55,9 @@ public class PipelineLoader(
                 try
                 {
                     var json = await File.ReadAllTextAsync(filePath, stoppingToken);
+#pragma warning disable IL2026
                     var pipeline = JsonSerializer.Deserialize<Pipeline>(json, JsonOptions);
+#pragma warning restore IL2026
 
                     if (pipeline != null)
                     {

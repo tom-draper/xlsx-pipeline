@@ -4,9 +4,9 @@ namespace XLSXPipeline.Actions;
 
 internal class Helpers
 {
-    public static IXLWorksheet GetWorksheet(XLWorkbook workbook, string sheetName)
+    public static IXLWorksheet GetWorksheet(XLWorkbook workbook, string? sheetName)
     {
-        var worksheet = workbook.Worksheet(sheetName);
+        var worksheet = workbook.Worksheet(sheetName ?? string.Empty);
         if (worksheet == null)
             throw new InvalidOperationException($"Sheet '{sheetName}' does not exist in workbook.");
         return worksheet;

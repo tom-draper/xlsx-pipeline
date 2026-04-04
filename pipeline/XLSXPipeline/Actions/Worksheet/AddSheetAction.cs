@@ -18,7 +18,7 @@ public class AddSheetAction : ActionBase
 
         Validation.ValidateSheetNotExists(workbook, SheetName);
 
-        workbook.AddWorksheet(SheetName);
+        workbook.AddWorksheet(SheetName!);
         workbook.Save();
 
         return Task.CompletedTask;

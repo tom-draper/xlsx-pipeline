@@ -6,6 +6,7 @@ using XLSXPipeline.Actions.Time;
 using XLSXPipeline.Actions.Formatting;
 using XLSXPipeline.Actions.Cells;
 using XLSXPipeline.Actions.Advanced;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -27,6 +28,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
 
         var rawText = rootElement.GetRawText();
 
+#pragma warning disable IL2026
         ActionBase action = actionType switch
         {
             // File actions
@@ -92,6 +94,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
 
             _ => throw new NotSupportedException($"Unknown action type: {actionType}")
         };
+#pragma warning restore IL2026
 
         return action;
     }
@@ -106,9 +109,12 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
 
         // Create options without this converter to avoid infinite recursion
         var optionsForWriting = CreateOptionsWithoutThisConverter(options);
+#pragma warning disable IL2026
         JsonSerializer.Serialize(writer, value, value.GetType(), optionsForWriting);
+#pragma warning restore IL2026
     }
 
+    [RequiresUnreferencedCode("Uses reflection-based JSON deserialization.")]
     private static T DeserializeAction<T>(string json, JsonSerializerOptions options) where T : ActionBase
     {
         try

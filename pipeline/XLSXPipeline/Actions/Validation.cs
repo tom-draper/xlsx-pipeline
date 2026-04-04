@@ -4,13 +4,13 @@ namespace XLSXPipeline.Actions;
 
 internal class Validation
 {
-    public static void ValidateSheetExists(XLWorkbook workbook, string newSheetName)
+    public static void ValidateSheetExists(XLWorkbook workbook, string? newSheetName)
     {
         if (!workbook.Worksheets.Any(ws => ws.Name == newSheetName))
             throw new InvalidOperationException($"Sheet '{newSheetName}' does not exist in the target workbook.");
     }
 
-    public static void ValidateSheetNotExists(XLWorkbook workbook, string newSheetName)
+    public static void ValidateSheetNotExists(XLWorkbook workbook, string? newSheetName)
     {
         if (workbook.Worksheets.Any(ws => ws.Name == newSheetName))
             throw new InvalidOperationException($"Sheet '{newSheetName}' already exists in the target workbook.");

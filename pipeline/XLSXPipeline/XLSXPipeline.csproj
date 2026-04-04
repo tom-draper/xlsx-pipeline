@@ -53,6 +53,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="0.105.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="itext" Version="9.2.0" />
 		<PackageReference Include="itext.bouncy-castle-adapter" Version="9.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />

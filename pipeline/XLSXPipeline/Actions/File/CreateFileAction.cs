@@ -43,7 +43,7 @@ public class CreateFileAction : ActionBase
             ValidateInputs();
 
             var destinationFilePath = Helpers.DetermineDestinationFilePath(
-                filePath, DestinationPath, false, FileName);
+                filePath, DestinationPath!, false, FileName);
 
             Helpers.EnsureDirectory(destinationFilePath, CreateDirectories);
 

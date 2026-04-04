@@ -41,7 +41,7 @@ public class CopySheetAction : ActionBase
         Validation.ValidateSheetNotExists(workbook, NewSheetName);
 
         var worksheet = Helpers.GetWorksheet(workbook, SourceSheetName);
-        worksheet.CopyTo(NewSheetName);
+        worksheet.CopyTo(NewSheetName!);
         workbook.Save();
     }
 
@@ -54,7 +54,7 @@ public class CopySheetAction : ActionBase
         Validation.ValidateSheetNotExists(targetWorkbook, NewSheetName);
 
         var sourceWorksheet = Helpers.GetWorksheet(sourceWorkbook, SourceSheetName);
-        sourceWorksheet.CopyTo(targetWorkbook, NewSheetName);
+        sourceWorksheet.CopyTo(targetWorkbook, NewSheetName!);
         targetWorkbook.SaveAs(TargetFilePath!);
     }
 }

@@ -56,7 +56,7 @@ public class ReplaceSheetAction : ActionBase
     private void ReplaceSheetFromDifferentWorkbook(string filePath)
     {
         using var targetWorkbook = new XLWorkbook(filePath);
-        using var sourceWorkbook = new XLWorkbook(SourceFilePath);
+        using var sourceWorkbook = new XLWorkbook((string)SourceFilePath!);
 
         Validation.ValidateSheetExists(sourceWorkbook, SourceSheetName);
         Validation.ValidateSheetExists(targetWorkbook, TargetSheetName);

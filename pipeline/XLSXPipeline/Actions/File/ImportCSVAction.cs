@@ -40,7 +40,7 @@ public class ImportCSVAction : ActionBase
 
     protected override async Task ExecuteInternalAsync(string filePath)
     {
-        string csvPath = CsvFilePath;
+        string csvPath = CsvFilePath.Resolved;
         if (!System.IO.File.Exists(csvPath))
             throw new FileNotFoundException($"CSV file not found: {csvPath}");
 

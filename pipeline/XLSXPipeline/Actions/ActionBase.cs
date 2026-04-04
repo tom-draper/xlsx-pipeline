@@ -40,7 +40,7 @@ public abstract class ActionBase
     {
         string effectiveFilePath;
         if (!string.IsNullOrEmpty(FilePath))
-            effectiveFilePath = Path.GetFullPath(Helpers.NormalizePathSeparators(FilePath));
+            effectiveFilePath = Path.GetFullPath(Helpers.NormalizePathSeparators(FilePath!));
         else
             effectiveFilePath = Helpers.ReplaceDateTimePlaceholders(triggerFilePath);
         return effectiveFilePath;

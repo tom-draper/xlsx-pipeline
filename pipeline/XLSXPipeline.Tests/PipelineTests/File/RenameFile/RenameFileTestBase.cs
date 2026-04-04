@@ -9,7 +9,7 @@ public abstract class RenameFileTestBase(string? defaultPipelineName = null) : S
     {
         pipelineName ??= DefaultPipelineName;
         var action = GetLastAction(pipelineName);
-        return action.NewName ?? throw new InvalidOperationException($"No NewName found in RenameFileAction for pipeline '{pipelineName}'");
+        return action.NewName?.Resolved ?? throw new InvalidOperationException($"No NewName found in RenameFileAction for pipeline '{pipelineName}'");
     }
 
     protected string GetOutputPath(string? pipelineName = null)
