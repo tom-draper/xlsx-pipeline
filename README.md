@@ -16,14 +16,20 @@ Pipelines like the one below are defined using a flexible DML in JSON.
     },
     "actions": [
         {
-            "type": "DuplicateSheet",
-            "sourceName": "Template",
-            "newName": "Summary"
+            "type": "CopySheet",
+            "sourceSheetName": "Template",
+            "newSheetName": "Summary"
         },
         {
-            "type": "FillFormula",
-            "sheet": "Summary",
-            "range": "B2:B100",
+            "type": "SetCellValue",
+            "sheetName": "Summary",
+            "cellAddress": "A1",
+            "value": "Monthly Summary - {month} {year}"
+        },
+        {
+            "type": "ApplyFormula",
+            "sheetName": "Summary",
+            "cellAddress": "B2",
             "formula": "=SUM(Sales!B2:D2)"
         },
         {
