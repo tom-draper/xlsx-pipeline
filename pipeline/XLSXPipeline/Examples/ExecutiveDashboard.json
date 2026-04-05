@@ -1,0 +1,79 @@
+{
+    "pipelineName": "Executive Dashboard",
+    "trigger": {
+        "type": "0 8 * * 1",
+        "path": "C:\\Reporting\\Dashboard.xlsx"
+    },
+    "actions": [
+        {
+            "type": "CopySheet",
+            "sourceSheetName": "Template",
+            "newSheetName": "Dashboard_{month}_{year}"
+        },
+        {
+            "type": "SetCellValue",
+            "sheetName": "Dashboard_{month}_{year}",
+            "cellAddress": "B2",
+            "value": "Week of {day}/{month}/{year}"
+        },
+        {
+            "type": "ApplyFormula",
+            "sheetName": "Dashboard_{month}_{year}",
+            "cellAddress": "C5",
+            "formula": "=SUM(RawData!C2:C500)"
+        },
+        {
+            "type": "ApplyFormula",
+            "sheetName": "Dashboard_{month}_{year}",
+            "cellAddress": "C6",
+            "formula": "=AVERAGE(RawData!C2:C500)"
+        },
+        {
+            "type": "ConditionalFormatting",
+            "sheetName": "Dashboard_{month}_{year}",
+            "range": "C5:C20",
+            "condition": 18,
+            "minColor": "#FF0000",
+            "midColor": "#FFFF00",
+            "maxColor": "#00FF00"
+        },
+        {
+            "type": "AddNamedRange",
+            "sheetName": "Dashboard_{month}_{year}",
+            "name": "KPISummary",
+            "range": "B2:D20",
+            "scope": "Workbook"
+        },
+        {
+            "type": "FreezePane",
+            "sheetName": "Dashboard_{month}_{year}",
+            "rows": 3,
+            "columns": 1
+        },
+        {
+            "type": "SetPageOrientation",
+            "sheetName": "Dashboard_{month}_{year}",
+            "orientation": "Landscape"
+        },
+        {
+            "type": "SetPrintArea",
+            "sheetName": "Dashboard_{month}_{year}",
+            "range": "A1:J40"
+        },
+        {
+            "type": "SetHeaderFooter",
+            "sheetName": "Dashboard_{month}_{year}",
+            "centerHeader": "Executive Dashboard — {month}/{year}",
+            "rightFooter": "Page &P of &N"
+        },
+        {
+            "type": "ExportToPDF",
+            "sheetName": "Dashboard_{month}_{year}",
+            "outputPath": "C:\\Reporting\\Distributed\\Dashboard_{month}_{year}.pdf"
+        },
+        {
+            "type": "HideSheet",
+            "sheetName": "Template"
+        }
+    ]
+}

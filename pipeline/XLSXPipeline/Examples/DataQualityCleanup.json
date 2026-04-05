@@ -1,0 +1,46 @@
+{
+    "pipelineName": "Data Quality Cleanup",
+    "trigger": {
+        "type": "0 7 * * 1",
+        "path": "C:\\CRM\\Contacts.xlsx"
+    },
+    "actions": [
+        {
+            "type": "FindAndReplace",
+            "sheetName": "Contacts",
+            "find": "N/A",
+            "replace": "",
+            "matchCase": false
+        },
+        {
+            "type": "FindAndReplace",
+            "sheetName": "Contacts",
+            "find": "n/a",
+            "replace": ""
+        },
+        {
+            "type": "DeduplicateRows",
+            "sheetName": "Contacts",
+            "columns": ["A", "B"],
+            "hasHeaders": true,
+            "keepFirst": true
+        },
+        {
+            "type": "SortData",
+            "sheetName": "Contacts",
+            "sortColumn": 2,
+            "ascending": true
+        },
+        {
+            "type": "AutoFitColumns",
+            "sheetName": "Contacts",
+            "minWidth": 8,
+            "maxWidth": 40
+        },
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\CRM\\Cleaned\\",
+            "fileName": "Contacts_clean_{year}_{month}_{day}.xlsx"
+        }
+    ]
+}

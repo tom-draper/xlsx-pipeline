@@ -1,0 +1,19 @@
+{
+    "pipelineName": "Weekly Backup",
+    "trigger": {
+        "type": "0 23 * * 5",
+        "path": "C:\\Finance\\Budget.xlsx"
+    },
+    "actions": [
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\Finance\\Backups\\",
+            "fileName": "Budget_{year}_{month}_{day}.xlsx"
+        },
+        {
+            "type": "ProtectFile",
+            "filePath": "C:\\Finance\\Backups\\Budget_{year}_{month}_{day}.xlsx",
+            "password": "readonly2024"
+        }
+    ]
+}

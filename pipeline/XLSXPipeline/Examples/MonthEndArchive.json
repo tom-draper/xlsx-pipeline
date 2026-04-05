@@ -1,0 +1,44 @@
+{
+    "pipelineName": "Month End Archive",
+    "trigger": {
+        "type": "0 9 1 * *",
+        "path": "C:\\Finance\\Ledger.xlsx"
+    },
+    "actions": [
+        {
+            "type": "RenameSheet",
+            "sheetName": "Working",
+            "newSheetName": "{month}_{year}"
+        },
+        {
+            "type": "SetSheetTabColor",
+            "sheetName": "{month}_{year}",
+            "color": "#4CAF50"
+        },
+        {
+            "type": "HideSheet",
+            "sheetName": "{month}_{year}"
+        },
+        {
+            "type": "AddSheet",
+            "sheetName": "Working"
+        },
+        {
+            "type": "SetHeaderFooter",
+            "sheetName": "Working",
+            "leftHeader": "Finance Ledger",
+            "rightHeader": "{month}/{year}",
+            "centerFooter": "Page &P of &N"
+        },
+        {
+            "type": "ExportToPDF",
+            "sheetName": "{month}_{year}",
+            "outputPath": "C:\\Finance\\Archive\\Ledger_{month}_{year}.pdf"
+        },
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\Finance\\Archive\\",
+            "fileName": "Ledger_{month}_{year}.xlsx"
+        }
+    ]
+}

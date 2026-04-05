@@ -1,0 +1,63 @@
+{
+    "pipelineName": "Daily Sales Report",
+    "trigger": {
+        "type": "0 18 * * *",
+        "path": "C:\\Sales\\SalesData.xlsx"
+    },
+    "actions": [
+        {
+            "type": "CopySheet",
+            "sourceSheetName": "Template",
+            "newSheetName": "Report_{month}_{year}"
+        },
+        {
+            "type": "SetCellValue",
+            "sheetName": "Report_{month}_{year}",
+            "cellAddress": "A1",
+            "value": "Sales Report — {month}/{year}"
+        },
+        {
+            "type": "ApplyFormula",
+            "sheetName": "Report_{month}_{year}",
+            "cellAddress": "B2",
+            "formula": "=SUM(SalesData!B2:B100)"
+        },
+        {
+            "type": "ConditionalFormatting",
+            "sheetName": "Report_{month}_{year}",
+            "range": "B2:B50",
+            "condition": 0,
+            "value": "0",
+            "backgroundColor": "#FF0000"
+        },
+        {
+            "type": "FreezePane",
+            "sheetName": "Report_{month}_{year}",
+            "rows": 1
+        },
+        {
+            "type": "AutoFitColumns",
+            "sheetName": "Report_{month}_{year}"
+        },
+        {
+            "type": "SetPageOrientation",
+            "sheetName": "Report_{month}_{year}",
+            "orientation": "Landscape"
+        },
+        {
+            "type": "SetPrintArea",
+            "sheetName": "Report_{month}_{year}",
+            "range": "A1:H50"
+        },
+        {
+            "type": "ExportToPDF",
+            "sheetName": "Report_{month}_{year}",
+            "outputPath": "C:\\Sales\\Reports\\SalesReport_{month}_{year}.pdf"
+        },
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\Sales\\Archive\\",
+            "fileName": "SalesData_{month}_{year}.xlsx"
+        }
+    ]
+}

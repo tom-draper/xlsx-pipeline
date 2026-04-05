@@ -6,21 +6,25 @@
     },
     "actions": [
         {
+            "type": "DeduplicateRows",
+            "hasHeaders": true
+        },
+        {
+            "type": "SortData",
+            "sortColumn": 1,
+            "ascending": true
+        },
+        {
+            "type": "AutoFitColumns"
+        },
+        {
             "type": "CopyFile",
             "destinationPath": "C:\\Sales\\Summaries\\",
             "fileName": "Summary.xlsx"
         },
         {
             "type": "OpenFile",
-            "fileName": "C:\\Sales\\Summaries\\Summary.xlsx"
-        },
-        {
-            "type": "Wait",
-            "time": 60000
-        },
-        {
-            "type": "CloseFile",
-            "fileName": "C:\\Sales\\Summaries\\Summary.xlsx"
+            "filePath": "C:\\Sales\\Summaries\\Summary.xlsx"
         }
     ]
 }

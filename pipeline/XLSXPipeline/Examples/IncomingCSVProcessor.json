@@ -1,0 +1,49 @@
+{
+    "pipelineName": "Incoming CSV Processor",
+    "trigger": {
+        "type": "OnNewFile",
+        "path": "C:\\Data\\Incoming\\"
+    },
+    "actions": [
+        {
+            "type": "ClearCells",
+            "sheetName": "Data",
+            "range": "A2:Z10000",
+            "clearType": 0
+        },
+        {
+            "type": "ImportCSV",
+            "csvFilePath": "C:\\Data\\Incoming\\latest.csv",
+            "sheetName": "Data",
+            "startCell": "A1",
+            "clearExistingData": true
+        },
+        {
+            "type": "DeduplicateRows",
+            "sheetName": "Data",
+            "hasHeaders": true,
+            "keepFirst": true
+        },
+        {
+            "type": "SortData",
+            "sheetName": "Data",
+            "sortColumn": 1,
+            "ascending": true
+        },
+        {
+            "type": "AutoFitColumns",
+            "sheetName": "Data"
+        },
+        {
+            "type": "FreezePane",
+            "sheetName": "Data",
+            "rows": 1
+        },
+        {
+            "type": "ExportToCSV",
+            "sheetName": "Data",
+            "outputPath": "C:\\Data\\Processed\\",
+            "fileName": "processed_{year}_{month}_{day}.csv"
+        }
+    ]
+}

@@ -1,0 +1,46 @@
+{
+    "pipelineName": "Split Department Reports",
+    "trigger": {
+        "type": "0 17 28-31 * *",
+        "path": "C:\\HR\\DepartmentData.xlsx"
+    },
+    "actions": [
+        {
+            "type": "DeduplicateRows",
+            "sheetName": "Headcount",
+            "hasHeaders": true
+        },
+        {
+            "type": "SortData",
+            "sheetName": "Headcount",
+            "sortColumn": 1,
+            "ascending": true
+        },
+        {
+            "type": "AutoFitColumns",
+            "sheetName": "Headcount"
+        },
+        {
+            "type": "SetPageOrientation",
+            "sheetName": "Headcount",
+            "orientation": "Landscape"
+        },
+        {
+            "type": "SetHeaderFooter",
+            "sheetName": "Headcount",
+            "leftHeader": "HR Headcount Report",
+            "rightHeader": "{month}/{year}",
+            "centerFooter": "CONFIDENTIAL"
+        },
+        {
+            "type": "SplitSheetsToFiles",
+            "outputDirectory": "C:\\HR\\Reports\\{year}_{month}\\",
+            "createDirectories": true
+        },
+        {
+            "type": "CopyFile",
+            "destinationPath": "C:\\HR\\Archive\\",
+            "fileName": "DepartmentData_{year}_{month}.xlsx"
+        }
+    ]
+}

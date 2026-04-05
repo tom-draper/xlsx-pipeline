@@ -1,0 +1,51 @@
+{
+    "pipelineName": "Inventory Alerts",
+    "trigger": {
+        "type": "OnChange",
+        "path": "C:\\Warehouse\\Inventory.xlsx"
+    },
+    "actions": [
+        {
+            "type": "ConditionalFormatting",
+            "sheetName": "Stock",
+            "range": "D2:D500",
+            "condition": 3,
+            "value": "10",
+            "backgroundColor": "#FF4444",
+            "fontColor": "#FFFFFF",
+            "bold": true
+        },
+        {
+            "type": "ConditionalFormatting",
+            "sheetName": "Stock",
+            "range": "D2:D500",
+            "condition": 0,
+            "value": "50",
+            "backgroundColor": "#FFF176"
+        },
+        {
+            "type": "SetColumnWidth",
+            "sheetName": "Stock",
+            "column": "A",
+            "width": 30,
+            "count": 1
+        },
+        {
+            "type": "AutoFitColumns",
+            "sheetName": "Stock",
+            "from": "B",
+            "to": "G"
+        },
+        {
+            "type": "FreezePane",
+            "sheetName": "Stock",
+            "rows": 1
+        },
+        {
+            "type": "ExportToCSV",
+            "sheetName": "Stock",
+            "outputPath": "C:\\Warehouse\\Exports\\",
+            "fileName": "inventory_{year}_{month}_{day}.csv"
+        }
+    ]
+}
