@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Unprotect File",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "UnprotectFile",
+      "password": "testpass123"
+    }
+  ]
+}

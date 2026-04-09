@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Delete Row",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "DeleteRow",
+      "rowNumber": 2,
+      "count": 1
+    }
+  ]
+}

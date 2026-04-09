@@ -1,0 +1,18 @@
+{
+  "pipelineName": "Create Pivot Table",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CreatePivotTable",
+      "sourceSheetName": "Sheet1",
+      "sourceRange": "A1:B4",
+      "destinationSheetName": "Pivot",
+      "destinationCell": "A1",
+      "rowFields": ["Category"],
+      "dataFields": ["Value"]
+    }
+  ]
+}

@@ -9,7 +9,7 @@
             "type": "ConditionalFormatting",
             "sheetName": "Stock",
             "range": "D2:D500",
-            "condition": 3,
+            "condition": "LessOrEqual",
             "value": "10",
             "backgroundColor": "#FF4444",
             "fontColor": "#FFFFFF",
@@ -19,7 +19,7 @@
             "type": "ConditionalFormatting",
             "sheetName": "Stock",
             "range": "D2:D500",
-            "condition": 0,
+            "condition": "GreaterThan",
             "value": "50",
             "backgroundColor": "#FFF176"
         },

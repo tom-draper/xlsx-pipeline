@@ -1,0 +1,16 @@
+{
+  "pipelineName": "Transpose",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "TransposeAction",
+      "sourceSheetName": "Sheet1",
+      "sourceRange": "A1:B2",
+      "destinationSheetName": "Sheet1",
+      "destinationCell": "D1"
+    }
+  ]
+}

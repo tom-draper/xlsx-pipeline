@@ -1,0 +1,12 @@
+{
+  "pipelineName": "Open File",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "OpenFile"
+    }
+  ]
+}

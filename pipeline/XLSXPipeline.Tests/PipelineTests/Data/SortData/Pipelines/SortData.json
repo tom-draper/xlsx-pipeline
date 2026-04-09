@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Sort Data",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SortData",
+      "range": "A1:A3",
+      "sortColumn": "A",
+      "ascending": true
+    }
+  ]
+}

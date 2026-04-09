@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Merge Data",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MergeData",
+      "sourceFilePath": ".\\Source\\Source.xlsx",
+      "destinationCell": "A4",
+      "includeHeaders": false
+    }
+  ]
+}

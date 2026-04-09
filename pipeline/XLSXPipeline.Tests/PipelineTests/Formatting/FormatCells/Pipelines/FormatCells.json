@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Format Cells",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "FormatCells",
+      "range": "A1:B2",
+      "bold": true,
+      "fontSize": 14
+    }
+  ]
+}

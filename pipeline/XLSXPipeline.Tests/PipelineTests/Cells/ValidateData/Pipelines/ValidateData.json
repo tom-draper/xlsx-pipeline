@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Validate Data",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ValidateData",
+      "range": "A1:A3",
+      "validationType": "Whole",
+      "validationCriteria": "1,100"
+    }
+  ]
+}

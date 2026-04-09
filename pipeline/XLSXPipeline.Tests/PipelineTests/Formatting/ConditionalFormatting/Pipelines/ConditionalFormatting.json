@@ -8,7 +8,7 @@
     {
       "type": "ConditionalFormatting",
       "range": "A2:A3",
-      "condition": 0,
+      "condition": "GreaterThan",
       "value": "100",
       "backgroundColor": "#FF0000"
     }

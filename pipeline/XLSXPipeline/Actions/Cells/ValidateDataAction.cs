@@ -177,7 +177,7 @@ public class ValidateDataAction : ActionBase
     {
         try
         {
-            var validation = range.GetDataValidation();
+            var validation = range.CreateDataValidation();
             ApplyValidationRule(validation);
 
             if (!string.IsNullOrWhiteSpace(ErrorMessage))

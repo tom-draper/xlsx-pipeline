@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Set Cell Value",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetCellValue",
+      "cellAddress": "C1",
+      "value": "Hello World"
+    }
+  ]
+}

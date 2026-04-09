@@ -1,0 +1,16 @@
+{
+  "pipelineName": "Filter Data",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "FilterData",
+      "range": "A1:B3",
+      "filterColumnIndex": 1,
+      "filterValue": "Alpha",
+      "filterOperator": "Equal"
+    }
+  ]
+}

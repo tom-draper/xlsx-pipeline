@@ -33,6 +33,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
         {
             // File actions
             "CopyFile" => DeserializeAction<CopyFileAction>(rawText, options),
+            "CreateFile" => DeserializeAction<CreateFileAction>(rawText, options),
             "DeleteFile" => DeserializeAction<DeleteFileAction>(rawText, options),
             "ExportToCSV" => DeserializeAction<ExportToCSVAction>(rawText, options),
             "ExportToPDF" => DeserializeAction<ExportToPDFAction>(rawText, options),
@@ -62,6 +63,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             "SetPrintArea" => DeserializeAction<SetPrintAreaAction>(rawText, options),
             "SetSheetTabColor" => DeserializeAction<SetSheetTabColorAction>(rawText, options),
             "SetZoom" => DeserializeAction<SetZoomAction>(rawText, options),
+            "RecalculateFormulas" => DeserializeAction<RecalculateFormulasAction>(rawText, options),
             "UnhideSheet" => DeserializeAction<UnhideSheetAction>(rawText, options),
             "UnprotectSheet" => DeserializeAction<UnprotectSheetAction>(rawText, options),
 

@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Replace Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ReplaceSheet",
+      "targetSheetName": "Sheet1",
+      "sourceSheetName": "Source"
+    }
+  ]
+}

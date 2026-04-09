@@ -8,7 +8,7 @@
     {
       "type": "ClearCells",
       "range": "A1:B2",
-      "clearType": 0
+      "clearType": "Values"
     }
   ]
 }

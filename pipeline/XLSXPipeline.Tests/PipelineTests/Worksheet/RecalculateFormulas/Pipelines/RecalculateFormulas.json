@@ -1,0 +1,12 @@
+{
+  "pipelineName": "Recalculate Formulas",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "RecalculateFormulas"
+    }
+  ]
+}

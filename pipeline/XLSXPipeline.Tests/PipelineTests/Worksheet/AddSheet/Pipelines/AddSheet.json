@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Add Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "AddSheet",
+      "sheetName": "NewSheet"
+    }
+  ]
+}

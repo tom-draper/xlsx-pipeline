@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Insert Row",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "InsertRow",
+      "rowNumber": 2,
+      "count": 1
+    }
+  ]
+}

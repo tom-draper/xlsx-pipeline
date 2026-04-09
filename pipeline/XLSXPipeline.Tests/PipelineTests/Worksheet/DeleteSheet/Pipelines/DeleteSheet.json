@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Delete Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "DeleteSheet",
+      "sheetName": "Sheet2"
+    }
+  ]
+}

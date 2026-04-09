@@ -26,7 +26,7 @@
             "type": "ConditionalFormatting",
             "sheetName": "Report_{month}_{year}",
             "range": "B2:B50",
-            "condition": 0,
+            "condition": "GreaterThan",
             "value": "0",
             "backgroundColor": "#FF0000"
         },

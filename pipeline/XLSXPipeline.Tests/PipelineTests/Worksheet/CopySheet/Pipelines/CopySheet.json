@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Copy Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CopySheet",
+      "sourceSheetName": "Sheet1",
+      "newSheetName": "Sheet1Copy"
+    }
+  ]
+}

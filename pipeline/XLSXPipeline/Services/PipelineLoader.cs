@@ -59,7 +59,7 @@ public class PipelineLoader(
                     var pipeline = JsonSerializer.Deserialize<Pipeline>(json, JsonOptions);
 #pragma warning restore IL2026
 
-                    if (pipeline != null)
+                    if (pipeline != null && Validate(pipeline, filePath))
                     {
                         var triggerType = pipeline.Trigger.Type?.ToLowerInvariant() ?? TriggerTypes.Once;
 
@@ -116,5 +116,40 @@ public class PipelineLoader(
         }
 
         return (scheduledPipelines, fileWatcherPipelines);
+    }
+
+    private bool Validate(Pipeline pipeline, string filePath)
+    {
+        var fileName = Path.GetFileName(filePath);
+
+        if (string.IsNullOrWhiteSpace(pipeline.PipelineName))
+        {
+            _logger.LogWarning("Pipeline in '{FileName}' has a null or empty PipelineName. Skipping.", fileName);
+            return false;
+        }
+
+        if (pipeline.Trigger == null)
+        {
+            _logger.LogWarning("Pipeline '{PipelineName}' in '{FileName}' has a null Trigger. Skipping.", pipeline.PipelineName, fileName);
+            return false;
+        }
+
+        if (pipeline.Actions == null)
+        {
+            _logger.LogWarning("Pipeline '{PipelineName}' in '{FileName}' has a null Actions list. Skipping.", pipeline.PipelineName, fileName);
+            return false;
+        }
+
+        for (int i = 0; i < pipeline.Actions.Count; i++)
+        {
+            var action = pipeline.Actions[i];
+            if (string.IsNullOrWhiteSpace(action?.Type))
+            {
+                _logger.LogWarning("Pipeline '{PipelineName}' in '{FileName}' has an action at index {Index} with a null or empty Type. Skipping pipeline.", pipeline.PipelineName, fileName, i);
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -1,0 +1,12 @@
+{
+  "pipelineName": "Delete File",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "DeleteFile"
+    }
+  ]
+}

@@ -73,9 +73,7 @@ public class ReplaceSheetAction : ActionBase
 
     private static IXLWorksheet CopyAndRenameWorksheet(IXLWorksheet sourceWorksheet, XLWorkbook targetWorkbook, string newName, int position)
     {
-        var copiedWorksheet = sourceWorksheet.CopyTo(targetWorkbook);
-        copiedWorksheet.Name = newName;
-        copiedWorksheet.Position = position;
+        var copiedWorksheet = sourceWorksheet.CopyTo(targetWorkbook, newName, position);
         return copiedWorksheet;
     }
 }

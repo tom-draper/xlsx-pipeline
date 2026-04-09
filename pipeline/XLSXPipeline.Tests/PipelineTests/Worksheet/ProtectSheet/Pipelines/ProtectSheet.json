@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Protect Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ProtectSheet",
+      "sheetName": "Sheet1",
+      "password": "sheetpass"
+    }
+  ]
+}

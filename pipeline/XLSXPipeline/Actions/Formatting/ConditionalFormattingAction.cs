@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.Formatting;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ConditionalFormattingType
 {
     GreaterThan,

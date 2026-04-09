@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Move Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "MoveSheet",
+      "sheetName": "Sheet1",
+      "targetIndex": 2
+    }
+  ]
+}

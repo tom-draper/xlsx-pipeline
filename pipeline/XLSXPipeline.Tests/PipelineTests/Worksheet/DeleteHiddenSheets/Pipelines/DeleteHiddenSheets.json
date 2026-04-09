@@ -1,0 +1,12 @@
+{
+  "pipelineName": "Delete Hidden Sheets",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "DeleteHiddenSheets"
+    }
+  ]
+}

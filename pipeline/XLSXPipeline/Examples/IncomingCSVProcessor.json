@@ -9,7 +9,7 @@
             "type": "ClearCells",
             "sheetName": "Data",
             "range": "A2:Z10000",
-            "clearType": 0
+            "clearType": "Values"
         },
         {
             "type": "ImportCSV",

@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Apply Formula",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ApplyFormula",
+      "cellAddress": "C1",
+      "formula": "=A1+A2"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace XLSXPipeline.Actions.Cells;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ClearType
 {
     /// <summary>Clear cell values and formulas only, preserve formatting.</summary>

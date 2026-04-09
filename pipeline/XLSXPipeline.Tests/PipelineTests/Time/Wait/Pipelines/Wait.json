@@ -1,0 +1,13 @@
+{
+  "pipelineName": "Wait",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "Wait",
+      "timeInSeconds": 0
+    }
+  ]
+}

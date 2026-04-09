@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using System.Globalization;
 
 namespace XLSXPipeline.Actions;
 
@@ -39,10 +40,9 @@ internal class Helpers
                 return workbook.Worksheets.Add("Sheet1");
             return workbook.Worksheets.First();
         }
-        var worksheet = workbook.Worksheet(sheetName);
-        if (worksheet == null)
-            worksheet = workbook.Worksheets.Add(sheetName);
-        return worksheet;
+        if (workbook.Worksheets.Contains(sheetName))
+            return workbook.Worksheet(sheetName);
+        return workbook.Worksheets.Add(sheetName);
     }
 
     public static string DetermineOutputPath(string sourceFilePath, string fileExtension, string? outputPath, string? filename)
@@ -97,13 +97,22 @@ internal class Helpers
 
         var now = DateTime.Now;
 
+        var isoWeek = ISOWeek.GetWeekOfYear(now);
+        var quarter = (now.Month + 2) / 3;
+        var epochSeconds = new DateTimeOffset(now).ToUnixTimeSeconds();
+
         return input
             .Replace("{year}", now.Year.ToString("D4"))
             .Replace("{month}", now.Month.ToString("D2"))
             .Replace("{day}", now.Day.ToString("D2"))
             .Replace("{hour}", now.Hour.ToString("D2"))
             .Replace("{minute}", now.Minute.ToString("D2"))
-            .Replace("{second}", now.Second.ToString("D2"));
+            .Replace("{second}", now.Second.ToString("D2"))
+            .Replace("{date}", now.ToString("yyyy-MM-dd"))
+            .Replace("{week}", isoWeek.ToString("D2"))
+            .Replace("{quarter}", quarter.ToString())
+            .Replace("{weekday}", now.ToString("dddd"))
+            .Replace("{timestamp}", epochSeconds.ToString());
     }
 
     public static void EnsureDirectory(string filepath, bool createDirectories)

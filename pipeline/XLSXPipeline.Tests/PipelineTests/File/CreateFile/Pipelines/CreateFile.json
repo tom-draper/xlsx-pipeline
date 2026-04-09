@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Create File",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "CreateFile",
+      "destinationPath": ".\\Output\\NewFile.xlsx",
+      "content": "test content"
+    }
+  ]
+}

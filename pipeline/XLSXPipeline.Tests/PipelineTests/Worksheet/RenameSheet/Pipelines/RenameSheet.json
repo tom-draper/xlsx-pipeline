@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Rename Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "RenameSheet",
+      "sheetName": "Sheet1",
+      "newSheetName": "Renamed"
+    }
+  ]
+}

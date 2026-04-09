@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Insert Column",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "InsertColumn",
+      "columnName": "B",
+      "count": 1
+    }
+  ]
+}

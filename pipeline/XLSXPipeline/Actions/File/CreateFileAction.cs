@@ -34,6 +34,7 @@ public class CreateFileAction : ActionBase
     /// <summary>
     /// Text encoding to use when writing content. Defaults to UTF-8.
     /// </summary>
+    [JsonIgnore]
     public Encoding Encoding { get; set; } = Encoding.UTF8;
 
     protected override Task ExecuteInternalAsync(string filePath)

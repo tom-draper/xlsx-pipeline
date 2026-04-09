@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Unprotect Sheet",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "UnprotectSheet",
+      "sheetName": "Sheet1",
+      "password": "sheetpass"
+    }
+  ]
+}

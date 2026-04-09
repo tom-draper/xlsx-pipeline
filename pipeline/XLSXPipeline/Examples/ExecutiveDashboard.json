@@ -32,7 +32,7 @@
             "type": "ConditionalFormatting",
             "sheetName": "Dashboard_{month}_{year}",
             "range": "C5:C20",
-            "condition": 18,
+            "condition": "ColorScale",
             "minColor": "#FF0000",
             "midColor": "#FFFF00",
             "maxColor": "#00FF00"

@@ -1,0 +1,14 @@
+{
+  "pipelineName": "Delete Column",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "DeleteColumn",
+      "columnName": "B",
+      "count": 1
+    }
+  ]
+}
