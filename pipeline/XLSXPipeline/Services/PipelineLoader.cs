@@ -11,11 +11,13 @@ public interface IPipelineLoader
 public class PipelineLoader(
     ILogger<PipelineLoader> logger,
     IScheduledPipelineFactory scheduledPipelineFactory,
-    IPipelineDisableService completionService) : IPipelineLoader
+    IPipelineDisableService completionService,
+    IPipelineRegistry pipelineRegistry) : IPipelineLoader
 {
     private readonly ILogger<PipelineLoader> _logger = logger;
     private readonly IScheduledPipelineFactory _scheduledPipelineFactory = scheduledPipelineFactory;
     private readonly IPipelineDisableService _completionService = completionService;
+    private readonly IPipelineRegistry _pipelineRegistry = pipelineRegistry;
     private readonly string _pipelinesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Pipelines");
 
     // Configure JsonSerializerOptions with the source generator context
@@ -80,7 +82,7 @@ public class PipelineLoader(
                             {
                                 Pipeline = pipeline,
                                 FilePath = filePath,
-                                WatchPath = pipeline.Trigger.Path
+                                WatchPaths = [.. pipeline.Trigger.AllPaths]
                             };
                             fileWatcherPipelines.Add(fileWatcherPipeline);
                             _logger.LogInformation("Loaded file watcher pipeline: {FileName}", Path.GetFileName(filePath));
@@ -114,6 +116,12 @@ public class PipelineLoader(
         {
             _logger.LogError(ex, "Error accessing pipelines directory: {PipelinesDirectory}", _pipelinesDirectory);
         }
+
+        // Register all loaded pipelines in the registry
+        var allPipelines = scheduledPipelines.Select(sp => sp.Pipeline)
+            .Concat(fileWatcherPipelines.Select(fwp => fwp.Pipeline))
+            .ToList();
+        _pipelineRegistry.Register(allPipelines);
 
         return (scheduledPipelines, fileWatcherPipelines);
     }

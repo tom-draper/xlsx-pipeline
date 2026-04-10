@@ -109,6 +109,7 @@ public class ActionJsonConverter : JsonConverter<ActionBase>
             // Advanced actions
             "CreatePivotTable" => DeserializeAction<CreatePivotTableAction>(rawText, options),
             "TransposeAction" => DeserializeAction<TransposeAction>(rawText, options),
+            "RunPipeline" => DeserializeAction<RunPipelineAction>(rawText, options),
 
             _ => throw new NotSupportedException($"Unknown action type: {actionType}")
         };

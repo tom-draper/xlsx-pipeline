@@ -14,6 +14,11 @@ public class Trigger
 {
     public required string Type { get; set; }
     public required string Path { get; set; }
+    public List<string>? Paths { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<string> AllPaths =>
+        Paths is { Count: > 0 } ? Paths : [Path];
 }
 
 public static class TriggerTypes
@@ -52,5 +57,5 @@ public class FileWatcherPipeline
 {
     public Pipeline Pipeline { get; set; } = null!;
     public string FilePath { get; set; } = string.Empty;
-    public string WatchPath { get; set; } = string.Empty;
+    public List<string> WatchPaths { get; set; } = [];
 }

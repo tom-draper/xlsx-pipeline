@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IFileWatcherService, FileWatcherService>();
         services.AddSingleton<IPipelineExecutor, PipelineExecutor>();
         services.AddSingleton<IPipelineDisableService, PipelineDisableService>();
+        services.AddSingleton<IPipelineRegistry, PipelineRegistry>();
 
         return services;
     }

@@ -20,61 +20,64 @@ public class FileWatcherService(ILogger<FileWatcherService> logger, IPipelineExe
     {
         foreach (var fileWatcherPipeline in fileWatcherPipelines)
         {
-            try
+            foreach (var watchPath in fileWatcherPipeline.WatchPaths)
             {
-                string directoryPath;
-                string fileFilter;
+                try
+                {
+                    string directoryPath;
+                    string fileFilter;
 
-                // Check if the path is a file or directory
-                if (File.Exists(fileWatcherPipeline.WatchPath))
-                {
-                    // It's a file - watch its directory with specific filter
-                    directoryPath = Path.GetDirectoryName(fileWatcherPipeline.WatchPath)!;
-                    fileFilter = Path.GetFileName(fileWatcherPipeline.WatchPath);
-                    _logger.LogInformation("Watching specific file: {WatchPath} (Directory: {DirectoryPath}, Filter: {FileFilter})",
-                        fileWatcherPipeline.WatchPath, directoryPath, fileFilter);
-                }
-                else if (Directory.Exists(fileWatcherPipeline.WatchPath))
-                {
-                    // It's a directory - watch all files
-                    directoryPath = fileWatcherPipeline.WatchPath;
-                    fileFilter = "*.*";
-                    _logger.LogInformation("Watching directory: {DirectoryPath}", fileWatcherPipeline.WatchPath);
-                }
-                else
-                {
-                    // Path doesn't exist - check if it looks like a file path
-                    var directory = Path.GetDirectoryName(fileWatcherPipeline.WatchPath);
-                    if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
+                    // Check if the path is a file or directory
+                    if (File.Exists(watchPath))
                     {
-                        // Directory exists but file doesn't - watch for the file to be created
-                        directoryPath = directory;
-                        fileFilter = Path.GetFileName(fileWatcherPipeline.WatchPath);
-                        _logger.LogInformation("Watching for file creation: {FilePath}", fileWatcherPipeline.WatchPath);
+                        // It's a file - watch its directory with specific filter
+                        directoryPath = Path.GetDirectoryName(watchPath)!;
+                        fileFilter = Path.GetFileName(watchPath);
+                        _logger.LogInformation("Watching specific file: {WatchPath} (Directory: {DirectoryPath}, Filter: {FileFilter})",
+                            watchPath, directoryPath, fileFilter);
+                    }
+                    else if (Directory.Exists(watchPath))
+                    {
+                        // It's a directory - watch all files
+                        directoryPath = watchPath;
+                        fileFilter = "*.*";
+                        _logger.LogInformation("Watching directory: {DirectoryPath}", watchPath);
                     }
                     else
                     {
-                        _logger.LogWarning("Watch path and its directory do not exist: {WatchPath}", fileWatcherPipeline.WatchPath);
-                        continue;
+                        // Path doesn't exist - check if it looks like a file path
+                        var directory = Path.GetDirectoryName(watchPath);
+                        if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
+                        {
+                            // Directory exists but file doesn't - watch for the file to be created
+                            directoryPath = directory;
+                            fileFilter = Path.GetFileName(watchPath);
+                            _logger.LogInformation("Watching for file creation: {FilePath}", watchPath);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Watch path and its directory do not exist: {WatchPath}", watchPath);
+                            continue;
+                        }
                     }
+
+                    var watcher = new FileSystemWatcher(directoryPath)
+                    {
+                        Filter = fileFilter,
+                        NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite,
+                        EnableRaisingEvents = true,
+                        IncludeSubdirectories = false
+                    };
+
+                    watcher.Created += (sender, e) => ScheduleDebouncedExecution(fileWatcherPipeline.Pipeline, e.FullPath);
+                    watcher.Changed += (sender, e) => ScheduleDebouncedExecution(fileWatcherPipeline.Pipeline, e.FullPath);
+
+                    _fileWatchers.Add(watcher);
                 }
-
-                var watcher = new FileSystemWatcher(directoryPath)
+                catch (Exception ex)
                 {
-                    Filter = fileFilter,
-                    NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.LastWrite,
-                    EnableRaisingEvents = true,
-                    IncludeSubdirectories = false
-                };
-
-                watcher.Created += (sender, e) => ScheduleDebouncedExecution(fileWatcherPipeline.Pipeline, e.FullPath);
-                watcher.Changed += (sender, e) => ScheduleDebouncedExecution(fileWatcherPipeline.Pipeline, e.FullPath);
-
-                _fileWatchers.Add(watcher);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error starting file watcher for: {WatchPath}", fileWatcherPipeline.WatchPath);
+                    _logger.LogError(ex, "Error starting file watcher for: {WatchPath}", watchPath);
+                }
             }
         }
     }

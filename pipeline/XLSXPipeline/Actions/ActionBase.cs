@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ClosedXML.Excel;
 using XLSXPipeline.Services;
 
 namespace XLSXPipeline.Actions;
@@ -25,10 +26,26 @@ public abstract class ActionBase
 
     /// <summary>
     /// Optional condition to skip the action at runtime.
-    /// Supported expressions: "fileExists:&lt;path&gt;", "fileNotExists:&lt;path&gt;".
-    /// Paths support datetime placeholders.
+    /// Supported expressions: "fileExists:&lt;path&gt;", "fileNotExists:&lt;path&gt;",
+    /// "dayOfWeek:&lt;days&gt;", "fileOlderThan:&lt;duration&gt;", "cellEquals:&lt;sheet&gt;!&lt;cell&gt;:&lt;value&gt;".
     /// </summary>
     public string? SkipIf { get; set; }
+
+    /// <summary>
+    /// Number of times to retry the action on failure (default 0 = no retries).
+    /// </summary>
+    public int Retries { get; set; } = 0;
+
+    /// <summary>
+    /// Delay in seconds between retry attempts (default 5.0).
+    /// </summary>
+    public double RetryDelaySeconds { get; set; } = 5.0;
+
+    /// <summary>
+    /// Service provider injected by PipelineExecutor before execution. Not serialized.
+    /// </summary>
+    [JsonIgnore]
+    public IServiceProvider? Services { get; set; }
 
     /// <summary>
     /// Executes the action with the provided file path from the pipeline.
@@ -39,7 +56,7 @@ public abstract class ActionBase
         if (Disabled)
             return false;
 
-        if (!string.IsNullOrWhiteSpace(SkipIf) && ShouldSkip(SkipIf))
+        if (!string.IsNullOrWhiteSpace(SkipIf) && ShouldSkip(SkipIf, triggerFilePath))
             return false;
 
         // Determine which file path to use - override takes precedence
@@ -53,10 +70,13 @@ public abstract class ActionBase
         return true;
     }
 
-    private static bool ShouldSkip(string skipIf)
+    private static bool ShouldSkip(string skipIf, string filePath)
     {
         const string fileExistsPrefix = "fileExists:";
         const string fileNotExistsPrefix = "fileNotExists:";
+        const string dayOfWeekPrefix = "dayOfWeek:";
+        const string fileOlderThanPrefix = "fileOlderThan:";
+        const string cellEqualsPrefix = "cellEquals:";
 
         if (skipIf.StartsWith(fileExistsPrefix, StringComparison.OrdinalIgnoreCase))
         {
@@ -70,7 +90,52 @@ public abstract class ActionBase
             return !System.IO.File.Exists(path);
         }
 
+        if (skipIf.StartsWith(dayOfWeekPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            var days = skipIf[dayOfWeekPrefix.Length..].Split(',');
+            var today = DateTime.Now.DayOfWeek.ToString();
+            return !days.Any(d => d.Trim().Equals(today, StringComparison.OrdinalIgnoreCase)
+                               || today.StartsWith(d.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (skipIf.StartsWith(fileOlderThanPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            var durationStr = skipIf[fileOlderThanPrefix.Length..].Trim();
+            var duration = ParseDuration(durationStr);
+            if (!System.IO.File.Exists(filePath)) return false;
+            var age = DateTime.Now - System.IO.File.GetLastWriteTime(filePath);
+            return age > duration;
+        }
+
+        if (skipIf.StartsWith(cellEqualsPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            var spec = skipIf[cellEqualsPrefix.Length..];
+            var bangIdx = spec.IndexOf('!');
+            var colonIdx = spec.LastIndexOf(':');
+            if (bangIdx < 0 || colonIdx <= bangIdx) return false;
+            var sheetName = spec[..bangIdx];
+            var cellAddress = spec[(bangIdx + 1)..colonIdx];
+            var expectedValue = spec[(colonIdx + 1)..];
+            try
+            {
+                using var wb = new XLWorkbook(filePath);
+                var ws = wb.Worksheet(sheetName);
+                var actual = ws?.Cell(cellAddress)?.GetString() ?? "";
+                return actual.Equals(expectedValue, StringComparison.OrdinalIgnoreCase);
+            }
+            catch { return false; }
+        }
+
         return false;
+    }
+
+    private static TimeSpan ParseDuration(string s)
+    {
+        s = s.Trim().ToLowerInvariant();
+        if (s.EndsWith('h') && double.TryParse(s[..^1], out var h)) return TimeSpan.FromHours(h);
+        if (s.EndsWith('m') && double.TryParse(s[..^1], out var m)) return TimeSpan.FromMinutes(m);
+        if (s.EndsWith('d') && double.TryParse(s[..^1], out var d)) return TimeSpan.FromDays(d);
+        return TimeSpan.Zero;
     }
 
     /// <summary>
