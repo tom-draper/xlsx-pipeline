@@ -12,7 +12,7 @@ public class SetCellValueAction : ActionBase
     [JsonPropertyName("sheetName")]
     public PlaceholderString? SheetName { get; set; }
     public required string CellAddress { get; set; }
-    public required string Value { get; set; }
+    public required PlaceholderString Value { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
@@ -87,7 +87,8 @@ public class SetCellValueAction : ActionBase
                 cell.FormulaA1 = string.Empty;
 
             // Set the value - ClosedXML will automatically detect and convert data types
-            cell.Value = Value;
+            // PlaceholderString will resolve placeholders like {month}, {year}
+            cell.Value = (string)Value!;
 
             // Validate that the value was set successfully
             ValidateValueWasSet(cell);
@@ -103,7 +104,7 @@ public class SetCellValueAction : ActionBase
     private void ValidateValueWasSet(IXLCell cell)
     {
         // For empty strings, the cell value might be empty or null
-        if (string.IsNullOrEmpty(Value))
+        if (string.IsNullOrEmpty((string)Value!))
         {
             if (!cell.IsEmpty() && !string.IsNullOrEmpty(cell.GetString()))
                 throw new InvalidOperationException("Failed to clear cell value as expected.");

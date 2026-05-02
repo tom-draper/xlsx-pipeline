@@ -11,14 +11,14 @@ public class TransposeAction : ActionBase
     /// </summary>
     [JsonPropertyName("sourceSheetName")]
     public PlaceholderString? SourceSheetName { get; set; }
-    public required string SourceRange { get; set; }
+    public required PlaceholderString SourceRange { get; set; }
     /// <summary>
     /// Optional file path override. If provided, this will be used instead of the pipeline's current file path.
     /// Automatically processes date/time placeholders like {year}, {month}, {day}, etc.
     /// </summary>
     [JsonPropertyName("destinationSheetName")]
     public PlaceholderString? DestinationSheetName { get; set; }
-    public required string DestinationCell { get; set; }
+    public required PlaceholderString DestinationCell { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
@@ -48,20 +48,20 @@ public class TransposeAction : ActionBase
 
     private void ValidateInputs()
     {
-        if (string.IsNullOrWhiteSpace(SourceSheetName))
+        if (string.IsNullOrWhiteSpace((string?)SourceSheetName))
             throw new ArgumentException("Source sheet name cannot be null or empty.", nameof(SourceSheetName));
 
-        if (string.IsNullOrWhiteSpace(SourceRange))
+        if (string.IsNullOrWhiteSpace((string?)SourceRange))
             throw new ArgumentException("Source range cannot be null or empty.", nameof(SourceRange));
 
-        if (string.IsNullOrWhiteSpace(DestinationSheetName))
+        if (string.IsNullOrWhiteSpace((string?)DestinationSheetName))
             throw new ArgumentException("Destination sheet name cannot be null or empty.", nameof(DestinationSheetName));
 
-        if (string.IsNullOrWhiteSpace(DestinationCell))
+        if (string.IsNullOrWhiteSpace((string?)DestinationCell))
             throw new ArgumentException("Destination cell cannot be null or empty.", nameof(DestinationCell));
 
         // Validate cell address format
-        if (!IsValidCellAddress(DestinationCell))
+        if (!IsValidCellAddress((string)DestinationCell!))
             throw new ArgumentException($"Invalid destination cell address format '{DestinationCell}'. Please use a valid format (e.g., 'A1', 'B5').", nameof(DestinationCell));
     }
 
@@ -83,7 +83,7 @@ public class TransposeAction : ActionBase
     {
         try
         {
-            var range = sourceWorksheet.Range(SourceRange);
+            var range = sourceWorksheet.Range((string)SourceRange!);
             if (range == null)
                 throw new InvalidOperationException($"Failed to create range from '{SourceRange}'.");
 
@@ -99,7 +99,7 @@ public class TransposeAction : ActionBase
     {
         try
         {
-            return destinationWorksheet.Cell(DestinationCell);
+            return destinationWorksheet.Cell((string)DestinationCell!);
         }
         catch (Exception ex)
         {

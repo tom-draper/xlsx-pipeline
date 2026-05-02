@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Apply Formula Placeholders",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "ApplyFormula",
+      "sheetName": "Sheet1",
+      "cellAddress": "B1",
+      "formula": "=\"Current Date: \" & \"{year}-{month}\""
+    }
+  ]
+}

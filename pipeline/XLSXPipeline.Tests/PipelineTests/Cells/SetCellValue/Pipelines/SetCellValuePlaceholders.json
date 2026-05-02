@@ -1,0 +1,15 @@
+{
+  "pipelineName": "Set Cell Value Placeholders",
+  "trigger": {
+    "type": "Once",
+    "path": ".\\Input\\Input.xlsx"
+  },
+  "actions": [
+    {
+      "type": "SetCellValue",
+      "sheetName": "Sheet1",
+      "cellAddress": "A1",
+      "value": "Year: {year}, Month: {month}"
+    }
+  ]
+}

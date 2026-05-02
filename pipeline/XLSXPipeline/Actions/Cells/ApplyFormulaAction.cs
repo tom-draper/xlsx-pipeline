@@ -12,7 +12,7 @@ public class ApplyFormulaAction : ActionBase
     [JsonPropertyName("sheetName")]
     public PlaceholderString? SheetName { get; set; }
     public required string CellAddress { get; set; }
-    public required string Formula { get; set; }
+    public required PlaceholderString Formula { get; set; }
 
     protected override Task ExecuteInternalAsync(string filePath)
     {
@@ -41,7 +41,7 @@ public class ApplyFormulaAction : ActionBase
         if (string.IsNullOrWhiteSpace(CellAddress))
             throw new ArgumentException("Cell address cannot be null or empty.", nameof(CellAddress));
 
-        if (string.IsNullOrWhiteSpace(Formula))
+        if (string.IsNullOrWhiteSpace((string)Formula!))
             throw new ArgumentException("Formula cannot be null or empty.", nameof(Formula));
 
         // Validate cell address format
@@ -54,7 +54,7 @@ public class ApplyFormulaAction : ActionBase
 
     private void ValidateFormulaFormat()
     {
-        var trimmedFormula = Formula.Trim();
+        var trimmedFormula = ((string)Formula!).Trim();
         
         if (string.IsNullOrEmpty(trimmedFormula))
             throw new ArgumentException("Formula cannot be empty after trimming whitespace.", nameof(Formula));
@@ -100,7 +100,7 @@ public class ApplyFormulaAction : ActionBase
     {
         try
         {
-            var trimmedFormula = Formula.Trim();
+            var trimmedFormula = ((string)Formula!).Trim();
             cell.FormulaA1 = trimmedFormula;
             
             // Optionally validate that the formula was set correctly

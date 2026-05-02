@@ -17,4 +17,23 @@ public class SetCellValueTest : SetCellValueTestBase
             await CleanupTempFilesAsync();
         }
     }
+
+    [Fact]
+    public async Task SetCellValue_WithPlaceholders_ShouldResolvePlaceholders()
+    {
+        string pipelineName = "Set Cell Value Placeholders";
+        try
+        {
+            await ExecutePipelineTestAsync(pipelineName);
+            
+            var now = DateTime.Now;
+            string expectedValue = $"Year: {now.Year:D4}, Month: {now.Month:D2}";
+            
+            VerifyCellValue("A1", expectedValue, pipelineName);
+        }
+        finally
+        {
+            await CleanupTempFilesAsync();
+        }
+    }
 }

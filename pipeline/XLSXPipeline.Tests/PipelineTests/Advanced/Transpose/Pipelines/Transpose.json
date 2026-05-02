@@ -6,7 +6,7 @@
   },
   "actions": [
     {
-      "type": "TransposeAction",
+      "type": "Transpose",
       "sourceSheetName": "Sheet1",
       "sourceRange": "A1:B2",
       "destinationSheetName": "Sheet1",

@@ -109,7 +109,7 @@ Environment=DOTNET_ENVIRONMENT=Production
 WantedBy=multi-user.target
 ```
 
-Restart the service after making any changes to a pipeline files within `/Pipeline` to reload.
+Restart the service after making any changes to `XLSXPipeline.exe` itself. Pipeline files within `/Pipelines` are hot-reloaded automatically.
 
 ## Contributions
 
